@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "PlayerVamp.generated.h"
 
 UCLASS()
@@ -37,12 +38,16 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent *mesh = nullptr;
+	USkeletalMeshComponent *mesh = nullptr;
 
 	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent *collider = nullptr;
 
+	// Movement speed of character.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed = 10.f;
-		
+
+	// Add extra rotation to the rotation of the character.
+	UPROPERTY(EditAnywhere)
+	FRotator AdjustmentRotation = FRotator{ 0, 0, 0 };
 };

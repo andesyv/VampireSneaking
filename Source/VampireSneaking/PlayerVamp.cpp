@@ -13,7 +13,7 @@ APlayerVamp::APlayerVamp()
 	collider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision"));
 	RootComponent = collider;
 
-	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static mesh"));
+	mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Static mesh"));
 	mesh->SetupAttachment(RootComponent);
 }
 
@@ -22,15 +22,9 @@ void APlayerVamp::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if (!mesh->GetStaticMesh()) {
+	/*if (!mesh->GetStaticMesh()) {
 		UE_LOG(LogTemp, Error, TEXT("No mesh attached to player class instance!"));
-		// SetActorTickEnabled(false);
-	}
-	controller = Cast<APlayerController>(GetController());
-	if (controller) {
-		controller->bShowMouseCursor = true;
-	}
-	// controller = UGameplayStatics::GetPlayerController(this, 0);
+	}*/
 }
 
 // Called every frame
@@ -38,9 +32,12 @@ void APlayerVamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Set velocity via physics
 	if (collider->IsSimulatingPhysics() && velocity.Size() > KINDA_SMALL_NUMBER) {
 		collider->SetPhysicsLinearVelocity(GetActorForwardVector().Rotation().Quaternion() * FVector { velocity.GetClampedToMaxSize(1.f) * MoveSpeed  + GetVelocity().Z});
 	}
+
+	// Rotation
 	if (controller) {
 		Rotate();
 	}
@@ -53,6 +50,11 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("XAxis", this, &APlayerVamp::MoveX);
 	PlayerInputComponent->BindAxis("YAxis", this, &APlayerVamp::MoveY);
+
+	controller = Cast<APlayerController>(GetController());
+	if (controller) {
+		controller->bShowMouseCursor = true;
+	}
 }
 
 void APlayerVamp::MoveX(float amount)
@@ -68,9 +70,9 @@ void APlayerVamp::MoveY(float amount)
 void APlayerVamp::Rotate()
 {
 	FHitResult hitResult{};
-	if (controller->GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, false, hitResult)) {
+	if (controller->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult)) {
 		FVector direction{hitResult.ImpactPoint - GetActorLocation()};
 		direction.Z = 0;
-		mesh->SetWorldRotation(direction.Rotation());
+		mesh->SetWorldRotation(FRotator{ direction.Rotation() + AdjustmentRotation});
 	}
 }
