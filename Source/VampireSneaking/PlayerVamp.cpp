@@ -2,7 +2,7 @@
 
 #include "PlayerVamp.h"
 #include "Components/InputComponent.h"
-
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp()
@@ -26,10 +26,11 @@ void APlayerVamp::BeginPlay()
 		UE_LOG(LogTemp, Error, TEXT("No mesh attached to player class instance!"));
 		// SetActorTickEnabled(false);
 	}
-	else {
-		// mesh->CanEditSimulatePhysics();
-		// mesh->SetSimulatePhysics(true);
+	controller = Cast<APlayerController>(GetController());
+	if (controller) {
+		controller->bShowMouseCursor = true;
 	}
+	// controller = UGameplayStatics::GetPlayerController(this, 0);
 }
 
 // Called every frame
@@ -39,6 +40,9 @@ void APlayerVamp::Tick(float DeltaTime)
 
 	if (collider->IsSimulatingPhysics() && velocity.Size() > KINDA_SMALL_NUMBER) {
 		collider->SetPhysicsLinearVelocity(GetActorForwardVector().Rotation().Quaternion() * FVector { velocity.GetClampedToMaxSize(1.f) * MoveSpeed  + GetVelocity().Z});
+	}
+	if (controller) {
+		Rotate();
 	}
 }
 
@@ -59,4 +63,14 @@ void APlayerVamp::MoveX(float amount)
 void APlayerVamp::MoveY(float amount)
 {
 	velocity.Y = amount;
+}
+
+void APlayerVamp::Rotate()
+{
+	FHitResult hitResult{};
+	if (controller->GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, false, hitResult)) {
+		FVector direction{hitResult.ImpactPoint - GetActorLocation()};
+		direction.Z = 0;
+		mesh->SetWorldRotation(direction.Rotation());
+	}
 }

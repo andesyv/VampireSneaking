@@ -16,8 +16,11 @@ class VAMPIRESNEAKING_API APlayerVamp : public APawn
 private:
 	void MoveX(float amount);
 	void MoveY(float amount);
+	void Rotate();
 
 	FVector velocity{ 0, 0, 0 };
+
+	APlayerController *controller;
 
 protected:
 	// Called when the game starts or when spawned
