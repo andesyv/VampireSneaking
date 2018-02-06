@@ -47,6 +47,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed = 10.f;
 
+	//UPROPERTY(EditAnywhere)
+	//float CustomLinearDrag = 1.f;
+
 	// Add extra rotation to the rotation of the character.
 	UPROPERTY(EditAnywhere)
 	FRotator AdjustmentRotation = FRotator{ 0, 0, 0 };

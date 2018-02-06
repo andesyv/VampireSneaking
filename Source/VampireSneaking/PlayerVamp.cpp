@@ -36,6 +36,11 @@ void APlayerVamp::Tick(float DeltaTime)
 	if (collider->IsSimulatingPhysics() && velocity.Size() > KINDA_SMALL_NUMBER) {
 		collider->SetPhysicsLinearVelocity(GetActorForwardVector().Rotation().Quaternion() * FVector { velocity.GetClampedToMaxSize(1.f) * MoveSpeed  + GetVelocity().Z});
 	}
+	//else if (collider->IsSimulatingPhysics() && collider->GetPhysicsLinearVelocity().Size() > 1.f) {
+	//	// Adding custom linear drag. (Why didn't I just make a physics material? No idea.)
+	//	UE_LOG(LogTemp, Warning, TEXT("Added %f force!"), (-collider->GetPhysicsLinearVelocity() * CustomLinearDrag).Size());
+	//	collider->AddForce(-collider->GetPhysicsLinearVelocity() * CustomLinearDrag);
+	//}
 
 	// Rotation
 	if (controller) {
