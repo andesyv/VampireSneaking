@@ -77,3 +77,4 @@ Content/desktop.ini
 Config/*
 Content/*
 !Content/Blueprints/
+Content/Maps/*
