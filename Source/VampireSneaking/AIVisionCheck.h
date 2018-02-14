@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "AIVisionCheck.generated.h"
 
 /**
@@ -18,5 +19,15 @@ private:
 	// This happens every tick.
 	virtual void TickNode (UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory, float DeltaSeconds) override;
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBlackboardComponent *Blackboard;
 
+	// The state of the behavior tree
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBlackboardKeySelector State;
+
+	// The target actor when the AI sees someone.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBlackboardKeySelector TargetActor;
 };

@@ -5,7 +5,10 @@
 void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory, float DeltaSeconds) {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
-
+	// UBlackboardData *blackboard = GetBlackboardAsset();
+	if (Blackboard) {
+		
+	}
 }
 
 

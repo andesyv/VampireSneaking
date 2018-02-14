@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
+#include "Camera/CameraComponent.h"/*
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"*/
 #include "PlayerVamp.generated.h"
 
 UCLASS()
-class VAMPIRESNEAKING_API APlayerVamp : public APawn
+class VAMPIRESNEAKING_API APlayerVamp : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -19,9 +20,11 @@ private:
 	void MoveY(float amount);
 	void Rotate();
 
-	FVector velocity{ 0, 0, 0 };
-
 	APlayerController *controller;
+
+	FRotator meshStartRotation{0.f, 0.f, 0.f};
+
+	USkeletalMeshComponent *meshComponent = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
@@ -38,19 +41,12 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY(VisibleAnywhere)
-	USkeletalMeshComponent *mesh = nullptr;
-
-	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent *collider = nullptr;
 
-	// Movement speed of character.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MoveSpeed = 10.f;
-
-	//UPROPERTY(EditAnywhere)
-	//float CustomLinearDrag = 1.f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UCameraComponent *Camera = nullptr;
 
 	// Add extra rotation to the rotation of the character.
 	UPROPERTY(EditAnywhere)
-	FRotator AdjustmentRotation = FRotator{ 0, 0, 0 };
+	FRotator AdjustmentRotation = FRotator{ 0.f, 0.f, 0.f };
 };
