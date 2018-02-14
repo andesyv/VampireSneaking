@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -26,6 +27,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
-	
+	// Behavior tree for Enemy. Defines the kind of behavior the Enemy is going to have.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBehaviorTree *BehaviorTree;
 };
