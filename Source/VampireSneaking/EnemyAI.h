@@ -20,21 +20,12 @@ private:
 	// Called on possession of controller.
 	virtual void Possess(APawn *Pawn) override;
 
+	// Debug pointsArray.
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FName> PointArr;
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
 
 public:
 	AEnemyAI();
 
-
-	/*UPROPERTY(VisibleAnywhere)
-	UBehaviorTreeComponent *BehaviorTree;*/
-
-	/*UPROPERTY(VisibleAnywhere)
-	UBlackboardComponent *Blackboard;*/
 
 };
