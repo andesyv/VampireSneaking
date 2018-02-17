@@ -15,17 +15,26 @@ UCLASS()
 class VAMPIRESNEAKING_API AEnemyAI : public AAIController
 {
 	GENERATED_BODY()
+	DECLARE_DELEGATE(OnMoveCompletedDelegate);
 
 private:
 	// Called on possession of controller.
 	virtual void Possess(APawn *Pawn) override;
 
+	/** Called on completing current movement request */
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+
 	// Debug pointsArray.
 	UPROPERTY(EditDefaultsOnly)
 	TArray<FName> PointArr;
 
+	APawn *possessedPawn = nullptr;
+
+
 public:
 	AEnemyAI();
 
+	OnMoveCompletedDelegate MoveCompletedDelegate{};
 
+	const APawn* GetPossessedPawn() { return possessedPawn; }
 };

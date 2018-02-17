@@ -4,6 +4,13 @@
 #include "Enemy.h"
 #include "Engine/TargetPoint.h"
 
+void AEnemyAI::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult & Result)
+{
+	Super::OnMoveCompleted(RequestID, Result);
+
+	MoveCompletedDelegate.ExecuteIfBound();
+}
+
 AEnemyAI::AEnemyAI() {
 
 	// Making a default blackboard and behavior tree. (A behavior tree inherits from BrainComponent)
