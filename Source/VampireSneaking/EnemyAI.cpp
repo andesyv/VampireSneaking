@@ -8,7 +8,13 @@ void AEnemyAI::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResul
 {
 	Super::OnMoveCompleted(RequestID, Result);
 
-	MoveCompletedDelegate.ExecuteIfBound();
+	// UE_LOG(LogTemp, Warning, TEXT("Delegate contains: %d"), static_cast<int>(MoveCompletedDelegate.IsBound()));
+	// MoveCompletedDelegate.ExecuteIfBound();
+
+	/*if (taskRef) {
+		taskRef->FinishExecute();
+		taskRef = nullptr;
+	}*/
 }
 
 AEnemyAI::AEnemyAI() {
@@ -27,6 +33,8 @@ void AEnemyAI::Possess(APawn *Pawn) {
 	Super::Possess(Pawn);
 
 	// UE_LOG(LogTemp, Warning, TEXT("Player controller %s possessed enemy %s!"), *GetName(), *Pawn->GetName());
+
+	possessedPawn = Pawn;
 
 	// Fetch reference to behaviorTreeComponent and enemy.
 	UBehaviorTreeComponent *behaviorTreeComp = Cast<UBehaviorTreeComponent>(BrainComponent);
@@ -65,5 +73,13 @@ void AEnemyAI::Possess(APawn *Pawn) {
 			UE_LOG(LogTemp, Error, TEXT("Enemy is missing behavior tree!"));
 		}
 	}
+}
+
+void AEnemyAI::UnPossess()
+{
+	Super::UnPossess();
+
+	possessedPawn = nullptr;
+
 }
 

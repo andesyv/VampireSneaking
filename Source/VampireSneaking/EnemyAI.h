@@ -21,6 +21,9 @@ private:
 	// Called on possession of controller.
 	virtual void Possess(APawn *Pawn) override;
 
+	// Called on unpossession of controller.
+	virtual void UnPossess() override;
+
 	/** Called on completing current movement request */
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
@@ -30,6 +33,9 @@ private:
 
 	APawn *possessedPawn = nullptr;
 
+	//friend EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
+
+	//UBTMoveToRandomPositionTask *taskRef = nullptr;
 
 public:
 	AEnemyAI();

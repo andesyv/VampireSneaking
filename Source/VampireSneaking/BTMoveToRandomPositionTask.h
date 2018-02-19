@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "EnemyAI.h"
 #include "BTMoveToRandomPositionTask.generated.h"
 
 /**
@@ -24,7 +25,11 @@ private:
 
 	UBehaviorTreeComponent *BrainRef{ nullptr };
 
-	void finish();
+	/*friend class AEnemyAI;*/
+
+protected:
+	UFUNCTION()
+	void FinishExecute(FAIRequestID RequestID, EPathFollowingResult::Type Result);
 
 public:
 
