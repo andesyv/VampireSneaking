@@ -4,19 +4,6 @@
 #include "Enemy.h"
 #include "Engine/TargetPoint.h"
 
-void AEnemyAI::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult & Result)
-{
-	Super::OnMoveCompleted(RequestID, Result);
-
-	// UE_LOG(LogTemp, Warning, TEXT("Delegate contains: %d"), static_cast<int>(MoveCompletedDelegate.IsBound()));
-	// MoveCompletedDelegate.ExecuteIfBound();
-
-	/*if (taskRef) {
-		taskRef->FinishExecute();
-		taskRef = nullptr;
-	}*/
-}
-
 AEnemyAI::AEnemyAI() {
 
 	// Making a default blackboard and behavior tree. (A behavior tree inherits from BrainComponent)

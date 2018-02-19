@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BTMoveToRandomPositionTask.h"
-// #include "EnemyAI.h"
 #include "AI/Navigation/NavigationSystem.h"
 
 EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
@@ -27,9 +26,9 @@ EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeCompon
 			}
 		} while (recreateMoveRequest);
 
-		UE_LOG(LogTemp, Warning, TEXT("Current move status: %d"), static_cast<int>(enemyAI->GetMoveStatus()));
+		// UE_LOG(LogTemp, Warning, TEXT("Current move status: %d"), static_cast<int>(enemyAI->GetMoveStatus()));
+
 		BrainRef = &OwnerComp;
-		// enemyAI->MoveCompletedDelegate.BindUObject(this, &UBTMoveToRandomPositionTask::FinishExecute);
 		if (!(enemyAI->ReceiveMoveCompleted.IsAlreadyBound(this, &UBTMoveToRandomPositionTask::FinishExecute))) {
 			enemyAI->ReceiveMoveCompleted.AddDynamic(this, &UBTMoveToRandomPositionTask::FinishExecute);
 		} else {
@@ -44,22 +43,35 @@ EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeCompon
 	return EBTNodeResult::Failed;
 }
 
+bool UBTMoveToRandomPositionTask::UnbindDelegate(UBrainComponent* brainReference) {
+	AEnemyAI *enemyAI = Cast<AEnemyAI>(brainReference->GetAIOwner());
+	if (enemyAI && enemyAI->ReceiveMoveCompleted.IsAlreadyBound(this, &UBTMoveToRandomPositionTask::FinishExecute)) {
+		enemyAI->ReceiveMoveCompleted.RemoveDynamic(this, &UBTMoveToRandomPositionTask::FinishExecute);
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Can't unbind delegate!"));
+		return false;
+	}
+
+	BrainRef = nullptr;
+
+	return true;
+}
+
+EBTNodeResult::Type UBTMoveToRandomPositionTask::AbortTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
+{
+	UnbindDelegate(&OwnerComp);
+
+	return EBTNodeResult::Aborted;
+}
+
 void UBTMoveToRandomPositionTask::FinishExecute(FAIRequestID RequestID, EPathFollowingResult::Type Result) {
 	if (BrainRef) {
 		FinishLatentTask(*BrainRef, EBTNodeResult::Succeeded);
-		AEnemyAI *enemyAI = Cast<AEnemyAI>(BrainRef->GetAIOwner());
-		if (enemyAI && enemyAI->ReceiveMoveCompleted.IsAlreadyBound(this, &UBTMoveToRandomPositionTask::FinishExecute)) {
-			// enemyAI->MoveCompletedDelegate.Unbind();
-			enemyAI->ReceiveMoveCompleted.RemoveDynamic(this, &UBTMoveToRandomPositionTask::FinishExecute);
-		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("Can't unbind delegate!"));
-		}
-
-		BrainRef = nullptr;
+		UnbindDelegate(BrainRef);
 	}
 	else {
-		UE_LOG(LogTemp, Error, TEXT("BTMoveToRandomPositionTask failed!! Something is wrong!"));
+		UE_LOG(LogTemp, Error, TEXT("BTMoveToRandomPositionTask is missing a reference to the brainComponent!"));
 	}
 }
 

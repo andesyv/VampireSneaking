@@ -14,25 +14,25 @@ UCLASS()
 class VAMPIRESNEAKING_API UBTMoveToRandomPositionTask : public UBTTaskNode
 {
 	GENERATED_BODY()
-
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 private:
+	// Called when task is executed.
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 	ANavigationData* GetMainNavData(FNavigationSystem::ECreateIfEmpty CreateNewIfNoneFound = FNavigationSystem::Create);
 
-	/** helper function: finish latent executing */
-	// void FinishLatentTask(UBehaviorTreeComponent& OwnerComp, EBTNodeResult::Type TaskResult) const;
+	bool UnbindDelegate(UBrainComponent* brainReference);
 
 	UBehaviorTreeComponent *BrainRef{ nullptr };
 
-	/*friend class AEnemyAI;*/
-
 protected:
+	// Called when task is aborted.
+	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
 	UFUNCTION()
 	void FinishExecute(FAIRequestID RequestID, EPathFollowingResult::Type Result);
 
 public:
-
 	// The radius to create random points in, centered on the enemy.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Radius = 100.f;
