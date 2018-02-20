@@ -23,14 +23,12 @@ private:
 
 	bool UnbindDelegate(UBrainComponent* brainReference);
 
-	UBehaviorTreeComponent *BrainRef{ nullptr };
-
 protected:
 	// Called when task is aborted.
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 	UFUNCTION()
-	void FinishExecute(FAIRequestID RequestID, EPathFollowingResult::Type Result);
+	void FinishExecute(UBehaviorTreeComponent *BehaviorTree);
 
 public:
 	// The radius to create random points in, centered on the enemy.

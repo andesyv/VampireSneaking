@@ -8,6 +8,9 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyAI.generated.h"
 
+// DECLARE_EVENT_OneParam(AEnemyAI, TaskNodeExecutionDelegate, TSharedPtr<UBehaviorTreeComponent>);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
+
 /**
  * Character controller for AI.
  */
@@ -15,7 +18,6 @@ UCLASS()
 class VAMPIRESNEAKING_API AEnemyAI : public AAIController
 {
 	GENERATED_BODY()
-	DECLARE_DELEGATE(OnMoveCompletedDelegate);
 
 private:
 	// Called on possession of controller.
@@ -33,7 +35,11 @@ private:
 public:
 	AEnemyAI();
 
-	OnMoveCompletedDelegate MoveCompletedDelegate{};
+	/** Called on completing current movement request */
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+
+	// Delegate for move completion.
+	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
 	const APawn* GetPossessedPawn() { return possessedPawn; }
 };

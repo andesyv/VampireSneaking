@@ -15,6 +15,15 @@ AEnemyAI::AEnemyAI() {
 	PointArr.Add(FName{ "Point2" });
 }
 
+void AEnemyAI::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) {
+	Super::OnMoveCompleted(RequestID, Result);
+
+	UBehaviorTreeComponent *behaviorTree = Cast<UBehaviorTreeComponent>(BrainComponent);
+	if (behaviorTree) {
+		OnMoveCompletedDelegate.Broadcast(behaviorTree);
+	}
+}
+
 void AEnemyAI::Possess(APawn *Pawn) {
 
 	Super::Possess(Pawn);

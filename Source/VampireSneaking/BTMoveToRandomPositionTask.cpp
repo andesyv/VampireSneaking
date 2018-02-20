@@ -28,9 +28,8 @@ EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeCompon
 
 		// UE_LOG(LogTemp, Warning, TEXT("Current move status: %d"), static_cast<int>(enemyAI->GetMoveStatus()));
 
-		BrainRef = &OwnerComp;
-		if (!(enemyAI->ReceiveMoveCompleted.IsAlreadyBound(this, &UBTMoveToRandomPositionTask::FinishExecute))) {
-			enemyAI->ReceiveMoveCompleted.AddDynamic(this, &UBTMoveToRandomPositionTask::FinishExecute);
+		if (!(enemyAI->OnMoveCompletedDelegate.IsAlreadyBound(this, &UBTMoveToRandomPositionTask::FinishExecute))) {
+			enemyAI->OnMoveCompletedDelegate.AddDynamic(this, &UBTMoveToRandomPositionTask::FinishExecute);
 		} else {
 			UE_LOG(LogTemp, Error, TEXT("Can't bind delegate!"));
 		}
@@ -45,15 +44,13 @@ EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeCompon
 
 bool UBTMoveToRandomPositionTask::UnbindDelegate(UBrainComponent* brainReference) {
 	AEnemyAI *enemyAI = Cast<AEnemyAI>(brainReference->GetAIOwner());
-	if (enemyAI && enemyAI->ReceiveMoveCompleted.IsAlreadyBound(this, &UBTMoveToRandomPositionTask::FinishExecute)) {
-		enemyAI->ReceiveMoveCompleted.RemoveDynamic(this, &UBTMoveToRandomPositionTask::FinishExecute);
+	if (enemyAI && enemyAI->OnMoveCompletedDelegate.IsAlreadyBound(this, &UBTMoveToRandomPositionTask::FinishExecute)) {
+		enemyAI->OnMoveCompletedDelegate.RemoveDynamic(this, &UBTMoveToRandomPositionTask::FinishExecute);
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("Can't unbind delegate!"));
 		return false;
 	}
-
-	BrainRef = nullptr;
 
 	return true;
 }
@@ -65,10 +62,10 @@ EBTNodeResult::Type UBTMoveToRandomPositionTask::AbortTask(UBehaviorTreeComponen
 	return EBTNodeResult::Aborted;
 }
 
-void UBTMoveToRandomPositionTask::FinishExecute(FAIRequestID RequestID, EPathFollowingResult::Type Result) {
-	if (BrainRef) {
-		FinishLatentTask(*BrainRef, EBTNodeResult::Succeeded);
-		UnbindDelegate(BrainRef);
+void UBTMoveToRandomPositionTask::FinishExecute(UBehaviorTreeComponent *BehaviorTree) {
+	if (BehaviorTree) {
+		FinishLatentTask(*BehaviorTree, EBTNodeResult::Succeeded);
+		UnbindDelegate(BehaviorTree);
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("BTMoveToRandomPositionTask is missing a reference to the brainComponent!"));
