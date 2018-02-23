@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
 #include "EnemyAI.h"
+#include "Engine/TargetPoint.h"
 #include "BTMoveToRandomPositionTask.generated.h"
 
 /**
@@ -34,4 +35,11 @@ public:
 	// The radius to create random points in, centered on the enemy.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Radius = 100.f;
+
+	// TODO: Remake this task node so that is uses the MoveTo -task node instead of handling moving on it's own.
+	// And make this task node able to center around a target point.
+
+	// Point to randomly move around. Leave empty to move around player instead.
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ATargetPoint *Center = nullptr;*/
 };
