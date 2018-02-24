@@ -24,6 +24,8 @@ private:
 
 	bool UnbindDelegate(UBrainComponent* brainReference);
 
+	FVector GetCenterPoint(const UBehaviorTreeComponent& OwnerComp) const;
+
 protected:
 	// Called when task is aborted.
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
@@ -39,7 +41,11 @@ public:
 	// TODO: Remake this task node so that is uses the MoveTo -task node instead of handling moving on it's own.
 	// And make this task node able to center around a target point.
 
-	// Point to randomly move around. Leave empty to move around player instead.
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ATargetPoint *Center = nullptr;*/
+	// Move around self instead of given point?
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool MoveAroundSelf = true;
+
+	// Point to randomly move around.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBlackboardKeySelector Center = FBlackboardKeySelector{};
 };

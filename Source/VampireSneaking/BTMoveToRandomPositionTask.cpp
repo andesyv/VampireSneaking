@@ -2,6 +2,7 @@
 
 #include "BTMoveToRandomPositionTask.h"
 #include "AI/Navigation/NavigationSystem.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 
 EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
@@ -10,7 +11,7 @@ EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeCompon
 	if (enemyAI && enemyAI->GetPossessedPawn()) {
 		bool recreateMoveRequest{ false };
 		do {
-			EPathFollowingRequestResult::Type requestResult{ enemyAI->MoveToLocation(UNavigationSystem::GetRandomPointInNavigableRadius(enemyAI, enemyAI->GetPossessedPawn()->GetActorLocation(), Radius, GetMainNavData())) };
+			EPathFollowingRequestResult::Type requestResult{ enemyAI->MoveToLocation(UNavigationSystem::GetRandomPointInNavigableRadius(enemyAI, GetCenterPoint(OwnerComp), Radius, GetMainNavData())) };
 			switch (requestResult) {
 			case EPathFollowingRequestResult::RequestSuccessful:
 				// Succeded, do nothing.
@@ -53,6 +54,39 @@ bool UBTMoveToRandomPositionTask::UnbindDelegate(UBrainComponent* brainReference
 	}
 
 	return true;
+}
+
+FVector UBTMoveToRandomPositionTask::GetCenterPoint(const UBehaviorTreeComponent & OwnerComp) const
+{
+	const UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
+	if (!MoveAroundSelf && blackboard) {
+		TSubclassOf<UBlackboardKeyType> keyType = blackboard->GetKeyType(blackboard->GetKeyID(Center.SelectedKeyName));
+		if (keyType == UBlackboardKeyType_Vector::StaticClass()) {
+			return blackboard->GetValue<UBlackboardKeyType_Vector>(Center.SelectedKeyName);
+		}
+		else if (keyType == UBlackboardKeyType_Object::StaticClass()) {
+			AActor *actor = Cast<AActor>(blackboard->GetValue<UBlackboardKeyType_Object>(Center.SelectedKeyName));
+			if (actor) {
+				return actor->GetActorLocation();
+			}
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Unable to find center point, using self location instead."));
+		}
+	}
+	else if (!blackboard) {
+		UE_LOG(LogTemp, Error, TEXT("Missing blackboard!"));
+	}
+
+	// If no other return paths has occured, do this.
+	AEnemyAI *enemyAI = Cast<AEnemyAI>(OwnerComp.GetAIOwner());
+	if (enemyAI && enemyAI->GetPossessedPawn()) {
+		return enemyAI->GetPossessedPawn()->GetActorLocation();
+	}
+	else {
+		UE_LOG(LogTemp, Error, TEXT("Some kind of error happened!"));
+		return FVector{ 0.f, 0.f, 0.f };
+	}
 }
 
 EBTNodeResult::Type UBTMoveToRandomPositionTask::AbortTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)

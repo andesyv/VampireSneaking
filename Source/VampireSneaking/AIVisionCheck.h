@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "AIVisionCheck.generated.h"
 
 /**
@@ -37,22 +37,22 @@ private:
 
 	float GetAngleBetween(FVector pos1, FVector pos2);
 
-	AIState GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds);
+	AIState GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds, AIState lastState);
 	
 public:
 	// The state of the behavior tree
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FBlackboardKeySelector State;
 
-	// The target actor when the AI sees someone.
+	// Position where the AI last saw the player.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBlackboardKeySelector LastSeenPosition;
+
+	// The player, when the AI sees it.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBlackboardKeySelector TargetActor;
 
-	// The angle from the center that the AI will be able to see, in degrees. Total angle that the AI can see is this * 2.
+	// The amount of time the AI will search for before giving up and going back to it's patrol.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float VisionAngle = 10.f;
-
-	// The length the AI will be able to see.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float VisionRadius = 100.f;
+	float SearchTime = 3.f;
 };

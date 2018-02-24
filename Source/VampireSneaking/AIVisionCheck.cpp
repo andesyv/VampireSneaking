@@ -14,15 +14,33 @@ void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMe
 	UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
 
 	if (blackboard) {
-		AIState state{ GetState(OwnerComp, DeltaSeconds) };
+		AIState state{ GetState(OwnerComp, DeltaSeconds, static_cast<AIState>(blackboard->GetValue<UBlackboardKeyType_Enum>(State.SelectedKeyName))) };
 
-		if (state != AIState::NoState && !(blackboard->SetValue<UBlackboardKeyType_Enum>(blackboard->GetKeyID(State.SelectedKeyName), static_cast<UBlackboardKeyType_Enum::FDataType>(state)))) {
+		// If the GetState function could'nt return a state, quit while you're ahead.
+		if (state == AIState::NoState) {
+			return;
+		}
+
+		// Set the memory of the last position the AI saw the player. (No need to check for nullptr's, as that was done in the GetState function.
+		if (state == AIState::Combat && !(blackboard->SetValue<UBlackboardKeyType_Vector>(blackboard->GetKeyID(LastSeenPosition.SelectedKeyName), UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()->GetActorLocation()))) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to set vector in blackboard!"));
+		}
+
+		// Set the actor to follow to be the player if the AI can see it, and nullptr if otherwise.
+		if (!(blackboard->SetValue<UBlackboardKeyType_Object>(blackboard->GetKeyID(TargetActor.SelectedKeyName), (state == AIState::Combat) ? Cast<AActor>(UGameplayStatics::GetPlayerController(GetWorld(), 0)->GetPawn()) : nullptr))) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to set actor in blackboard!"));
+		}
+
+
+
+		// Set the blackboard enum "State" to be the state gotten from GetState. (Should never be AIState::NoState)
+		if (!(blackboard->SetValue<UBlackboardKeyType_Enum>(blackboard->GetKeyID(State.SelectedKeyName), static_cast<UBlackboardKeyType_Enum::FDataType>(state)))) {
 			UE_LOG(LogTemp, Error, TEXT("Failed to set enum in blackboard!"));
 		}
 	}
 }
 
-AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds) {
+AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds, AIState lastState) {
 
 	if (GetWorld() && !OwnerComp.GetAIOwner()) {
 		return AIState::NoState;
@@ -40,8 +58,9 @@ AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float Delta
 	FVector enemyToPlayer{ playerController->GetPawn()->GetActorLocation() - enemy->GetActorLocation() };
 	FHitResult traceResult{};
 	const FName TraceTag("VisionTrace");
-	// GetWorld()->DebugDrawTraceTag = TraceTag;
+	GetWorld()->DebugDrawTraceTag = TraceTag;
 	FCollisionQueryParams collisionQueryParams(TraceTag, false);
+	static float timer{ 0.f };
 
 	// Do the checks.
 	if (FMath::Abs(GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
@@ -51,6 +70,14 @@ AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float Delta
 		// The enemy can see the player.
 
 		return AIState::Combat;
+	}
+	else if (lastState == AIState::Combat) {
+		timer = 0.f;
+		return AIState::Searching;
+	}
+	else if (lastState == AIState::Searching && timer < SearchTime) {
+		timer += DeltaSeconds;
+		return AIState::Searching;
 	}
 	else {
 		return AIState::Idle;
