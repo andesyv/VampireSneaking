@@ -14,42 +14,46 @@ void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMe
 	UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
 
 	if (blackboard) {
-		if (GetWorld() && !OwnerComp.GetAIOwner()) {
-			return;
-		}
+		AIState state{ GetState(OwnerComp, DeltaSeconds) };
 
-		AEnemy *enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-		APlayerController *playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-
-		// Checking that no pointers are nullptr's.
-		if (!playerController || !playerController->GetPawn() || !enemy) {
-			return;
-		}
-
-		// Setup additional stuff.
-		AIState state{AIState::Idle};
-		FVector enemyToPlayer{ playerController->GetPawn()->GetActorLocation() - enemy->GetActorLocation() };
-		FHitResult traceResult{};
-		const FName TraceTag("VisionTrace");
-		// GetWorld()->DebugDrawTraceTag = TraceTag;
-		FCollisionQueryParams collisionQueryParams(TraceTag, false);
-
-		// Do the checks.
-		if (FMath::Abs(GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
-			&& enemyToPlayer.Size() < enemy->VisionRadius	// Is player inside vision radius?
-			&& !(GetWorld()->LineTraceSingleByChannel(traceResult, enemy->GetActorLocation(), playerController->GetPawn()->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams)))	// Is there anything blocking the line of sight?
-		{
-			// The enemy can see the player.
-
-			state = AIState::Combat;
-		}
-		else {
-			state = AIState::Idle;
-		}		
-
-		if (!(blackboard->SetValue<UBlackboardKeyType_Enum>(blackboard->GetKeyID(State.SelectedKeyName), static_cast<UBlackboardKeyType_Enum::FDataType>(state)))) {
+		if (state != AIState::NoState && !(blackboard->SetValue<UBlackboardKeyType_Enum>(blackboard->GetKeyID(State.SelectedKeyName), static_cast<UBlackboardKeyType_Enum::FDataType>(state)))) {
 			UE_LOG(LogTemp, Error, TEXT("Failed to set enum in blackboard!"));
 		}
+	}
+}
+
+AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds) {
+
+	if (GetWorld() && !OwnerComp.GetAIOwner()) {
+		return AIState::NoState;
+	}
+
+	AEnemy *enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
+	APlayerController *playerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+
+	// Checking that no pointers are nullptr's.
+	if (!playerController || !playerController->GetPawn() || !enemy) {
+		return AIState::NoState;
+	}
+
+	// Setup additional stuff.
+	FVector enemyToPlayer{ playerController->GetPawn()->GetActorLocation() - enemy->GetActorLocation() };
+	FHitResult traceResult{};
+	const FName TraceTag("VisionTrace");
+	// GetWorld()->DebugDrawTraceTag = TraceTag;
+	FCollisionQueryParams collisionQueryParams(TraceTag, false);
+
+	// Do the checks.
+	if (FMath::Abs(GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
+		&& enemyToPlayer.Size() < enemy->VisionRadius	// Is player inside vision radius?
+		&& !(GetWorld()->LineTraceSingleByChannel(traceResult, enemy->GetActorLocation(), playerController->GetPawn()->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams)))	// Is there anything blocking the line of sight?
+	{
+		// The enemy can see the player.
+
+		return AIState::Combat;
+	}
+	else {
+		return AIState::Idle;
 	}
 }
 
