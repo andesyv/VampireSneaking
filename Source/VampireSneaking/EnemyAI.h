@@ -25,10 +25,6 @@ private:
 	// Called on unpossession of controller.
 	virtual void UnPossess() override;
 
-	// Debug pointsArray.
-	UPROPERTY(EditDefaultsOnly)
-	TArray<FName> PointArr;
-
 	APawn *possessedPawn = nullptr;
 
 public:

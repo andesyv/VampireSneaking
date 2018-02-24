@@ -26,7 +26,7 @@ enum class AIState : uint8 {
  * Class that checks to see if the AI can see the player and what action it shall do.
  * Action to do is se in the State enum.
  */
-UCLASS(Blueprintable)
+UCLASS(Blueprintable, DisplayName = "Vision Check")
 class VAMPIRESNEAKING_API UAIVisionCheck : public UBTService
 {
 	GENERATED_BODY()

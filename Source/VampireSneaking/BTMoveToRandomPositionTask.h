@@ -11,7 +11,7 @@
 /**
  * Moves to a random point within radius.
  */
-UCLASS()
+UCLASS(Blueprintable, DisplayName = "Move To Random Position")
 class VAMPIRESNEAKING_API UBTMoveToRandomPositionTask : public UBTTaskNode
 {
 	GENERATED_BODY()
