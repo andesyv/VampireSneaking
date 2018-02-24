@@ -30,4 +30,12 @@ public:
 	// Behavior tree for Enemy. Defines the kind of behavior the Enemy is going to have.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBehaviorTree *BehaviorTree;
+
+	// The angle from the center that the AI will be able to see, in degrees. Total angle that the AI can see is this * 2.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float VisionAngle = 10.f;
+
+	// The length the AI will be able to see.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float VisionRadius = 100.f;
 };

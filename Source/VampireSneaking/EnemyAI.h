@@ -8,13 +8,12 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyAI.generated.h"
 
-// DECLARE_EVENT_OneParam(AEnemyAI, TaskNodeExecutionDelegate, TSharedPtr<UBehaviorTreeComponent>);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 
 /**
  * Character controller for AI.
  */
-UCLASS()
+UCLASS(Blueprintable)
 class VAMPIRESNEAKING_API AEnemyAI : public AAIController
 {
 	GENERATED_BODY()

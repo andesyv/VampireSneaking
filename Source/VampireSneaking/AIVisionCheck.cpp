@@ -4,6 +4,7 @@
 #include "AIController.h"
 #include "Enemy.h"
 #include "EnemyAI.h"
+#include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -13,7 +14,7 @@ void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMe
 	UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
 
 	if (blackboard) {
-		if (!OwnerComp.GetAIOwner()) {
+		if (GetWorld() && !OwnerComp.GetAIOwner()) {
 			return;
 		}
 
@@ -25,19 +26,29 @@ void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMe
 			return;
 		}
 
-		if (FMath::Abs(GetAngleBetween(
-			FVector{ playerController->GetPawn()->GetActorLocation() - enemy->GetActorLocation() }
-			, enemy->GetActorForwardVector())) < VisionAngle) {
-			// Player is inside vision angle.
+		// Setup additional stuff.
+		AIState state{AIState::Idle};
+		FVector enemyToPlayer{ playerController->GetPawn()->GetActorLocation() - enemy->GetActorLocation() };
+		FHitResult traceResult{};
+		const FName TraceTag("VisionTrace");
+		// GetWorld()->DebugDrawTraceTag = TraceTag;
+		FCollisionQueryParams collisionQueryParams(TraceTag, false);
 
-			if (!(blackboard->SetValue<UBlackboardKeyType_Enum>(blackboard->GetKeyID(State.SelectedKeyName), static_cast<UBlackboardKeyType_Enum::FDataType>(AIState::Combat)))) {
-				UE_LOG(LogTemp, Error, TEXT("Failed to set enum in blackboard!"));
-			}
+		// Do the checks.
+		if (FMath::Abs(GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
+			&& enemyToPlayer.Size() < enemy->VisionRadius	// Is player inside vision radius?
+			&& !(GetWorld()->LineTraceSingleByChannel(traceResult, enemy->GetActorLocation(), playerController->GetPawn()->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams)))	// Is there anything blocking the line of sight?
+		{
+			// The enemy can see the player.
+
+			state = AIState::Combat;
 		}
 		else {
-			if (!(blackboard->SetValue<UBlackboardKeyType_Enum>(blackboard->GetKeyID(State.SelectedKeyName), static_cast<UBlackboardKeyType_Enum::FDataType>(AIState::Idle)))) {
-				UE_LOG(LogTemp, Error, TEXT("Failed to set enum in blackboard!"));
-			}
+			state = AIState::Idle;
+		}		
+
+		if (!(blackboard->SetValue<UBlackboardKeyType_Enum>(blackboard->GetKeyID(State.SelectedKeyName), static_cast<UBlackboardKeyType_Enum::FDataType>(state)))) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to set enum in blackboard!"));
 		}
 	}
 }

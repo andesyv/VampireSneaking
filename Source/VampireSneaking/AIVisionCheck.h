@@ -9,27 +9,21 @@
 #include "AIVisionCheck.generated.h"
 
 /**
-* Can't figure out how to make a single enum that is both available in the content browser and in code,
-* so for now I will duplicate this enum in the content browser.
-*/
+ * The state of the AI, for use in the behaviorTree.
+ * (Usable in blueprints and blackboards)
+ */
 UENUM(BlueprintType)
 enum class AIState : uint8 {
 	Idle	UMETA(DisplayName = "Idle"),
 	Combat	UMETA(DisplayName = "Combat"),
+	Searching	UMETA(DisplayName = "Searching"),
 };
-
-//namespace AIState {
-//	enum Type : uint8 {
-//		Idle	UMETA(DisplayName = "Idle"),
-//		Combat	UMETA(DisplayName = "Combat"),
-//	};
-//}
 
 /**
  * Class that checks to see if the AI can see the player and what action it shall do.
  * Action to do is se in the State enum.
  */
-UCLASS()
+UCLASS(Blueprintable)
 class VAMPIRESNEAKING_API UAIVisionCheck : public UBTService
 {
 	GENERATED_BODY()
@@ -53,6 +47,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float VisionAngle = 10.f;
 
-	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AIState stateEnum;*/
+	// The length the AI will be able to see.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float VisionRadius = 100.f;
 };

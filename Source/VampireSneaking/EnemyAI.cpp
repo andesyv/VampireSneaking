@@ -40,10 +40,10 @@ void AEnemyAI::Possess(APawn *Pawn) {
 	if (possessedEnemy && behaviorTreeComp) {
 		if (possessedEnemy->BehaviorTree) {
 			if (possessedEnemy->BehaviorTree->BlackboardAsset) {
+				
 				// Setup blackboard.
-
-				// Blackboard->InitializeBlackboard(*possessedEnemy->BehaviorTree->BlackboardAsset)
 				if (Blackboard->InitializeBlackboard(*possessedEnemy->BehaviorTree->BlackboardAsset)) {
+
 					// Adding some debugpoints.
 					UWorld *world = GetWorld();
 					TArray<FVector> positions{ FVector{ 0.f, 0.f, 0.f }, FVector{ 500.f, 500.f, 0.f } };
