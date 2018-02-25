@@ -19,6 +19,9 @@ APlayerVamp::APlayerVamp()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
+
+	// Set health.
+	Health = GetMaxHealth();
 }
 
 // Called when the game starts or when spawned
@@ -62,6 +65,31 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	if (controller) {
 		controller->bShowMouseCursor = true;
 	}
+}
+
+const float APlayerVamp::GetHealth() const
+{
+	return Health;
+}
+
+const float APlayerVamp::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
+const float APlayerVamp::GetPercentageHealth() const
+{
+	return Health / MaxHealth;
+}
+
+const float APlayerVamp::TakeDamage(float damage)
+{
+	Health -= damage;
+	if (Health <= 0) {
+		Health = 0;
+		ded = true;
+	}
+	return Health;
 }
 
 void APlayerVamp::MoveX(float amount)
