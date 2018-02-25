@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BehaviorTree.h"
+#include "Engine/TargetPoint.h"
 #include "Enemy.generated.h"
 
 UCLASS()
@@ -28,14 +29,18 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Behavior tree for Enemy. Defines the kind of behavior the Enemy is going to have.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
 	class UBehaviorTree *BehaviorTree;
 
 	// The angle from the center that the AI will be able to see, in degrees. Total angle that the AI can see is this * 2.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
 	float VisionAngle = 10.f;
 
 	// The length the AI will be able to see.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
 	float VisionRadius = 100.f;
+
+	// Patrol points
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
+	TArray<ATargetPoint*> PatrolPoints;
 };
