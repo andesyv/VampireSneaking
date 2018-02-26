@@ -14,7 +14,7 @@ class VAMPIRESNEAKING_API ACustomPlayerStart : public APlayerStart
 {
 	GENERATED_BODY()
 	
-	
-	
+public:
+	ACustomPlayerStart(const FObjectInitializer& ObjectInitializer);
 	
 };

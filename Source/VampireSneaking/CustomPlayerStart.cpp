@@ -2,6 +2,6 @@
 
 #include "CustomPlayerStart.h"
 
-
-
-
+ACustomPlayerStart::ACustomPlayerStart(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	UE_LOG(LogTemp, Warning, TEXT("Custom start!"));
+}
