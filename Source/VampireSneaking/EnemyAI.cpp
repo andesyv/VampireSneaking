@@ -4,7 +4,7 @@
 #include "Enemy.h"
 #include "Engine/TargetPoint.h"
 
-AEnemyAI::AEnemyAI() {
+AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
 	// Making a default blackboard and behavior tree. (A behavior tree inherits from BrainComponent)
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));

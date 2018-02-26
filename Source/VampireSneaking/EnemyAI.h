@@ -28,7 +28,7 @@ private:
 	APawn *possessedPawn = nullptr;
 
 public:
-	AEnemyAI();
+	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	/** Called on completing current movement request */
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
