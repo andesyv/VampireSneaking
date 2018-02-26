@@ -4,6 +4,9 @@
 #include "Components/InputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Engine/World.h"
+#include "Enemy.h"
+#include "AIVisionCheck.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp()
@@ -76,6 +79,11 @@ const float APlayerVamp::GetPercentageHealth() const
 	return Health / MaxHealth;
 }
 
+const float APlayerVamp::GetBlood() const
+{
+	return Blood;
+}
+
 const float APlayerVamp::TakeDamage(float damage)
 {
 	Health -= damage;
@@ -104,4 +112,17 @@ void APlayerVamp::Rotate()
 		direction.Z = 0;
 		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation});
 	}
+}
+
+void APlayerVamp::OnOverlap(UPrimitiveComponent* OverlappedComponent, ACharacter *OtherCharacter,
+	UPrimitiveComponent *OtherComponent, int32 OtherBodyIndex,
+	bool bFromSweep, const FHitResult &SweepResult)
+{
+	UE_LOG(LogTemp, Error, TEXT("Character overlapping, this is working as intended. no fix needed")); //Does not work yet
+	if (OtherCharacter->IsA(AEnemy::StaticClass())) {
+		//how to do "if current state = idle"?
+			Blood += 10.f;
+		
+	}
+	
 }

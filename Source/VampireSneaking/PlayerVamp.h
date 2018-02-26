@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(BlueprintGetter = GetHealth)
 	float Health = 100.f;
 
+	UPROPERTY(BlueprintGetter = GetBlood)
+		float Blood = 100.f;
+
 	// Max health, and starting health.
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxHealth)
 	float MaxHealth = 100.f;
@@ -62,6 +65,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	const float GetPercentageHealth() const;
 
+	UFUNCTION(BlueprintGetter)
+		const float GetBlood() const;
+
 	// Take damage.
 	UFUNCTION(BlueprintCallable)
 	const float TakeDamage(float damage);
@@ -75,4 +81,9 @@ public:
 	// Add extra rotation to the rotation of the character.
 	UPROPERTY(EditAnywhere)
 	FRotator AdjustmentRotation = FRotator{ 0.f, 0.f, 0.f };
+
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* OverlappedComponent, ACharacter *OtherCharacter,
+			UPrimitiveComponent *OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult &SweepResult);
 };
