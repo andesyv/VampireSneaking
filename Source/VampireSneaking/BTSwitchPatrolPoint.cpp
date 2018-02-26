@@ -13,28 +13,40 @@ EBTNodeResult::Type UBTSwitchPatrolPoint::ExecuteTask(UBehaviorTreeComponent & O
 {
 	static int32 currentPointIndex{ 0 };
 
-	AEnemy *enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	if (enemy) {
-		int32 ArraySize{ enemy->PatrolPoints.Num() };
-		if (ArraySize > 0 && enemy->PatrolPoints[0]) {
-
-			// Increment. Will loop around to the first index again, even if you remove an index.
-			currentPointIndex = (ArraySize < currentPointIndex) ? 0 : (currentPointIndex + 1) % ArraySize;
-
-			return SetBlackboard(OwnerComp, enemy->PatrolPoints[currentPointIndex]);
-		}
-		else {
-			TArray<ATargetPoint*> PatrolPoints{};
-
-			// Add all ATargetPoint's to the Patrol Points array.
-			for (TActorIterator<ATargetPoint> Itr(GetWorld()); Itr; ++Itr) {
-				PatrolPoints.Add(*Itr);
+	if (OwnerComp.GetAIOwner() && OwnerComp.GetAIOwner()->GetPawn()) {
+		AEnemy *enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
+		if (enemy) {
+			int32 ArraySize{ enemy->PatrolPoints.Num() };
+			bool bEmptySpots{ false };
+			for (auto item : enemy->PatrolPoints) {
+				if (!item) {
+					bEmptySpots = true;
+				}
 			}
-			
-			// Increment. Will loop around to the first index again, even if you remove an index.
-			currentPointIndex = (PatrolPoints.Num() < currentPointIndex) ? 0 : (currentPointIndex + 1) % PatrolPoints.Num();
+			if (ArraySize > 0 && !bEmptySpots) {
 
-			return SetBlackboard(OwnerComp, PatrolPoints[currentPointIndex]);
+				// Increment. Will loop around to the first index again, even if you remove an index.
+				currentPointIndex = (ArraySize < currentPointIndex) ? 0 : (currentPointIndex + 1) % ArraySize;
+
+				return SetBlackboard(OwnerComp, enemy->PatrolPoints[currentPointIndex]);
+			}
+			else {
+				TArray<ATargetPoint*> PatrolPoints{};
+
+				// Add all ATargetPoint's to the Patrol Points array.
+				for (TActorIterator<ATargetPoint> Itr(GetWorld()); Itr; ++Itr) {
+					if (*Itr) {
+						PatrolPoints.Add(*Itr);
+					}
+				}
+
+				if (PatrolPoints.Num() > 0) {
+					// Increment. Will loop around to the first index again, even if you remove an index.
+					currentPointIndex = (PatrolPoints.Num() < currentPointIndex) ? 0 : (currentPointIndex + 1) % PatrolPoints.Num();
+
+					return SetBlackboard(OwnerComp, PatrolPoints[currentPointIndex]);
+				}
+			}
 		}
 	}
 	return EBTNodeResult::Failed;
