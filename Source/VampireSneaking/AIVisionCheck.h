@@ -17,6 +17,7 @@ enum class AIState : uint8 {
 	Idle	UMETA(DisplayName = "Idle"),
 	Combat	UMETA(DisplayName = "Combat"),
 	Searching	UMETA(DisplayName = "Searching"),
+	Frozen	UMETA(DisplayName = "Frozen"),
 	
 	// When the check function can't find give a sensible state.
 	NoState	UMETA(DisplayName = "No State"),

@@ -21,8 +21,11 @@ class VAMPIRESNEAKING_API UBTShootAtPlayer : public UBTTaskNode
 	* this function should be considered as const (don't modify state of object) if node is not instanced! */
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 	
-private:
+protected:
 	float timer{ 0 };
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Shoot(UBehaviorTreeComponent *OwnerComp);
 
 public:
 	// Target to hit.

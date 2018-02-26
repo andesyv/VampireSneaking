@@ -17,21 +17,26 @@ void UBTShootAtPlayer::TickTask(UBehaviorTreeComponent & OwnerComp, uint8 * Node
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
 	if (timer > ShootTime) {
-		UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
-		if (blackboard) {
-			APlayerVamp *player = Cast<APlayerVamp>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
-			if (player) {
-				player->TakeDamage(Damage);
-				timer = 0.f;
-				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-				return;
-			}
-			else {
-				UE_LOG(LogTemp, Error, TEXT("Can't receive actor from blackboard!"));
-			}
-		}
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
+		Shoot(&OwnerComp);
 	}
 	timer += DeltaSeconds;
+}
+
+void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
+{
+	UBlackboardComponent *blackboard = OwnerComp->GetBlackboardComponent();
+	if (blackboard) {
+		APlayerVamp *player = Cast<APlayerVamp>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
+		if (player) {
+			player->TakeDamage(Damage);
+			timer = 0.f;
+			FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+			return;
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("Can't receive actor from blackboard!"));
+		}
+	}
+	FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
+	return;
 }
