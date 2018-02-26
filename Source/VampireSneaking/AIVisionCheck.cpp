@@ -42,7 +42,8 @@ void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMe
 
 AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds, AIState lastState) {
 
-	if (GetWorld() && !OwnerComp.GetAIOwner()) {
+	if (!GetWorld() || !OwnerComp.GetAIOwner()) {
+		UE_LOG(LogTemp, Error, TEXT("Can't get world and/or can't get enemyAI!"));
 		return AIState::NoState;
 	}
 
@@ -51,6 +52,7 @@ AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float Delta
 
 	// Checking that no pointers are nullptr's.
 	if (!playerController || !playerController->GetPawn() || !enemy) {
+		UE_LOG(LogTemp, Error, TEXT("Can't get playercontroller, player, and/or enemy!"));
 		return AIState::NoState;
 	}
 
