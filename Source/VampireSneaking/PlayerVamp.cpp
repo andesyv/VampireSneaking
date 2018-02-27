@@ -3,57 +3,38 @@
 #include "PlayerVamp.h"
 #include "Components/InputComponent.h"
 #include "Kismet/GameplayStatics.h"
+<<<<<<< HEAD
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
 #include "Enemy.h"
 #include "AIVisionCheck.h"
+=======
+>>>>>>> master
 
 // Sets default values
-APlayerVamp::APlayerVamp()
+APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(RootComponent);
-
-	// Set health.
-	Health = GetMaxHealth();
 }
 
 // Called when the game starts or when spawned
 void APlayerVamp::BeginPlay()
 {
 	Super::BeginPlay();
-
-	TArray<USkeletalMeshComponent*> skeletonMeshes;
-	GetComponents<USkeletalMeshComponent>(skeletonMeshes);
-	if (skeletonMeshes.Num() > 1) {
-		UE_LOG(LogTemp, Error, TEXT("This character got %d skeleton meshes!!"), skeletonMeshes.Num());
-	}
-	else if (skeletonMeshes.Num() < 1) {
-		UE_LOG(LogTemp, Error, TEXT("This character got no skeleton mesh!!"));
-		return;
-	}
-
-	meshStartRotation = skeletonMeshes[0]->RelativeRotation;
-	meshComponent = skeletonMeshes[0];
 }
 
 // Called every frame
 void APlayerVamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (controller && meshComponent) {
-		Rotate();
-	}
 }
 
 // Called to bind functionality to input
 void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+<<<<<<< HEAD
 
 	//PlayerInputComponent->BindAction("Bite", this, &APlayerVamp::BloodSuck );
 
@@ -114,6 +95,8 @@ void APlayerVamp::Rotate()
 		direction.Z = 0;
 		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation});
 	}
+=======
+>>>>>>> master
 }
 
 void APlayerVamp::OnOverlap(UPrimitiveComponent* OverlappedComponent, ACharacter *OtherCharacter,

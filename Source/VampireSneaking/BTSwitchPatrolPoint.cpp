@@ -41,6 +41,8 @@ EBTNodeResult::Type UBTSwitchPatrolPoint::ExecuteTask(UBehaviorTreeComponent & O
 				}
 
 				if (PatrolPoints.Num() > 0) {
+					PatrolPoints.Sort();
+
 					// Increment. Will loop around to the first index again, even if you remove an index.
 					currentPointIndex = (PatrolPoints.Num() < currentPointIndex) ? 0 : (currentPointIndex + 1) % PatrolPoints.Num();
 

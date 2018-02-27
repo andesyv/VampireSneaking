@@ -4,32 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Camera/CameraComponent.h"/*
-#include "Components/StaticMeshComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"*/
+#include "PlayableCharacterBase.h"
 #include "PlayerVamp.generated.h"
 
 UCLASS()
-class VAMPIRESNEAKING_API APlayerVamp : public ACharacter
+class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
 {
 	GENERATED_BODY()
-
-private:
-	void MoveX(float amount);
-	void MoveY(float amount);
-	void Rotate();
-
-	APlayerController *controller;
-
-	FRotator meshStartRotation{0.f, 0.f, 0.f};
-
-	USkeletalMeshComponent *meshComponent = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+<<<<<<< HEAD
 	// Health
 	UPROPERTY(BlueprintGetter = GetHealth)
 	float Health = 100.f;
@@ -43,15 +30,18 @@ protected:
 
 	bool ded{ false };
 
+=======
+>>>>>>> master
 public:	
 	// Sets default values for this pawn's properties
-	APlayerVamp();
+	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+<<<<<<< HEAD
 
 	// Getter for Health
 	UFUNCTION(BlueprintGetter)
@@ -89,4 +79,6 @@ public:
 
 	//UFUNCTION()
 		//void BloodSuck();
+=======
+>>>>>>> master
 };
