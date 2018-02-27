@@ -25,6 +25,19 @@ void APlayerVamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+}
+
+// Called to bind functionality to input
+void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayerVamp::SuckBlood);
+}
+
+void APlayerVamp::SuckBlood() {
+	UE_LOG(LogTemp, Warning, TEXT(" You pressed the button"));
 	const FName TraceTag("SuckTrace");
 	GetWorld()->DebugDrawTraceTag = TraceTag;
 	FCollisionQueryParams collisionQueryParams(TraceTag, false);
@@ -43,17 +56,4 @@ void APlayerVamp::Tick(float DeltaTime)
 
 		bool enemyClose = false;
 	}
-}
-
-// Called to bind functionality to input
-void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayerVamp::SuckBlood);
-}
-
-void APlayerVamp::SuckBlood() {
-	UE_LOG(LogTemp, Warning, TEXT(" You pressed the button"));
-	APlayableCharacterBase::Blood += 10;
 }
