@@ -22,7 +22,10 @@ protected:
 
 	TArray<APawn*> ControllablePawns{};
 
-	bool ChangePawn();
+	void ChangePawn();
+
+	/** Allows the PlayerController to set up custom input bindings. */
+	virtual void SetupInputComponent() override;
 	
 public:
 

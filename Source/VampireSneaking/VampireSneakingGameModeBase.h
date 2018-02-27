@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "CustomPlayerController.h"
+#include "BatMode.h"
 #include "VampireSneakingGameModeBase.generated.h"
 
 /**
@@ -25,7 +26,10 @@ public:
 	*/
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
+	/** The bat mode class used when in bat mode. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
+	TSubclassOf<ABatMode> BatFormClass;
 
 protected:
-	APawn* SpawnBatPawn(const FVector &Position, const FRotator &Rotation);
+	APawn* SpawnBatPawn(UClass *spawnClass, const FVector &Position, const FRotator &Rotation);
 };

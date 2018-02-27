@@ -11,15 +11,30 @@ APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AControl
 		playerController->ControllablePawns.Add(returnValue);
 		
 		// Add bat-pawn.
-		playerController->ControllablePawns.Add(SpawnBatPawn(FVector{ 0.f, 0.f, 0.f }, FRotator::ZeroRotator));
+		APawn *bat = SpawnBatPawn(BatFormClass, FVector{ 0.f, 0.f, -1000.f }, FRotator::ZeroRotator);
+		if (bat) {
+			playerController->ControllablePawns.Add(bat);
+		}
 	}
 
 	return returnValue;
 }
 
-APawn * AVampireSneakingGameModeBase::SpawnBatPawn(const FVector & Position, const FRotator & Rotation)
+APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVector & Position, const FRotator & Rotation)
 {
-	// TODO
+	APawn *returnPawn{ nullptr };
+	UWorld *world = GetWorld();
 
-	return nullptr;
+	FTransform transform{ Rotation, Position, FVector{1.f, 1.f, 1.f} };
+	// FActorSpawnParameters spawnParams;
+
+	if (world && spawnClass) {
+		returnPawn = world->SpawnActor<APawn>(spawnClass, transform);
+
+		if (!returnPawn) {
+			UE_LOG(LogTemp, Error, TEXT("Can't spawn bat!"));
+		}
+	}
+
+	return returnPawn;
 }

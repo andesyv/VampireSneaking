@@ -2,7 +2,7 @@
 
 #include "CustomPlayerController.h"
 
-bool ACustomPlayerController::ChangePawn()
+void ACustomPlayerController::ChangePawn()
 {
 	if (ControllablePawns.Num() != 0) {
 
@@ -19,12 +19,18 @@ bool ACustomPlayerController::ChangePawn()
 			Possess(ControllablePawns[CurrentIndex]);
 		}
 
-		return true;
+		return;
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("There aren't any pawns assigned in the controllable pawns array!"));
-		return false;
 	}
+}
+
+void ACustomPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	InputComponent->BindAction("BatTransform", EInputEvent::IE_Pressed, this, &ACustomPlayerController::ChangePawn);
 }
 
 void ACustomPlayerController::SwapActorLocation(AActor * first, AActor * second)

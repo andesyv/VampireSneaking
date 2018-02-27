@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/StaticMeshComponent.h"
 #include "PlayableCharacterBase.h"
 #include "BatMode.generated.h"
 
@@ -20,7 +21,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+	virtual void Rotate() override;
+
+public:
+	// Mesh for bat.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent *batModel = nullptr;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

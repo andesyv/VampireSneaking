@@ -9,18 +9,37 @@ ABatMode::ABatMode(const FObjectInitializer& ObjectInitializer) : Super(ObjectIn
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	batModel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BatModel"));
+	batModel->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
 void ABatMode::BeginPlay()
 {
-	Super::BeginPlay();
+	ACharacter::BeginPlay();
+
+	meshStartRotation = batModel->RelativeRotation;
+}
+
+void ABatMode::Rotate()
+{
+	FHitResult hitResult{};
+	if (controller->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult) && batModel) {
+		FVector direction{ hitResult.ImpactPoint - GetActorLocation() };
+		direction.Z = 0;
+		batModel->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation });
+	}
 }
 
 // Called every frame
 void ABatMode::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	ACharacter::Tick(DeltaTime);
+
+	if (controller && batModel) {
+		Rotate();
+	}
 
 }
 

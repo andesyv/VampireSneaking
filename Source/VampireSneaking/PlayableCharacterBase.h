@@ -20,7 +20,7 @@ public:
 protected:
 	virtual void MoveX(float amount);
 	virtual void MoveY(float amount);
-	void Rotate();
+	virtual void Rotate();
 
 	APlayerController *controller;
 

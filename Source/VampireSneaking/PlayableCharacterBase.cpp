@@ -54,6 +54,8 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	if (controller) {
 		controller->bShowMouseCursor = true;
 	}
+
+
 }
 
 void APlayableCharacterBase::MoveX(float amount)
