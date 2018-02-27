@@ -9,7 +9,7 @@
 #include "VampireSneakingGameModeBase.generated.h"
 
 /**
- * 
+ * The default Gamemode Base for the Project.
  */
 UCLASS()
 class VAMPIRESNEAKING_API AVampireSneakingGameModeBase : public AGameModeBase
@@ -31,5 +31,6 @@ public:
 	TSubclassOf<ABatMode> BatFormClass;
 
 protected:
+	// For spawning the bat.
 	APawn* SpawnBatPawn(UClass *spawnClass, const FVector &Position, const FRotator &Rotation);
 };

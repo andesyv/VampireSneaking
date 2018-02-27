@@ -5,8 +5,10 @@
 APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
 	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
 
+	// Check if the Controllable Pawns already got stuff in it. (Hopefully doesn't. :s)
 	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(NewPlayer);
 	if (playerController && playerController->ControllablePawns.Num() < 1) {
+
 		// Add player-pawn.
 		playerController->ControllablePawns.Add(returnValue);
 		

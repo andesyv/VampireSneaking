@@ -25,11 +25,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UPROPERTY(VisibleAnywhere)
-	UCapsuleComponent *collider = nullptr;
-
-	// Add extra rotation to the rotation of the character.
-	UPROPERTY(EditAnywhere)
-	FRotator AdjustmentRotation = FRotator{ 0.f, 0.f, 0.f };
 };

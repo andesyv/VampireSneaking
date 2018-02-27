@@ -10,6 +10,9 @@ APlayableCharacterBase::APlayableCharacterBase(const FObjectInitializer& ObjectI
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
+
+	// Set health.
+	Health = GetMaxHealth();
 }
 
 // Called when the game starts or when spawned
@@ -17,7 +20,7 @@ void APlayableCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<USkeletalMeshComponent*> skeletonMeshes;
+	TArray<USkeletalMeshComponent*> skeletonMeshes{};
 	GetComponents<USkeletalMeshComponent>(skeletonMeshes);
 	if (skeletonMeshes.Num() > 1) {
 		UE_LOG(LogTemp, Error, TEXT("This character got %d skeleton meshes!!"), skeletonMeshes.Num());
@@ -29,7 +32,6 @@ void APlayableCharacterBase::BeginPlay()
 
 	meshStartRotation = skeletonMeshes[0]->RelativeRotation;
 	meshComponent = skeletonMeshes[0];
-	
 }
 
 // Called every frame
@@ -54,8 +56,6 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	if (controller) {
 		controller->bShowMouseCursor = true;
 	}
-
-
 }
 
 void APlayableCharacterBase::MoveX(float amount)
@@ -101,5 +101,20 @@ const float APlayableCharacterBase::TakeDamage(float damage)
 		ded = true;
 	}
 	return Health;
+}
+
+const float APlayableCharacterBase::GetBlood() const
+{
+	return Blood;
+}
+
+const float APlayableCharacterBase::GetMaxBlood() const
+{
+	return MaxBlood;
+}
+
+const float APlayableCharacterBase::GetPercentageBlood() const
+{
+	return Health / MaxBlood;
 }
 
