@@ -119,4 +119,8 @@ public:
 	// Get percentage amount of blood.
 	UFUNCTION(BlueprintCallable)
 	const float GetPercentageBlood() const;
+
+	// Adds blood to the current amount of blood.
+	UFUNCTION(BlueprintCallable)
+	const float AddBlood(float amount);
 };
