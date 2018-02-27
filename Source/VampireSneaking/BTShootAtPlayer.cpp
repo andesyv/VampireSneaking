@@ -3,7 +3,7 @@
 #include "BTShootAtPlayer.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
-#include "PlayerVamp.h"
+#include "PlayableCharacterBase.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
@@ -26,7 +26,7 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 {
 	UBlackboardComponent *blackboard = OwnerComp->GetBlackboardComponent();
 	if (blackboard) {
-		APlayerVamp *player = Cast<APlayerVamp>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
+		APlayableCharacterBase *player = Cast<APlayableCharacterBase>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
 		if (player) {
 			player->TakeDamage(Damage);
 			timer = 0.f;

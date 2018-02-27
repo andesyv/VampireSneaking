@@ -31,28 +31,3 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
-
-const float APlayerVamp::GetHealth() const
-{
-	return Health;
-}
-
-const float APlayerVamp::GetMaxHealth() const
-{
-	return MaxHealth;
-}
-
-const float APlayerVamp::GetPercentageHealth() const
-{
-	return Health / MaxHealth;
-}
-
-const float APlayerVamp::TakeDamage(float damage)
-{
-	Health -= damage;
-	if (Health <= 0) {
-		Health = 0;
-		ded = true;
-	}
-	return Health;
-}

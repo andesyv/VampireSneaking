@@ -24,6 +24,8 @@ protected:
 
 	void ChangePawn();
 
+	bool TransferStats(APawn *newPawn, APawn *oldPawn);
+
 	/** Allows the PlayerController to set up custom input bindings. */
 	virtual void SetupInputComponent() override;
 	

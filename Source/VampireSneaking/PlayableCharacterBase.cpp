@@ -78,3 +78,28 @@ void APlayableCharacterBase::Rotate()
 	}
 }
 
+const float APlayableCharacterBase::GetHealth() const
+{
+	return Health;
+}
+
+const float APlayableCharacterBase::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
+const float APlayableCharacterBase::GetPercentageHealth() const
+{
+	return Health / MaxHealth;
+}
+
+const float APlayableCharacterBase::TakeDamage(float damage)
+{
+	Health -= damage;
+	if (Health <= 0) {
+		Health = 0;
+		ded = true;
+	}
+	return Health;
+}
+

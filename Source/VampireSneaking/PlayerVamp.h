@@ -4,10 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "PlayableCharacterBase.h"/*
-#include "Components/StaticMeshComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Components/SkeletalMeshComponent.h"*/
+#include "PlayableCharacterBase.h"
 #include "PlayerVamp.generated.h"
 
 UCLASS()
@@ -19,16 +16,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Health
-	UPROPERTY(BlueprintGetter = GetHealth)
-	float Health = 100.f;
-
-	// Max health, and starting health.
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxHealth)
-	float MaxHealth = 100.f;
-
-	bool ded{ false };
-
 public:	
 	// Sets default values for this pawn's properties
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -38,22 +25,6 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	// Getter for Health
-	UFUNCTION(BlueprintGetter)
-	const float GetHealth() const;
-
-	// Getter for MaxHealth
-	UFUNCTION(BlueprintGetter)
-	const float GetMaxHealth() const;
-
-	// Get Health in percentage
-	UFUNCTION(BlueprintCallable)
-	const float GetPercentageHealth() const;
-
-	// Take damage.
-	UFUNCTION(BlueprintCallable)
-	const float TakeDamage(float damage);
 
 	UPROPERTY(VisibleAnywhere)
 	UCapsuleComponent *collider = nullptr;
