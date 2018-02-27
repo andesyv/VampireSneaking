@@ -134,7 +134,17 @@ const float APlayableCharacterBase::AddBlood(float amount)
 	Blood += amount;
 	if (Blood < 0.f) {
 		Blood = 0.f;
+		OutOfBlood = true;
 	}
+	else if (Blood > 0.f){
+		OutOfBlood = false;
+	}
+
 	return Blood;
+}
+
+const bool APlayableCharacterBase::IsOutOfBlood() const
+{
+	return OutOfBlood;
 }
 
