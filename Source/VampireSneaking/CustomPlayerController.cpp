@@ -38,7 +38,9 @@ bool ACustomPlayerController::TransferStats(APawn * newPawn, APawn * oldPawn)
 	APlayableCharacterBase *oldCharacterBase = Cast<APlayableCharacterBase>(oldPawn);
 	if (newCharacterBase && oldCharacterBase) {
 		newCharacterBase->Health = oldCharacterBase->Health;
-		// newCharacterBase->Blood = oldCharacterBase->Blood;
+		newCharacterBase->Blood = oldCharacterBase->Blood;
+
+		
 
 		return true;
 	}
