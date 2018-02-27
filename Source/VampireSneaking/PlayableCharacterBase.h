@@ -101,7 +101,7 @@ protected:
 
 	// Blood
 	UPROPERTY(BlueprintGetter = GetBlood)
-	float Blood = 0.f;
+	float Blood = 50.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood)

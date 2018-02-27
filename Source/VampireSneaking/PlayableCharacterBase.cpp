@@ -120,13 +120,20 @@ const float APlayableCharacterBase::GetMaxBlood() const
 
 const float APlayableCharacterBase::GetPercentageBlood() const
 {
-	return Health / MaxBlood;
+	if (Health > KINDA_SMALL_NUMBER) {
+		return Blood / MaxBlood;
+	}
+	else {
+		return 0.f;
+	}
 }
 
 const float APlayableCharacterBase::AddBlood(float amount)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Changing blood!"));
 	Blood += amount;
+	if (Blood < 0.f) {
+		Blood = 0.f;
+	}
 	return Blood;
 }
 
