@@ -86,4 +86,7 @@ public:
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, ACharacter *OtherCharacter,
 			UPrimitiveComponent *OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult &SweepResult);
+
+	//UFUNCTION()
+		//void BloodSuck();
 };

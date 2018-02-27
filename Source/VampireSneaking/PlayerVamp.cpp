@@ -55,6 +55,8 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	//PlayerInputComponent->BindAction("Bite", this, &APlayerVamp::BloodSuck );
+
 	PlayerInputComponent->BindAxis("XAxis", this, &APlayerVamp::MoveX);
 	PlayerInputComponent->BindAxis("YAxis", this, &APlayerVamp::MoveY);
 
@@ -126,3 +128,7 @@ void APlayerVamp::OnOverlap(UPrimitiveComponent* OverlappedComponent, ACharacter
 	}
 	
 }
+/* void APlayerVamp::BloodSuck() {
+	Blood += 10.f;
+}
+*/
