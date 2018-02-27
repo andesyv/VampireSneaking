@@ -24,6 +24,10 @@ protected:
 	TArray<APawn*> ControllablePawns{};
 
 	void ChangePawn();
+	void ChangePawn(int index);
+
+	void MoveController(int index);
+	bool CheckIfBloodIsMissing();
 
 	bool TransferStats(APawn *newPawn, APawn *oldPawn);
 
