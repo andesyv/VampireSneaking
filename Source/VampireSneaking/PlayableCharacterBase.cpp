@@ -52,7 +52,7 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("XAxis", this, &APlayableCharacterBase::MoveX);
 	PlayerInputComponent->BindAxis("YAxis", this, &APlayableCharacterBase::MoveY);
 
-	controller = Cast<APlayerController>(GetController());
+	controller = Cast<ACustomPlayerController>(GetController());
 	if (controller) {
 		controller->bShowMouseCursor = true;
 	}

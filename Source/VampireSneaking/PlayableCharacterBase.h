@@ -31,7 +31,7 @@ protected:
 	virtual void Rotate();
 
 	// Playercontroller reference.
-	APlayerController *controller;
+	ACustomPlayerController *controller;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -100,7 +100,7 @@ protected:
 
 	// Blood
 	UPROPERTY(BlueprintGetter = GetBlood)
-	float Blood = 0.f;
+	float Blood = 50.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood)
