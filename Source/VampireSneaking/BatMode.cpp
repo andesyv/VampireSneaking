@@ -2,6 +2,7 @@
 
 #include "BatMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "CustomPlayerController.h"
 
 
 // Sets default values
@@ -45,9 +46,11 @@ void ABatMode::Tick(float DeltaTime)
 	ACharacter::Tick(DeltaTime);
 
 	if (controller && batModel) {
+		// Drain blood while using.
+		AddBlood(-1.f);
+		
 		Rotate();
 	}
-
 }
 
 // Called to bind functionality to input

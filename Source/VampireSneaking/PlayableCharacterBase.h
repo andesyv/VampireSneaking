@@ -31,7 +31,7 @@ protected:
 	virtual void Rotate();
 
 	// Playercontroller reference.
-	APlayerController *controller;
+	ACustomPlayerController *controller;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -119,4 +119,8 @@ public:
 	// Get percentage amount of blood.
 	UFUNCTION(BlueprintCallable)
 	const float GetPercentageBlood() const;
+
+	// Add amount of blood to blood count.
+	UFUNCTION(BlueprintCallable)
+	const float AddBlood(float amount);
 };

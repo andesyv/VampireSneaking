@@ -2,6 +2,7 @@
 
 #include "CustomPlayerController.h"
 #include "PlayableCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void ACustomPlayerController::ChangePawn()
 {
@@ -39,8 +40,7 @@ bool ACustomPlayerController::TransferStats(APawn * newPawn, APawn * oldPawn)
 	if (newCharacterBase && oldCharacterBase) {
 		newCharacterBase->Health = oldCharacterBase->Health;
 		newCharacterBase->Blood = oldCharacterBase->Blood;
-
-		
+		newCharacterBase->GetMovementComponent()->Velocity = oldCharacterBase->GetVelocity();
 
 		return true;
 	}

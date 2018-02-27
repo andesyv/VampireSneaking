@@ -52,7 +52,7 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("XAxis", this, &APlayableCharacterBase::MoveX);
 	PlayerInputComponent->BindAxis("YAxis", this, &APlayableCharacterBase::MoveY);
 
-	controller = Cast<APlayerController>(GetController());
+	controller = Cast<ACustomPlayerController>(GetController());
 	if (controller) {
 		controller->bShowMouseCursor = true;
 	}
@@ -121,5 +121,12 @@ const float APlayableCharacterBase::GetMaxBlood() const
 const float APlayableCharacterBase::GetPercentageBlood() const
 {
 	return Health / MaxBlood;
+}
+
+const float APlayableCharacterBase::AddBlood(float amount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Changing blood!"));
+	Blood += amount;
+	return Blood;
 }
 
