@@ -3,13 +3,7 @@
 #include "PlayerVamp.h"
 #include "Components/InputComponent.h"
 #include "Kismet/GameplayStatics.h"
-<<<<<<< HEAD
-#include "Components/SkeletalMeshComponent.h"
-#include "Engine/World.h"
-#include "Enemy.h"
-#include "AIVisionCheck.h"
-=======
->>>>>>> master
+
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -34,84 +28,6 @@ void APlayerVamp::Tick(float DeltaTime)
 void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-<<<<<<< HEAD
 
-	//PlayerInputComponent->BindAction("Bite", this, &APlayerVamp::BloodSuck );
-
-	PlayerInputComponent->BindAxis("XAxis", this, &APlayerVamp::MoveX);
-	PlayerInputComponent->BindAxis("YAxis", this, &APlayerVamp::MoveY);
-
-	controller = Cast<APlayerController>(GetController());
-	if (controller) {
-		controller->bShowMouseCursor = true;
-	}
 }
 
-const float APlayerVamp::GetHealth() const
-{
-	return Health;
-}
-
-const float APlayerVamp::GetMaxHealth() const
-{
-	return MaxHealth;
-}
-
-const float APlayerVamp::GetPercentageHealth() const
-{
-	return Health / MaxHealth;
-}
-
-const float APlayerVamp::GetBlood() const
-{
-	return Blood;
-}
-
-const float APlayerVamp::TakeDamage(float damage)
-{
-	Health -= damage;
-	if (Health <= 0) {
-		Health = 0;
-		ded = true;
-	}
-	return Health;
-}
-
-void APlayerVamp::MoveX(float amount)
-{
-	AddMovementInput(GetActorRightVector(), amount);
-}
-
-void APlayerVamp::MoveY(float amount)
-{
-	AddMovementInput(GetActorForwardVector(), amount);
-}
-
-void APlayerVamp::Rotate()
-{
-	FHitResult hitResult{};
-	if (controller->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult) && meshComponent) {
-		FVector direction{hitResult.ImpactPoint - GetActorLocation()};
-		direction.Z = 0;
-		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation});
-	}
-=======
->>>>>>> master
-}
-
-void APlayerVamp::OnOverlap(UPrimitiveComponent* OverlappedComponent, ACharacter *OtherCharacter,
-	UPrimitiveComponent *OtherComponent, int32 OtherBodyIndex,
-	bool bFromSweep, const FHitResult &SweepResult)
-{
-	UE_LOG(LogTemp, Error, TEXT("Character overlapping, this is working as intended. no fix needed")); //Does not work yet
-	if (OtherCharacter->IsA(AEnemy::StaticClass())) {
-		//how to do "if current state = idle"?
-			Blood += 10.f;
-		
-	}
-	
-}
-/* void APlayerVamp::BloodSuck() {
-	Blood += 10.f;
-}
-*/
