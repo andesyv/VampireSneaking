@@ -47,7 +47,9 @@ void ABatMode::Tick(float DeltaTime)
 
 	if (controller && batModel) {
 		// Drain blood while using.
-		AddBlood(-10.f * DeltaTime);
+		if (AddBlood(-10.f * DeltaTime) < KINDA_SMALL_NUMBER) {
+			controller->ChangePawn();
+		}
 		
 		Rotate();
 	}

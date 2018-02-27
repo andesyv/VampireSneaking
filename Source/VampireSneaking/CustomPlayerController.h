@@ -15,6 +15,7 @@ class VAMPIRESNEAKING_API ACustomPlayerController : public APlayerController
 	GENERATED_BODY()
 
 	friend class AVampireSneakingGameModeBase;
+	friend class ABatMode;
 
 protected:
 	// Shall only be changed in the ChangePawn function.

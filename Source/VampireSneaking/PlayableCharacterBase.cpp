@@ -95,6 +95,9 @@ const float APlayableCharacterBase::GetMaxHealth() const
 
 const float APlayableCharacterBase::GetPercentageHealth() const
 {
+	if (Health < 0.f) {
+		return 0.f;
+	}
 	return Health / MaxHealth;
 }
 
@@ -120,12 +123,10 @@ const float APlayableCharacterBase::GetMaxBlood() const
 
 const float APlayableCharacterBase::GetPercentageBlood() const
 {
-	if (Health > KINDA_SMALL_NUMBER) {
-		return Blood / MaxBlood;
-	}
-	else {
+	if (Blood < 0.f) {
 		return 0.f;
 	}
+	return Blood / MaxBlood;
 }
 
 const float APlayableCharacterBase::AddBlood(float amount)
