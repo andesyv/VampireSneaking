@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayableCharacterBase.h"
+#include "VampireSneakingGameModeBase.h"
 
 // Sets default values
 APlayableCharacterBase::APlayableCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -107,6 +108,12 @@ const float APlayableCharacterBase::TakeDamage(float damage)
 	if (Health <= 0) {
 		Health = 0;
 		ded = true;
+
+		// Call death event.
+		if (Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())) {
+			Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())->PlayerDies();
+		}
+		Destroy();
 	}
 	return Health;
 }
