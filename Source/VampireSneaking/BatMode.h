@@ -4,21 +4,29 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Components/StaticMeshComponent.h"
 #include "PlayableCharacterBase.h"
-#include "PlayerVamp.generated.h"
+#include "BatMode.generated.h"
 
 UCLASS()
-class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
+class VAMPIRESNEAKING_API ABatMode : public APlayableCharacterBase
 {
 	GENERATED_BODY()
+
+public:
+	// Sets default values for this character's properties
+	ABatMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Sets default values for this pawn's properties
-	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	virtual void Rotate() override;
+
+public:
+	// Mesh for bat.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent *batModel = nullptr;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -26,10 +34,4 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(VisibleAnywhere)
-	UCapsuleComponent *collider = nullptr;
-
-	// Add extra rotation to the rotation of the character.
-	UPROPERTY(EditAnywhere)
-	FRotator AdjustmentRotation = FRotator{ 0.f, 0.f, 0.f };
 };
