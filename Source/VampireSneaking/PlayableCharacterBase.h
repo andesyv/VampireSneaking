@@ -96,7 +96,6 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////
 	// Blood
-	
 protected:
 
 	// Blood
@@ -106,6 +105,10 @@ protected:
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood)
 	float MaxBlood = 100.f;
+
+	// If the player is out of blood.
+	UPROPERTY(BlueprintGetter = IsOutOfBlood)
+	bool OutOfBlood = false;
 
 public:
 	// Getter for Blood
@@ -123,4 +126,8 @@ public:
 	// Adds blood to the current amount of blood.
 	UFUNCTION(BlueprintCallable)
 	const float AddBlood(float amount);
+
+	// Returns true if the player is out of blood.
+	UFUNCTION(BlueprintGetter)
+	const bool IsOutOfBlood() const;
 };
