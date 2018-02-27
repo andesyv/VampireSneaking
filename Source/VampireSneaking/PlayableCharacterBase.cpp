@@ -120,6 +120,6 @@ const float APlayableCharacterBase::GetMaxBlood() const
 
 const float APlayableCharacterBase::GetPercentageBlood() const
 {
-	return Health / MaxBlood;
+	return Blood / MaxBlood;
 }
 
