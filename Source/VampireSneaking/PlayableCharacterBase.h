@@ -53,6 +53,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent *Camera = nullptr;
 
+	// Helper function to get the forward vector of the mesh, relative to the mesh's rotation.
+	UFUNCTION(BlueprintCallable)
+	FVector GetMeshForwardVector() const;
+
 
 
 
