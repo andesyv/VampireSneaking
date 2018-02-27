@@ -9,9 +9,6 @@ APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(Ob
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	// Set health.
-	Health = GetMaxHealth();
 }
 
 // Called when the game starts or when spawned

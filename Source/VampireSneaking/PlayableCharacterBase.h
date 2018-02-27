@@ -9,7 +9,10 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "PlayableCharacterBase.generated.h"
 
-UCLASS()
+/**
+* Character base for all characters that the player should be able to control.
+*/
+UCLASS(Abstract, meta = (DisplayName="Playable Character Base"))
 class VAMPIRESNEAKING_API APlayableCharacterBase : public ACharacter
 {
 	GENERATED_BODY()
@@ -23,15 +26,20 @@ public:
 protected:
 	virtual void MoveX(float amount);
 	virtual void MoveY(float amount);
+
+	// Rotation after mouse cursor.
 	virtual void Rotate();
 
+	// Playercontroller reference.
 	APlayerController *controller;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Extra rotation added to the mouse rotation. Get's set in BeginPlay, do not change in runtime.
 	FRotator meshStartRotation{ 0.f, 0.f, 0.f };
 
+	// Pointer to the skeletalmesh-component.
 	USkeletalMeshComponent *meshComponent = nullptr;
 
 public:
@@ -41,8 +49,9 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Camera component
 	UPROPERTY(VisibleAnywhere)
-		UCameraComponent *Camera = nullptr;
+	UCameraComponent *Camera = nullptr;
 
 
 
@@ -77,4 +86,33 @@ public:
 	// Take damage.
 	UFUNCTION(BlueprintCallable)
 		const float TakeDamage(float damage);
+
+
+
+
+	///////////////////////////////////////////////////////////////////////////
+	// Blood
+	
+protected:
+
+	// Blood
+	UPROPERTY(BlueprintGetter = GetBlood)
+	float Blood = 0.f;
+
+	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
+	UPROPERTY(BlueprintGetter = GetMaxBlood)
+	float MaxBlood = 100.f;
+
+public:
+	// Getter for Blood
+	UFUNCTION(BlueprintGetter)
+	const float GetBlood() const;
+
+	// Getter for MaxBlood
+	UFUNCTION(BlueprintGetter)
+	const float GetMaxBlood() const;
+
+	// Get percentage amount of blood.
+	UFUNCTION(BlueprintCallable)
+	const float GetPercentageBlood() const;
 };
