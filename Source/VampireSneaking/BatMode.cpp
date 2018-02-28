@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BatMode.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "CustomPlayerController.h"
 
 
 // Sets default values
@@ -20,6 +22,12 @@ void ABatMode::BeginPlay()
 	ACharacter::BeginPlay();
 
 	meshStartRotation = batModel->RelativeRotation;
+	/*if (GetMovementComponent()) {
+		UCharacterMovementComponent *moveComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
+		if (moveComponent) {
+			moveComponent->MovementMode = EMovementMode::MOVE_Flying;
+		}
+	}*/
 }
 
 void ABatMode::Rotate()
@@ -37,10 +45,14 @@ void ABatMode::Tick(float DeltaTime)
 {
 	ACharacter::Tick(DeltaTime);
 
-	if (controller && batModel) {
+	if (GetController() && batModel) {
+		// Drain blood while using.
+		if (AddBlood(FMath::Abs(DrainSpeed) * -DeltaTime) < KINDA_SMALL_NUMBER) {
+			controller->ChangePawn(0);
+		}
+		
 		Rotate();
 	}
-
 }
 
 // Called to bind functionality to input

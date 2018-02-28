@@ -15,6 +15,8 @@ UCLASS()
 class VAMPIRESNEAKING_API AVampireSneakingGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
+
+	friend class APlayableCharacterBase;
 	
 public:
 	
@@ -26,6 +28,10 @@ public:
 	*/
 	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
+	// Restart the level!
+	UFUNCTION(BlueprintCallable)
+	void RestartLevel();
+
 	/** The bat mode class used when in bat mode. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
 	TSubclassOf<ABatMode> BatFormClass;
@@ -33,4 +39,8 @@ public:
 protected:
 	// For spawning the bat.
 	APawn* SpawnBatPawn(UClass *spawnClass, const FVector &Position, const FRotator &Rotation);
+
+	// Event called when the player dies.
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayerDies();
 };

@@ -34,4 +34,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// How fast the ability drains blood in blood/second.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DrainSpeed = 10.f;
+
 };

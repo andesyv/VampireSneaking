@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "VampireSneakingGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
 	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
@@ -20,6 +21,11 @@ APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AControl
 	}
 
 	return returnValue;
+}
+
+void AVampireSneakingGameModeBase::RestartLevel()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName{ *GetWorld()->GetMapName() }, true);
 }
 
 APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVector & Position, const FRotator & Rotation)
