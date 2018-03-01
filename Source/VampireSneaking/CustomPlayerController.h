@@ -15,6 +15,7 @@ class VAMPIRESNEAKING_API ACustomPlayerController : public APlayerController
 	GENERATED_BODY()
 
 	friend class AVampireSneakingGameModeBase;
+	friend class ABatMode;
 
 protected:
 	// Shall only be changed in the ChangePawn function.
@@ -23,6 +24,10 @@ protected:
 	TArray<APawn*> ControllablePawns{};
 
 	void ChangePawn();
+	void ChangePawn(int index);
+
+	void MoveController(int index);
+	bool CheckIfBloodIsMissing();
 
 	bool TransferStats(APawn *newPawn, APawn *oldPawn);
 

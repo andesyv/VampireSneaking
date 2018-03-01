@@ -31,7 +31,7 @@ protected:
 	virtual void Rotate();
 
 	// Playercontroller reference.
-	APlayerController *controller;
+	ACustomPlayerController *controller;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -96,16 +96,19 @@ public:
 
 	///////////////////////////////////////////////////////////////////////////
 	// Blood
-	
 protected:
 
 	// Blood
 	UPROPERTY(BlueprintGetter = GetBlood)
-	float Blood = 0.f;
+	float Blood = 50.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood)
 	float MaxBlood = 100.f;
+
+	// If the player is out of blood.
+	UPROPERTY(BlueprintGetter = IsOutOfBlood)
+	bool OutOfBlood = false;
 
 public:
 	// Getter for Blood
@@ -119,4 +122,12 @@ public:
 	// Get percentage amount of blood.
 	UFUNCTION(BlueprintCallable)
 	const float GetPercentageBlood() const;
+
+	// Adds blood to the current amount of blood.
+	UFUNCTION(BlueprintCallable)
+	const float AddBlood(float amount);
+
+	// Returns true if the player is out of blood.
+	UFUNCTION(BlueprintGetter)
+	const bool IsOutOfBlood() const;
 };

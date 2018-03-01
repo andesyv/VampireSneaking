@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayableCharacterBase.h"
+#include "VampireSneakingGameModeBase.h"
 
 // Sets default values
 APlayableCharacterBase::APlayableCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -52,7 +53,7 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("XAxis", this, &APlayableCharacterBase::MoveX);
 	PlayerInputComponent->BindAxis("YAxis", this, &APlayableCharacterBase::MoveY);
 
-	controller = Cast<APlayerController>(GetController());
+	controller = Cast<ACustomPlayerController>(GetController());
 	if (controller) {
 		controller->bShowMouseCursor = true;
 	}
@@ -95,6 +96,9 @@ const float APlayableCharacterBase::GetMaxHealth() const
 
 const float APlayableCharacterBase::GetPercentageHealth() const
 {
+	if (Health < 0.f) {
+		return 0.f;
+	}
 	return Health / MaxHealth;
 }
 
@@ -104,6 +108,12 @@ const float APlayableCharacterBase::TakeDamage(float damage)
 	if (Health <= 0) {
 		Health = 0;
 		ded = true;
+
+		// Call death event.
+		if (Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())) {
+			Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())->PlayerDies();
+		}
+		Destroy();
 	}
 	return Health;
 }
@@ -120,6 +130,27 @@ const float APlayableCharacterBase::GetMaxBlood() const
 
 const float APlayableCharacterBase::GetPercentageBlood() const
 {
+	if (Blood < 0.f) {
+		return 0.f;
+	}
 	return Blood / MaxBlood;
 }
 
+const float APlayableCharacterBase::AddBlood(float amount)
+{
+	Blood += amount;
+	if (Blood < 0.f) {
+		Blood = 0.f;
+		OutOfBlood = true;
+	}
+	else if (Blood > 0.f){
+		OutOfBlood = false;
+	}
+
+	return Blood;
+}
+
+const bool APlayableCharacterBase::IsOutOfBlood() const
+{
+	return OutOfBlood;
+}
