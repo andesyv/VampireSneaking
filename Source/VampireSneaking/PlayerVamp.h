@@ -16,6 +16,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:	
 	// Sets default values for this pawn's properties
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -25,4 +26,7 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION()
+	void SuckBlood();
 };

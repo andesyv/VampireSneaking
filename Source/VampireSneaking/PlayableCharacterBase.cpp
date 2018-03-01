@@ -154,4 +154,3 @@ const bool APlayableCharacterBase::IsOutOfBlood() const
 {
 	return OutOfBlood;
 }
-
