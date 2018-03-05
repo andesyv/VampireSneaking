@@ -17,16 +17,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Is the player sucking blood?
 	bool SuckingBlood{ false };
 
+	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
 
 	// Toggle blood sucking.
 	void ToggleSuckBlood();
-
+	
+	// Returns whether there is an enemy in front of the player.
 	bool EnemyInFront();
 
-	UFUNCTION()
 	void SuckBlood(float amount, float DeltaTime);
 
 public:	
@@ -38,4 +40,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// Speed of blood sucking (blood/second).
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SuckSpeed = 5.f;
 };

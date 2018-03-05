@@ -26,7 +26,7 @@ void APlayerVamp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (SuckingBlood) {
-		SuckBlood(5.f, DeltaTime);
+		SuckBlood(SuckSpeed, DeltaTime);
 	}
 }
 
@@ -36,33 +36,28 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayerVamp::ToggleSuckBlood);
-	// PlayerInputComponent->BindAction("Bite", IE_Released, this, &APlayerVamp::ToggleSuckBlood);
 }
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime) {
-	if (EnemyInFront()) {
+	if (EnemyInFront())
+	{
 		AddBlood(amount * DeltaTime);
 	}
-	else {
+	else
+	{
 		ToggleSuckBlood();
 	}
 }
 
 void APlayerVamp::ToggleSuckBlood()
 {
-	if (SuckingBlood) {
-		SuckingBlood = false;
-		if (suckedEnemy) {
-			suckedEnemy->beingSucked = SuckingBlood;
-		}
-		suckedEnemy = nullptr;
-	}
-	else {
-		if (EnemyInFront()) {
-			SuckingBlood = true;
-			if (suckedEnemy) {
-				suckedEnemy->beingSucked = SuckingBlood;
-			}
+	SuckingBlood = !SuckingBlood && EnemyInFront();
+	if (suckedEnemy)
+	{
+		suckedEnemy->beingSucked = SuckingBlood;
+		if (SuckingBlood)
+		{
+			suckedEnemy = nullptr;
 		}
 	}
 }
@@ -74,13 +69,14 @@ bool APlayerVamp::EnemyInFront()
 	FCollisionQueryParams collisionQueryParams{ TraceTag, false , this };
 
 	FHitResult hitResult{};
-	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*100.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams)) {
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*100.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams))
+	{
 		AEnemy* enemy = Cast<AEnemy>(hitResult.Actor.Get());
-		if (enemy) {//->GetActorLocation<GetActorLocation() + meshComponent->GetForwardVector()*500.f) {
+		if (enemy)
+		{
 			suckedEnemy = enemy;
 			return true;
 		}
 	}
-
 	return false;
 }
