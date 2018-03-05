@@ -4,7 +4,7 @@
 #include "Components/InputComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
-#include "Enemy.h"
+#include "EnemyAI.h"
 
 
 // Sets default values
@@ -26,7 +26,7 @@ void APlayerVamp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (SuckingBlood) {
-		SuckBlood(10.f, DeltaTime);
+		SuckBlood(5.f, DeltaTime);
 	}
 }
 
@@ -36,7 +36,7 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayerVamp::ToggleSuckBlood);
-	PlayerInputComponent->BindAction("Bite", IE_Released, this, &APlayerVamp::ToggleSuckBlood);
+	// PlayerInputComponent->BindAction("Bite", IE_Released, this, &APlayerVamp::ToggleSuckBlood);
 }
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime) {
@@ -44,7 +44,7 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime) {
 		AddBlood(amount * DeltaTime);
 	}
 	else {
-		SuckingBlood = false;
+		ToggleSuckBlood();
 	}
 }
 
@@ -52,24 +52,32 @@ void APlayerVamp::ToggleSuckBlood()
 {
 	if (SuckingBlood) {
 		SuckingBlood = false;
+		if (suckedEnemy) {
+			suckedEnemy->beingSucked = SuckingBlood;
+		}
+		suckedEnemy = nullptr;
 	}
 	else {
 		if (EnemyInFront()) {
 			SuckingBlood = true;
+			if (suckedEnemy) {
+				suckedEnemy->beingSucked = SuckingBlood;
+			}
 		}
 	}
 }
 
-bool APlayerVamp::EnemyInFront() const
+bool APlayerVamp::EnemyInFront()
 {
 	const FName TraceTag("SuckTrace");
 	GetWorld()->DebugDrawTraceTag = TraceTag;
 	FCollisionQueryParams collisionQueryParams{ TraceTag, false , this };
 
 	FHitResult hitResult{};
-	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*500.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams)) {
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*100.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams)) {
 		AEnemy* enemy = Cast<AEnemy>(hitResult.Actor.Get());
 		if (enemy) {//->GetActorLocation<GetActorLocation() + meshComponent->GetForwardVector()*500.f) {
+			suckedEnemy = enemy;
 			return true;
 		}
 	}

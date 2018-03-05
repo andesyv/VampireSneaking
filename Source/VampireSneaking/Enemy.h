@@ -43,4 +43,6 @@ public:
 	// Patrol points
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
 	TArray<ATargetPoint*> PatrolPoints;
+
+	bool beingSucked{ false };
 };

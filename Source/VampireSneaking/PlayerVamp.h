@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PlayableCharacterBase.h"
+#include "Enemy.h"
 #include "PlayerVamp.generated.h"
 
 UCLASS()
@@ -16,12 +17,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	bool SuckingBlood{ false };
+
+	AEnemy *suckedEnemy{ nullptr };
+
 	// Toggle blood sucking.
 	void ToggleSuckBlood();
 
-	bool EnemyInFront() const;
-
-	bool SuckingBlood{ false };
+	bool EnemyInFront();
 
 	UFUNCTION()
 	void SuckBlood(float amount, float DeltaTime);
