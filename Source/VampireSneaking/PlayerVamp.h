@@ -16,6 +16,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Toggle blood sucking.
+	void ToggleSuckBlood();
+
+	bool EnemyInFront() const;
+
+	bool SuckingBlood{ false };
+
+	UFUNCTION()
+	void SuckBlood(float amount, float DeltaTime);
 
 public:	
 	// Sets default values for this pawn's properties
@@ -26,7 +35,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION()
-	void SuckBlood();
 };
