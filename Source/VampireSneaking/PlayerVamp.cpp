@@ -40,20 +40,17 @@ void APlayerVamp::SuckBlood() {
 	UE_LOG(LogTemp, Warning, TEXT(" You pressed the button"));
 	const FName TraceTag("SuckTrace");
 	GetWorld()->DebugDrawTraceTag = TraceTag;
-	FCollisionQueryParams collisionQueryParams(TraceTag, false);
+	FCollisionQueryParams collisionQueryParams{ TraceTag, false , this};
 
 	FHitResult hitResult{};
-	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation() + 100.f, GetActorLocation() + meshComponent->GetForwardVector()*500.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams)) {
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*500.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams)) {
 		AEnemy* enemy = Cast<AEnemy>(hitResult.Actor.Get());
-		if (hitResult.Actor.Get()){//->GetActorLocation<GetActorLocation() + meshComponent->GetForwardVector()*500.f) {
+		if (enemy){//->GetActorLocation<GetActorLocation() + meshComponent->GetForwardVector()*500.f) {
 			
 			Blood += 10.f;
 
 
 			
 		}
-
-
-		bool enemyClose = false;
 	}
 }

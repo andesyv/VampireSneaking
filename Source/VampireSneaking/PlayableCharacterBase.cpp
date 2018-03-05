@@ -61,7 +61,7 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 FVector APlayableCharacterBase::GetMeshForwardVector() const
 {
-	return FVector{(meshComponent->GetForwardVector().Rotation() + meshStartRotation).Vector()};
+	return FVector{(meshComponent->GetForwardVector().Rotation() - meshStartRotation).Vector()};
 }
 
 void APlayableCharacterBase::MoveX(float amount)
