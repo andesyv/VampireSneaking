@@ -19,9 +19,13 @@ class VAMPIRESNEAKING_API UBTSwitchPatrolPoint : public UBTTaskNode
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
-	EBTNodeResult::Type SetBlackboard(UBehaviorTreeComponent& OwnerComp, ATargetPoint * Point);
+	EBTNodeResult::Type SetBlackboard(UBehaviorTreeComponent& OwnerComp, ATargetPoint * Point, int index);
 
 public:
+	// Current patrol point index.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBlackboardKeySelector CurrentPointIndex;
+
 	// Next patrol point.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBlackboardKeySelector NextPoint;

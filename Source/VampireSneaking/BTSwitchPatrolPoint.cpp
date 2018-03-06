@@ -6,29 +6,34 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Int.h"
 #include "EngineUtils.h"
 
 
 EBTNodeResult::Type UBTSwitchPatrolPoint::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
-	static int32 currentPointIndex{ 0 };
-
-	if (OwnerComp.GetAIOwner() && OwnerComp.GetAIOwner()->GetPawn()) {
+	if (OwnerComp.GetAIOwner() && OwnerComp.GetAIOwner()->GetPawn() && OwnerComp.GetBlackboardComponent()) {
 		AEnemy *enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-		if (enemy) {
-			int32 ArraySize{ enemy->PatrolPoints.Num() };
-			bool bEmptySpots{ false };
+
+		int currentPointIndexInstance{ OwnerComp.GetBlackboardComponent()->GetValue<UBlackboardKeyType_Int>(CurrentPointIndex.SelectedKeyName) };
+		if (enemy && currentPointIndexInstance >= 0) {
+			int ArraySize{ enemy->PatrolPoints.Num() };
+			int emptySpots{ 0 };
 			for (auto item : enemy->PatrolPoints) {
 				if (!item) {
-					bEmptySpots = true;
+					emptySpots++;
 				}
 			}
-			if (ArraySize > 0 && !bEmptySpots) {
+			if (ArraySize > emptySpots) {
 
-				// Increment. Will loop around to the first index again, even if you remove an index.
-				currentPointIndex = (ArraySize < currentPointIndex) ? 0 : (currentPointIndex + 1) % ArraySize;
+				do {
+					// Increment. Will loop around to the first index again, even if you remove an index.
+					currentPointIndexInstance = (ArraySize < currentPointIndexInstance) ? 0 : (currentPointIndexInstance + 1) % ArraySize;
 
-				return SetBlackboard(OwnerComp, enemy->PatrolPoints[currentPointIndex]);
+					// Check if current index is empty
+				} while (!enemy->PatrolPoints[currentPointIndexInstance]);
+
+				return SetBlackboard(OwnerComp, enemy->PatrolPoints[currentPointIndexInstance], currentPointIndexInstance);
 			}
 			else {
 				TArray<ATargetPoint*> PatrolPoints{};
@@ -44,9 +49,9 @@ EBTNodeResult::Type UBTSwitchPatrolPoint::ExecuteTask(UBehaviorTreeComponent & O
 					PatrolPoints.Sort();
 
 					// Increment. Will loop around to the first index again, even if you remove an index.
-					currentPointIndex = (PatrolPoints.Num() < currentPointIndex) ? 0 : (currentPointIndex + 1) % PatrolPoints.Num();
+					currentPointIndexInstance = (PatrolPoints.Num() < currentPointIndexInstance) ? 0 : (currentPointIndexInstance + 1) % PatrolPoints.Num();
 
-					return SetBlackboard(OwnerComp, PatrolPoints[currentPointIndex]);
+					return SetBlackboard(OwnerComp, PatrolPoints[currentPointIndexInstance], currentPointIndexInstance);
 				}
 			}
 		}
@@ -54,11 +59,16 @@ EBTNodeResult::Type UBTSwitchPatrolPoint::ExecuteTask(UBehaviorTreeComponent & O
 	return EBTNodeResult::Failed;
 }
 
-EBTNodeResult::Type UBTSwitchPatrolPoint::SetBlackboard(UBehaviorTreeComponent& OwnerComp, ATargetPoint * Point)
+EBTNodeResult::Type UBTSwitchPatrolPoint::SetBlackboard(UBehaviorTreeComponent& OwnerComp, ATargetPoint * Point, int index)
 {
 	UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
-	if (blackboard && Point && !(blackboard->SetValue<UBlackboardKeyType_Vector>(blackboard->GetKeyID(NextPoint.SelectedKeyName), Point->GetActorLocation()))) {
+	if (blackboard && Point && !(blackboard->SetValue<UBlackboardKeyType_Vector>(NextPoint.SelectedKeyName, Point->GetActorLocation()))) {
 		UE_LOG(LogTemp, Error, TEXT("Failed to set next patrol point in blackboard!"));
+		return EBTNodeResult::Failed;
+	}
+
+	if (blackboard && !(blackboard->SetValue<UBlackboardKeyType_Int>(CurrentPointIndex.SelectedKeyName, index))) {
+		UE_LOG(LogTemp, Error, TEXT("Failed to set current point index in blackboard!"));
 		return EBTNodeResult::Failed;
 	}
 	return EBTNodeResult::Succeeded;
