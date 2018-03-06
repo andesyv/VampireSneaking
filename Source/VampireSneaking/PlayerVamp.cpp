@@ -25,8 +25,14 @@ void APlayerVamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (SuckingBlood) {
+	if (SuckingBlood && EnemyInFront()) {
 		SuckBlood(SuckSpeed, DeltaTime);
+	}
+	else {
+		if (suckedEnemy) {
+			suckedEnemy->beingSucked = false;
+			suckedEnemy = nullptr;
+		}
 	}
 }
 
@@ -36,30 +42,21 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayerVamp::ToggleSuckBlood);
+	PlayerInputComponent->BindAction("Bite", IE_Released, this, &APlayerVamp::ToggleSuckBlood);
 }
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime) {
-	if (EnemyInFront())
+
+	if (suckedEnemy)
 	{
-		AddBlood(amount * DeltaTime);
+		suckedEnemy->beingSucked = true;
 	}
-	else
-	{
-		ToggleSuckBlood();
-	}
+	AddBlood(amount * DeltaTime);
 }
 
 void APlayerVamp::ToggleSuckBlood()
 {
-	SuckingBlood = !SuckingBlood && EnemyInFront();
-	if (suckedEnemy)
-	{
-		suckedEnemy->beingSucked = SuckingBlood;
-		if (SuckingBlood)
-		{
-			suckedEnemy = nullptr;
-		}
-	}
+	SuckingBlood = !SuckingBlood;
 }
 
 bool APlayerVamp::EnemyInFront()
