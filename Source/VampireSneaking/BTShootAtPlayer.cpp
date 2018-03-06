@@ -4,6 +4,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "PlayableCharacterBase.h"
+#include "AIController.h"
+#include "Components/CapsuleComponent.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
@@ -30,6 +32,9 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 		if (player) {
 			player->TakeDamage(Damage);
 			timer = 0.f;
+			if (OwnerComp->GetAIOwner() && OwnerComp->GetAIOwner()->GetPawn()) {
+				PlayExplotion(OwnerComp->GetAIOwner()->GetPawn(), player);
+			}
 			FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
 			return;
 		}
@@ -42,4 +47,30 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 	}
 	FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
 	return;
+}
+
+void UBTShootAtPlayer::PlayExplotion(AActor *enemy, AActor *player)
+{
+	if (ExplotionFX) {
+		APlayableCharacterBase *playerChar = Cast<APlayableCharacterBase>(player);
+		if (playerChar) {
+			UCapsuleComponent *playerCollider = Cast<UCapsuleComponent>(playerChar->GetRootComponent());
+			if (playerCollider) {
+				UE_LOG(LogTemp, Warning, TEXT("SHOT'S FIRED!"));
+				FVector playerToEnemy{ player->GetActorLocation() - enemy->GetActorLocation() };
+				playerToEnemy.Normalize();
+				FTransform trans{ FRotator::ZeroRotator, player->GetActorLocation() - playerToEnemy * playerCollider->GetScaledCapsuleRadius(), FVector{ 1.f, 1.f, 1.f } };
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplotionFX, trans, true);
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("Unable to get player collider."));
+			}
+		}
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("Unable to get player."));
+		}
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("ExplotionFX is not set on task: \"Shoot at player\" in behavior tree."));
+	}
 }

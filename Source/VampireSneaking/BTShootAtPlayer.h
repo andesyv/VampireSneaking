@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "Kismet/GameplayStatics.h"
 #include "BTShootAtPlayer.generated.h"
 
 /**
@@ -27,6 +28,8 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Shoot(UBehaviorTreeComponent *OwnerComp);
 
+	void PlayExplotion(AActor *enemy, AActor *player);
+
 public:
 	// Target to hit.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -39,4 +42,8 @@ public:
 	// Damage the AI deals.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Damage = 30.f;
+
+	// Explotion effect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem *ExplotionFX = nullptr;
 };
