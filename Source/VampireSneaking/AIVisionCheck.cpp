@@ -73,15 +73,22 @@ AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float Delta
 
 		return AIState::Combat;
 	}
-	else if (lastState == AIState::Combat) {
+	else if (enemy->beingSucked)
+	{
+		return AIState::Frozen;
+	}
+	else if (lastState == AIState::Combat)
+	{
 		timer = 0.f;
 		return AIState::Searching;
 	}
-	else if (lastState == AIState::Searching && timer < SearchTime) {
+	else if (lastState == AIState::Searching && timer < SearchTime)
+	{
 		timer += DeltaSeconds;
 		return AIState::Searching;
 	}
-	else {
+	else
+	{
 		return AIState::Idle;
 	}
 }
