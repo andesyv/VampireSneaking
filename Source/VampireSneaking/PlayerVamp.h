@@ -13,23 +13,28 @@ class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
 {
 	GENERATED_BODY()
 
+private:
+	/**
+	* Is there an enemy in front of the player who is affected by the blood suck?
+	* NB: Don't change this directly, should only be changed via SetEnemyLocked.
+	*/
+	bool EnemyLocked{ false };
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Is the player sucking blood?
-	bool SuckingBlood{ false };
-
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
-
-	// Toggle blood sucking.
-	void ToggleSuckBlood();
 	
 	// Returns whether there is an enemy in front of the player.
 	bool EnemyInFront();
 
+	// The actual sucking of the blood.
 	void SuckBlood(float amount, float DeltaTime);
+
+	// Setter for EnemyLocked. Use this to set EnemyLocked.
+	const bool SetEnemyLocked(bool state);
 
 public:	
 	// Sets default values for this pawn's properties

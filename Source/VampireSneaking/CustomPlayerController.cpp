@@ -80,6 +80,7 @@ bool ACustomPlayerController::TransferStats(APawn * newPawn, APawn * oldPawn)
 		newCharacterBase->Health = oldCharacterBase->Health;
 		newCharacterBase->Blood = oldCharacterBase->Blood;
 		newCharacterBase->OutOfBlood = oldCharacterBase->OutOfBlood;
+		newCharacterBase->SuckingBlood = oldCharacterBase->SuckingBlood;
 		newCharacterBase->GetMovementComponent()->Velocity = oldCharacterBase->GetVelocity();
 
 		return true;
