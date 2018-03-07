@@ -45,9 +45,9 @@ void ABatMode::Tick(float DeltaTime)
 {
 	ACharacter::Tick(DeltaTime);
 
-	if (GetController() && batModel) {
+	if (Cast<ACustomPlayerController>(GetController()) && batModel) {
 		// Drain blood while using.
-		if (AddBlood(FMath::Abs(DrainSpeed) * -DeltaTime) < KINDA_SMALL_NUMBER) {
+		if (Cast<ACustomPlayerController>(GetController())->AddBlood(FMath::Abs(DrainSpeed) * -DeltaTime) < KINDA_SMALL_NUMBER) {
 			controller->ChangePawn(0);
 		}
 		

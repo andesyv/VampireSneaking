@@ -41,7 +41,12 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 {
-	AddBlood(amount * DeltaTime);
+	// TODO: Make more efficient?
+	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(GetController());
+	if (playerController) {
+		playerController->AddBlood(amount * DeltaTime);
+	}
+
 }
 
 const bool APlayerVamp::SetEnemyLocked(bool state)
