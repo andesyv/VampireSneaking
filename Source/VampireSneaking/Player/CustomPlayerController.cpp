@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "CustomPlayerController.h"
-#include "PlayableCharacterBase.h"
-#include "PlayerVamp.h"
+#include "Player/CustomPlayerController.h"
+#include "Player/PlayableCharacterBase.h"
+#include "Player/PlayerVamp.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 void ACustomPlayerController::ChangePawn()

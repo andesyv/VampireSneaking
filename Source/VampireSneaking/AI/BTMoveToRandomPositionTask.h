@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "EnemyAI.h"
+#include "AI/EnemyAI.h"
 #include "Engine/TargetPoint.h"
 #include "BTMoveToRandomPositionTask.generated.h"
 

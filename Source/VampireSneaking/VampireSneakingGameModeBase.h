@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "CustomPlayerController.h"
-#include "BatMode.h"
+#include "Player/CustomPlayerController.h"
+#include "Player/BatMode.h"
 #include "VampireSneakingGameModeBase.generated.h"
 
 /**

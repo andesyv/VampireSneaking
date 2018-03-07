@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "PlayableCharacterBase.h"
+#include "Player/PlayableCharacterBase.h"
 #include "Enemy.h"
 #include "PlayerVamp.generated.h"
 

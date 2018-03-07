@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BTMoveToRandomPositionTask.h"
+#include "AI/BTMoveToRandomPositionTask.h"
 #include "AI/Navigation/NavigationSystem.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 

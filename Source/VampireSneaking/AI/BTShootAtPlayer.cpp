@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BTShootAtPlayer.h"
+#include "AI/BTShootAtPlayer.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
-#include "PlayableCharacterBase.h"
+#include "Player/PlayableCharacterBase.h"
 #include "AIController.h"
 #include "Components/CapsuleComponent.h"
 

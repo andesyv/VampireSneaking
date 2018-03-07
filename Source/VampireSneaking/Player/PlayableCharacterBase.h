@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Camera/CameraComponent.h"
-#include "CustomPlayerController.h"
+#include "Player/CustomPlayerController.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "PlayableCharacterBase.generated.h"
 

@@ -18,6 +18,8 @@ APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AControl
 		if (bat) {
 			playerController->ControllablePawns.Add(bat);
 		}
+
+		// Make stats
 	}
 
 	return returnValue;

@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "BatMode.h"
+#include "Player/BatMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "CustomPlayerController.h"
+#include "Player/CustomPlayerController.h"
 
 
 // Sets default values

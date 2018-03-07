@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "AIVisionCheck.h"
+#include "AI/AIVisionCheck.h"
 #include "AIController.h"
 #include "Enemy.h"
-#include "EnemyAI.h"
+#include "AI/EnemyAI.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Components/StaticMeshComponent.h"
-#include "PlayableCharacterBase.h"
+#include "Player/PlayableCharacterBase.h"
 #include "BatMode.generated.h"
 
 UCLASS()
