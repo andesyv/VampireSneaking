@@ -24,14 +24,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Is the player sucking blood?
-	bool SuckingBlood{ false };
-
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
-
-	// Toggle blood sucking.
-	void ToggleSuckBlood();
 	
 	// Returns whether there is an enemy in front of the player.
 	bool EnemyInFront();

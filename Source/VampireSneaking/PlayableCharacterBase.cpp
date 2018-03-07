@@ -53,6 +53,9 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("XAxis", this, &APlayableCharacterBase::MoveX);
 	PlayerInputComponent->BindAxis("YAxis", this, &APlayableCharacterBase::MoveY);
 
+	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayableCharacterBase::ToggleSuckBlood); // Note: Lambda expression?
+	PlayerInputComponent->BindAction("Bite", IE_Released, this, &APlayableCharacterBase::ToggleSuckBlood);
+
 	controller = Cast<ACustomPlayerController>(GetController());
 	if (controller) {
 		controller->bShowMouseCursor = true;
@@ -153,4 +156,9 @@ const float APlayableCharacterBase::AddBlood(float amount)
 const bool APlayableCharacterBase::IsOutOfBlood() const
 {
 	return OutOfBlood;
+}
+
+void APlayableCharacterBase::ToggleSuckBlood()
+{
+	SuckingBlood = !SuckingBlood;
 }

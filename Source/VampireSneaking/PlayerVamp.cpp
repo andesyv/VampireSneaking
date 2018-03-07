@@ -37,9 +37,6 @@ void APlayerVamp::Tick(float DeltaTime)
 void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayerVamp::ToggleSuckBlood); // Note: Lambda expression?
-	PlayerInputComponent->BindAction("Bite", IE_Released, this, &APlayerVamp::ToggleSuckBlood);
 }
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
@@ -62,11 +59,6 @@ const bool APlayerVamp::SetEnemyLocked(bool state)
 	else {
 		return EnemyLocked;
 	}
-}
-
-void APlayerVamp::ToggleSuckBlood()
-{
-	SuckingBlood = !SuckingBlood;
 }
 
 bool APlayerVamp::EnemyInFront()
