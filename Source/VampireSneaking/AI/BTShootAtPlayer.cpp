@@ -5,6 +5,7 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Player/PlayableCharacterBase.h"
 #include "AIController.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
@@ -17,6 +18,14 @@ EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & Owner
 void UBTShootAtPlayer::TickTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
+
+	APawn *player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	APawn *enemy = OwnerComp.GetAIOwner()->GetPawn();
+	if (player && enemy) {
+		FVector toPlayer{ player->GetActorLocation() - enemy->GetActorLocation() };
+		toPlayer.Z = 0;
+		enemy->SetActorRotation(toPlayer.Rotation());
+	}
 
 	if (timer > ShootTime) {
 		Shoot(&OwnerComp);

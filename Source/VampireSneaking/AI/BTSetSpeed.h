@@ -22,4 +22,8 @@ public:
 	// Movement speed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Speed = 400.f;
+
+	// Rotate speed
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RotateSpeed = 360.f;
 };

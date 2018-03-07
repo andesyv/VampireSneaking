@@ -8,8 +8,12 @@
 EBTNodeResult::Type UBTSetSpeed::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
 	AEnemy *enemy = Cast<AEnemy>(OwnerComp.GetAIOwner()->GetPawn());
-	if (enemy && enemy->GetMovementComponent() && Cast<UCharacterMovementComponent>(enemy->GetMovementComponent())) {
-		Cast<UCharacterMovementComponent>(enemy->GetMovementComponent())->MaxWalkSpeed = Speed;
+	if (enemy && enemy->GetMovementComponent()) {
+		UCharacterMovementComponent *movementComponent = Cast<UCharacterMovementComponent>(enemy->GetMovementComponent());
+		if (movementComponent) {
+			movementComponent->MaxWalkSpeed = Speed;
+			movementComponent->RotationRate.Yaw = RotateSpeed;
+		}
 		return EBTNodeResult::Succeeded;
 	}
 	else {
