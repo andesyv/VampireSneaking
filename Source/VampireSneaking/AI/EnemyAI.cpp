@@ -2,6 +2,7 @@
 
 #include "AI/EnemyAI.h"
 #include "Enemy.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "Engine/TargetPoint.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
@@ -24,8 +25,6 @@ void AEnemyAI::Possess(APawn *Pawn) {
 
 	Super::Possess(Pawn);
 
-	// UE_LOG(LogTemp, Warning, TEXT("Player controller %s possessed enemy %s!"), *GetName(), *Pawn->GetName());
-
 	possessedPawn = Pawn;
 
 	// Fetch reference to behaviorTreeComponent and enemy.
@@ -42,6 +41,11 @@ void AEnemyAI::Possess(APawn *Pawn) {
 
 				// Setup behavior tree.
 				behaviorTreeComp->StartTree(*possessedEnemy->BehaviorTree);
+
+				// Setup first control point.
+				if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("NextPoint"), Pawn->GetActorLocation())) {
+					UE_LOG(LogTemp, Warning, TEXT("Failed to set start patrol point for EnemyAI: %s"), *GetName());
+				}
 
 			}
 			else {
