@@ -49,9 +49,6 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	PlayerInputComponent->BindAxis("XAxis", this, &APlayableCharacterBase::MoveX);
 	PlayerInputComponent->BindAxis("YAxis", this, &APlayableCharacterBase::MoveY);
 
-	PlayerInputComponent->BindAction("Bite", IE_Pressed, this, &APlayableCharacterBase::ToggleSuckBlood); // Note: Lambda expression?
-	PlayerInputComponent->BindAction("Bite", IE_Released, this, &APlayableCharacterBase::ToggleSuckBlood);
-
 	controller = Cast<ACustomPlayerController>(GetController());
 	if (controller) {
 		controller->bShowMouseCursor = true;
@@ -81,9 +78,4 @@ void APlayableCharacterBase::Rotate()
 		direction.Z = 0;
 		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation });
 	}
-}
-
-void APlayableCharacterBase::ToggleSuckBlood()
-{
-	SuckingBlood = !SuckingBlood;
 }

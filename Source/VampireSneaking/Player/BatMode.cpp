@@ -22,12 +22,6 @@ void ABatMode::BeginPlay()
 	ACharacter::BeginPlay();
 
 	meshStartRotation = batModel->RelativeRotation;
-	/*if (GetMovementComponent()) {
-		UCharacterMovementComponent *moveComponent = Cast<UCharacterMovementComponent>(GetMovementComponent());
-		if (moveComponent) {
-			moveComponent->MovementMode = EMovementMode::MOVE_Flying;
-		}
-	}*/
 }
 
 void ABatMode::Rotate()

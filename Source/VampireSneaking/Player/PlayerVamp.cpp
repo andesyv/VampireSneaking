@@ -24,13 +24,8 @@ void APlayerVamp::BeginPlay()
 void APlayerVamp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (SuckingBlood && SetEnemyLocked(EnemyInFront())) {
-		SuckBlood(SuckSpeed, DeltaTime);
-	}
-	else {
-		SetEnemyLocked(false);
-	}
+	
+	SuckBlood(SuckSpeed, DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -42,27 +37,22 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 {
 	// TODO: Make more efficient?
-	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(GetController());
-	if (playerController) {
-		playerController->AddBlood(amount * DeltaTime);
-	}
-
-}
-
-const bool APlayerVamp::SetEnemyLocked(bool state)
-{
-	if (EnemyLocked != state) {
-		EnemyLocked = state;
-		if (suckedEnemy) {
-			suckedEnemy->beingSucked = EnemyLocked;
-			if (!EnemyLocked) {
+	if (GetController()) {
+		ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(GetController());
+		if (playerCon) {
+			if (playerCon->GetBloodSuckButton() && EnemyInFront()) {
+				if (EnemyLocked != true) {
+					EnemyLocked = true;
+					suckedEnemy->beingSucked = EnemyLocked;
+				}
+				playerCon->AddBlood(amount * DeltaTime);
+			}
+			else if (EnemyLocked != false) {
+				EnemyLocked = false;
+				suckedEnemy->beingSucked = EnemyLocked;
 				suckedEnemy = nullptr;
 			}
 		}
-		return EnemyLocked;
-	}
-	else {
-		return EnemyLocked;
 	}
 }
 

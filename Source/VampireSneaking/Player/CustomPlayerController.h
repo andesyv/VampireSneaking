@@ -32,10 +32,19 @@ protected:
 
 	/** Allows the PlayerController to set up custom input bindings. */
 	virtual void SetupInputComponent() override;
+
+	// Is the player sucking blood?
+	bool PressingBloodSuckButton{ false };
 	
 public:
 
 	void SwapActorLocation(AActor *first, AActor *second);
+
+	// Toggle blood sucking.
+	void ToggleSuckBlood();
+
+	// Getter for blood-sucking button.
+	const bool GetBloodSuckButton();
 
 
 

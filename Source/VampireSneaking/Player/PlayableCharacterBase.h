@@ -30,12 +30,6 @@ protected:
 	// Rotation after mouse cursor.
 	virtual void Rotate();
 
-	// Is the player sucking blood?
-	bool SuckingBlood{ false };
-
-	// Toggle blood sucking.
-	void ToggleSuckBlood();
-
 	// Playercontroller reference.
 	ACustomPlayerController *controller;
 

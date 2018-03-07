@@ -74,6 +74,9 @@ void ACustomPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("BatTransform", EInputEvent::IE_Pressed, this, &ACustomPlayerController::ChangePawn);
 	InputComponent->BindAction("BatTransform", EInputEvent::IE_Released, this, &ACustomPlayerController::ChangePawn);
+
+	InputComponent->BindAction("Bite", IE_Pressed, this, &ACustomPlayerController::ToggleSuckBlood);
+	InputComponent->BindAction("Bite", IE_Released, this, &ACustomPlayerController::ToggleSuckBlood);
 }
 
 void ACustomPlayerController::SwapActorLocation(AActor * first, AActor * second)
@@ -157,4 +160,14 @@ const float ACustomPlayerController::AddBlood(float amount)
 const bool ACustomPlayerController::IsOutOfBlood() const
 {
 	return OutOfBlood;
+}
+
+void ACustomPlayerController::ToggleSuckBlood()
+{
+	PressingBloodSuckButton = !PressingBloodSuckButton;
+}
+
+const bool ACustomPlayerController::GetBloodSuckButton()
+{
+	return PressingBloodSuckButton;
 }
