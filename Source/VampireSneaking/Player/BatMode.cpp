@@ -60,5 +60,9 @@ void ABatMode::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(GetController());
+	if (playerController) {
+		playerController->AddBlood(-ActivationCost);
+	}
 }
 

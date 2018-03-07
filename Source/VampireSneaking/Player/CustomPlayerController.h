@@ -30,8 +30,6 @@ protected:
 
 	void MoveController(int index);
 
-	bool TransferStats(APawn *newPawn, APawn *oldPawn);
-
 	/** Allows the PlayerController to set up custom input bindings. */
 	virtual void SetupInputComponent() override;
 	
@@ -47,30 +45,30 @@ public:
 protected:
 
 	// Health
-	UPROPERTY(BlueprintGetter = GetHealth)
+	UPROPERTY(BlueprintGetter = GetHealth, Category="Health")
 		float Health = 100.f;
 
 	// Max health, and starting health.
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxHealth)
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxHealth, Category = "Health")
 		float MaxHealth = 100.f;
 
 	bool ded{ false };
 
 public:
 	// Getter for Health
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Health")
 		const float GetHealth() const;
 
 	// Getter for MaxHealth
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Health")
 		const float GetMaxHealth() const;
 
 	// Get Health in percentage
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Health")
 		const float GetPercentageHealth() const;
 
 	// Take damage.
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Health")
 		const float TakeDamage(float damage);
 
 
@@ -81,35 +79,35 @@ public:
 protected:
 
 	// Blood
-	UPROPERTY(BlueprintGetter = GetBlood)
+	UPROPERTY(BlueprintGetter = GetBlood, Category = "Blood")
 		float Blood = 50.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
-	UPROPERTY(BlueprintGetter = GetMaxBlood)
+	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
 		float MaxBlood = 100.f;
 
 	// If the player is out of blood.
-	UPROPERTY(BlueprintGetter = IsOutOfBlood)
+	UPROPERTY(BlueprintGetter = IsOutOfBlood, Category = "Blood")
 		bool OutOfBlood = false;
 
 public:
 	// Getter for Blood
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Blood")
 		const float GetBlood() const;
 
 	// Getter for MaxBlood
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Blood")
 		const float GetMaxBlood() const;
 
 	// Get percentage amount of blood.
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Blood")
 		const float GetPercentageBlood() const;
 
 	// Adds blood to the current amount of blood.
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Blood")
 		const float AddBlood(float amount);
 
 	// Returns true if the player is out of blood.
-	UFUNCTION(BlueprintGetter)
+	UFUNCTION(BlueprintGetter, Category = "Blood")
 		const bool IsOutOfBlood() const;
 };

@@ -65,29 +65,7 @@ void ACustomPlayerController::MoveController(int index)
 	Possess(ControllablePawns[index]);
 
 	// Transfer stats
-	if (!TransferStats(ControllablePawns[index], currentlyPossessed)) {
-		UE_LOG(LogTemp, Error, TEXT("Failed to transfer stats when switching pawns!"));
-	}
-}
-
-bool ACustomPlayerController::TransferStats(APawn * newPawn, APawn * oldPawn)
-{
-	APlayableCharacterBase *newCharacterBase = Cast<APlayableCharacterBase>(newPawn);
-	APlayableCharacterBase *oldCharacterBase = Cast<APlayableCharacterBase>(oldPawn);
-	if (newCharacterBase && oldCharacterBase) {
-		/*
-		newCharacterBase->Health = oldCharacterBase->Health;
-		newCharacterBase->Blood = oldCharacterBase->Blood;
-		newCharacterBase->OutOfBlood = oldCharacterBase->OutOfBlood;
-		newCharacterBase->SuckingBlood = oldCharacterBase->SuckingBlood;
-		*/
-		newCharacterBase->GetMovementComponent()->Velocity = oldCharacterBase->GetVelocity();
-
-		return true;
-	}
-	else {
-		return false;
-	}
+	ControllablePawns[index]->GetMovementComponent()->Velocity = currentlyPossessed->GetVelocity();
 }
 
 void ACustomPlayerController::SetupInputComponent()
