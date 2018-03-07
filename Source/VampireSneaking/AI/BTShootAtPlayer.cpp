@@ -29,14 +29,17 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 	UBlackboardComponent *blackboard = OwnerComp->GetBlackboardComponent();
 	if (blackboard) {
 		APlayableCharacterBase *player = Cast<APlayableCharacterBase>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
-		if (player) {
-			player->TakeDamage(Damage);
-			timer = 0.f;
-			if (OwnerComp->GetAIOwner() && OwnerComp->GetAIOwner()->GetPawn()) {
-				PlayExplotion(OwnerComp->GetAIOwner()->GetPawn(), player);
+		if (player && player->GetController()) {
+			ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
+			if (playerController) {
+				playerController->TakeDamage(Damage);
+				timer = 0.f;
+				if (OwnerComp->GetAIOwner() && OwnerComp->GetAIOwner()->GetPawn()) {
+					PlayExplotion(OwnerComp->GetAIOwner()->GetPawn(), player);
+				}
+				FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+				return;
 			}
-			FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
-			return;
 		}
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Can't receive actor from blackboard!"));
@@ -56,7 +59,6 @@ void UBTShootAtPlayer::PlayExplotion(AActor *enemy, AActor *player)
 		if (playerChar) {
 			UCapsuleComponent *playerCollider = Cast<UCapsuleComponent>(playerChar->GetRootComponent());
 			if (playerCollider) {
-				UE_LOG(LogTemp, Warning, TEXT("SHOT'S FIRED!"));
 				FVector playerToEnemy{ player->GetActorLocation() - enemy->GetActorLocation() };
 				playerToEnemy.Normalize();
 				FTransform trans{ FRotator::ZeroRotator, player->GetActorLocation() - playerToEnemy * playerCollider->GetScaledCapsuleRadius(), FVector{ 1.f, 1.f, 1.f } };

@@ -38,4 +38,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DrainSpeed = 10.f;
 
+	// Activation cost for batmode
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ActivationCost = 10.f;
+
 };

@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Player/PlayableCharacterBase.h"
-#include "VampireSneakingGameModeBase.h"
 
 // Sets default values
 APlayableCharacterBase::APlayableCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -11,9 +10,6 @@ APlayableCharacterBase::APlayableCharacterBase(const FObjectInitializer& ObjectI
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(RootComponent);
-
-	// Set health.
-	Health = GetMaxHealth();
 }
 
 // Called when the game starts or when spawned
@@ -85,77 +81,6 @@ void APlayableCharacterBase::Rotate()
 		direction.Z = 0;
 		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation });
 	}
-}
-
-const float APlayableCharacterBase::GetHealth() const
-{
-	return Health;
-}
-
-const float APlayableCharacterBase::GetMaxHealth() const
-{
-	return MaxHealth;
-}
-
-const float APlayableCharacterBase::GetPercentageHealth() const
-{
-	if (Health < 0.f) {
-		return 0.f;
-	}
-	return Health / MaxHealth;
-}
-
-const float APlayableCharacterBase::TakeDamage(float damage)
-{
-	Health -= damage;
-	if (Health <= 0) {
-		Health = 0;
-		ded = true;
-
-		// Call death event.
-		if (Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())) {
-			Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())->PlayerDies();
-		}
-		Destroy();
-	}
-	return Health;
-}
-
-const float APlayableCharacterBase::GetBlood() const
-{
-	return Blood;
-}
-
-const float APlayableCharacterBase::GetMaxBlood() const
-{
-	return MaxBlood;
-}
-
-const float APlayableCharacterBase::GetPercentageBlood() const
-{
-	if (Blood < 0.f) {
-		return 0.f;
-	}
-	return Blood / MaxBlood;
-}
-
-const float APlayableCharacterBase::AddBlood(float amount)
-{
-	Blood += amount;
-	if (Blood < 0.f) {
-		Blood = 0.f;
-		OutOfBlood = true;
-	}
-	else if (Blood > 0.f){
-		OutOfBlood = false;
-	}
-
-	return Blood;
-}
-
-const bool APlayableCharacterBase::IsOutOfBlood() const
-{
-	return OutOfBlood;
 }
 
 void APlayableCharacterBase::ToggleSuckBlood()
