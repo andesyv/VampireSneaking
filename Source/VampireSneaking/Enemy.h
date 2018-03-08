@@ -22,6 +22,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

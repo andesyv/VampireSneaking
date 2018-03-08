@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Enemy.h"
+#include "Player/DamageType_Explosion.h"
 
 
 // Sets default values
@@ -16,6 +17,18 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+float AEnemy::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	float temp = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+	TSubclassOf<UDamageType> damageType = DamageEvent.DamageTypeClass;
+	if (DamageEvent.DamageTypeClass == UDamageType_Explosion::StaticClass()) {
+		UDamageType_Explosion::HandleDamage();
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Damaged with %d damage!"), Damage);
+
+	return temp;
 }
 
 // Called every frame

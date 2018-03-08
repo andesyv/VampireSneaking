@@ -2,9 +2,11 @@
 
 #include "Player/PlayerVamp.h"
 #include "Components/InputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "AI/EnemyAI.h"
+#include "Player/DamageType_Explosion.h"
 
 
 // Sets default values
@@ -32,6 +34,8 @@ void APlayerVamp::Tick(float DeltaTime)
 void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
 }
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
@@ -51,6 +55,31 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 				EnemyLocked = false;
 				suckedEnemy->beingSucked = EnemyLocked;
 				suckedEnemy = nullptr;
+			}
+		}
+	}
+}
+
+void APlayerVamp::Attack()
+{
+	const FName TraceTag("HitTrace");
+	GetWorld()->DebugDrawTraceTag = TraceTag;
+	FCollisionQueryParams collisionQueryParams{ TraceTag, false , this };
+
+	FHitResult hitResult{};
+	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*1000.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams))
+	{
+		AEnemy* enemy = Cast<AEnemy>(hitResult.Actor.Get());
+		if (enemy && enemy->GetMovementComponent())
+		{
+			UCharacterMovementComponent *movement = Cast<UCharacterMovementComponent>(enemy->GetMovementComponent());
+			if (movement) {
+				/*FVector toEnemy{ enemy->GetActorLocation() - GetActorLocation() };
+				toEnemy.GetSafeNormal();*/
+				// movement->AddImpulse(FVector{ enemy->GetActorLocation() - GetActorLocation() }.GetSafeNormal() * HitForce);
+				TArray<AActor*> IgnoredActors{};
+				IgnoredActors.Add(this);
+				UGameplayStatics::ApplyRadialDamage(GetWorld(), 100.f, hitResult.ImpactPoint, 100.f, DamageType, IgnoredActors, this, GetController(), true);
 			}
 		}
 	}

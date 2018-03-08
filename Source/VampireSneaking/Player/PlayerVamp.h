@@ -29,6 +29,8 @@ protected:
 	// The actual sucking of the blood.
 	void SuckBlood(float amount, float DeltaTime);
 
+	void Attack();
+
 public:	
 	// Sets default values for this pawn's properties
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -42,4 +44,12 @@ public:
 	// Speed of blood sucking (blood/second).
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SuckSpeed = 5.f;
+
+	// Hit force of normal attack.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float HitForce = 10.f;
+
+	// Damage type
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UDamageType> DamageType;
 };
