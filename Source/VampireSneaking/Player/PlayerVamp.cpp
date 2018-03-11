@@ -8,7 +8,6 @@
 #include "AI/EnemyAI.h"
 #include "Player/DamageType_Explosion.h"
 
-
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -69,6 +68,12 @@ void APlayerVamp::Attack()
 	FHitResult hitResult{};
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*1000.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams))
 	{
+		TArray<AActor*> IgnoredActors{};
+		IgnoredActors.Add(this);
+		float baseDmg{ 100.f };
+		UE_LOG(LogTemp, Warning, TEXT("Damage applied: %f"), baseDmg);
+		UGameplayStatics::ApplyRadialDamage(GetWorld(), baseDmg, hitResult.ImpactPoint, 10000.f, DamageType, IgnoredActors, this, GetController(), false, ECC_Visibility);
+
 		AEnemy* enemy = Cast<AEnemy>(hitResult.Actor.Get());
 		if (enemy && enemy->GetMovementComponent())
 		{
@@ -77,9 +82,7 @@ void APlayerVamp::Attack()
 				/*FVector toEnemy{ enemy->GetActorLocation() - GetActorLocation() };
 				toEnemy.GetSafeNormal();*/
 				// movement->AddImpulse(FVector{ enemy->GetActorLocation() - GetActorLocation() }.GetSafeNormal() * HitForce);
-				TArray<AActor*> IgnoredActors{};
-				IgnoredActors.Add(this);
-				UGameplayStatics::ApplyRadialDamage(GetWorld(), 100.f, hitResult.ImpactPoint, 100.f, DamageType, IgnoredActors, this, GetController(), true);
+				
 			}
 		}
 	}

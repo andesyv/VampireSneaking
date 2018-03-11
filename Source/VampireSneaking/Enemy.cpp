@@ -19,14 +19,21 @@ void AEnemy::BeginPlay()
 	
 }
 
-float AEnemy::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	float temp = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
-	TSubclassOf<UDamageType> damageType = DamageEvent.DamageTypeClass;
-	if (DamageEvent.DamageTypeClass == UDamageType_Explosion::StaticClass()) {
-		UDamageType_Explosion::HandleDamage();
+	float temp = AActor::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	// TSubclassOf<UDamageType> damageType = DamageEvent.DamageTypeClass;
+	if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID) && DamageEvent.DamageTypeClass == ExplosionDamage) {
+		FRadialDamageEvent* const RadialDamageEvent = (FRadialDamageEvent*)&DamageEvent;
+		UE_LOG(LogTemp, Warning, TEXT("Damaged with %f damage!"), DamageAmount + RadialDamageEvent->Params.GetDamageScale(FVector{ GetActorLocation() - RadialDamageEvent->Origin }.Size()));
+		
+		FVector HitToVictim{ GetActorLocation() - RadialDamageEvent->Origin };
+		UDamageType_Explosion::HandleDamage(this, HitToVictim, RadialDamageEvent->Params.GetDamageScale(HitToVictim.Size()) * 1000.f);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Damaged with %d damage!"), Damage);
+
+	if (DamageEvent.DamageTypeClass == ExplosionDamage) {
+	}
+	// FDamageEvent *RadialDamageEvent{ &DamageEvent };
 
 	return temp;
 }
