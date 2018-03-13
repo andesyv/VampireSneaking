@@ -2,10 +2,12 @@
 
 #include "Player/PlayerVamp.h"
 #include "Components/InputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "AI/EnemyAI.h"
-
+#include "Player/DamageType_Explosion.h"
+#include "VampireSneakingGameModeBase.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -32,6 +34,8 @@ void APlayerVamp::Tick(float DeltaTime)
 void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
 }
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
@@ -51,6 +55,39 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 				EnemyLocked = false;
 				suckedEnemy->beingSucked = EnemyLocked;
 				suckedEnemy = nullptr;
+			}
+		}
+	}
+}
+
+void APlayerVamp::Attack()
+{
+	/*
+	// Setup for trace-check.
+	const FName TraceTag("HitTrace");
+	GetWorld()->DebugDrawTraceTag = TraceTag;
+	FCollisionQueryParams collisionQueryParams{ TraceTag, false };
+	*/
+	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
+	
+
+	// Check if enemies are inside players attack area
+	if (UGameplayStatics::GetGameMode(GetWorld())) {
+		AVampireSneakingGameModeBase *gamemode = Cast<AVampireSneakingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		if (gamemode) {
+			for (auto item : gamemode->GetEnemyList()) {
+				if (item == nullptr) {
+					continue;
+				}
+
+				/// (Exactly the same checks as in "AIVisionCheck.h". Go see there for explanation.
+				FVector playerToEnemy{ item->GetActorLocation() - GetActorLocation() };
+				if (playerToEnemy.Size() < AttackRange
+					&& AVampireSneakingGameModeBase::GetAngleBetween(playerToEnemy, GetMeshForwardVector()) < AttackAngle
+					// && !(GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), item->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams))
+					) {
+					UGameplayStatics::ApplyPointDamage(item, AttackDamage, playerToEnemy, hitResult, GetController(), this, DamageType);
+				}
 			}
 		}
 	}

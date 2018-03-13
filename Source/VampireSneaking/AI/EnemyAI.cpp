@@ -46,7 +46,6 @@ void AEnemyAI::Possess(APawn *Pawn) {
 				if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("NextPoint"), Pawn->GetActorLocation())) {
 					UE_LOG(LogTemp, Warning, TEXT("Failed to set start patrol point for EnemyAI: %s"), *GetName());
 				}
-
 			}
 			else {
 				UE_LOG(LogTemp, Error, TEXT("Enemy behavior tree is missing a blackboard!"));

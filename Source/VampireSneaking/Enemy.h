@@ -17,13 +17,16 @@ public:
 	// Sets default values for this pawn's properties
 	AEnemy();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	/** Apply damage to this actor.
+	* @see https://www.unrealengine.com/blog/damage-in-ue4
+	* @param DamageAmount		How much damage to apply
+	* @param DamageEvent		Data package that fully describes the damage received.
+	* @param EventInstigator	The Controller responsible for the damage.
+	* @param DamageCauser		The Actor that directly caused the damage (e.g. the projectile that exploded, the rock that landed on you)
+	* @return					The amount of damage actually applied.
+	*/
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -43,6 +46,10 @@ public:
 	// Patrol points
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
 	TArray<ATargetPoint*> PatrolPoints;
+
+	// Explosion damage referance
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class UDamageType_Explosion> ExplosionDamage;
 
 	bool beingSucked{ false };
 };
