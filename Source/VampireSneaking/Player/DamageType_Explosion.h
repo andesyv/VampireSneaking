@@ -14,14 +14,12 @@ class VAMPIRESNEAKING_API UDamageType_Explosion : public UDamageType
 {
 	GENERATED_BODY()
 
-		// UDamageType_Explosion();
-
 public:
 	// Handle the damage.
 	static void HandleDamage(APawn *HitPawn, const FVector &FlingDirection);
 	static void HandleDamage(APawn *HitPawn, const FVector &FlingDirection, float FlingForce);
 	
-	// Force to be applied to flinging.
+	// Default force to be applied to flinging.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AppliedForce = 1000.f;
 };

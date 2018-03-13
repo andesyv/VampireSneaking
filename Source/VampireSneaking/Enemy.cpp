@@ -2,8 +2,6 @@
 
 #include "Enemy.h"
 #include "Player/DamageType_Explosion.h"
-#include "Kismet/GameplayStatics.h"
-#include "VampireSneakingGameModeBase.h"
 #include "Player/PlayerVamp.h"
 
 
@@ -13,21 +11,6 @@ AEnemy::AEnemy()
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-}
-
-// Called when the game starts or when spawned
-void AEnemy::BeginPlay()
-{
-	Super::BeginPlay();
-
-	/*
-	if (UGameplayStatics::GetGameMode(GetWorld())) {
-		AVampireSneakingGameModeBase *gameMode = Cast<AVampireSneakingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-		if (gameMode) {
-			gameMode->GetEnemyList().Add(this);
-		}
-	}
-	*/
 }
 
 float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -67,18 +50,11 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 			UDamageType_Explosion::HandleDamage(this, FVector{ GetActorLocation() - DamageCauser->GetActorLocation() });
 		}
 		else {
-			UE_LOG(LogTemp, Warning, TEXT("I guess it was no damage?"));
+			UE_LOG(LogTemp, Warning, TEXT("Unknown damageEvent. (Fix this warning in AEnemy::TakeDamage)"));
 		}
 	}
 
 	return temp;
-}
-
-// Called every frame
-void AEnemy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input

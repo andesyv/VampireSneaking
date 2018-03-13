@@ -62,14 +62,14 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 
 void APlayerVamp::Attack()
 {
-	// Setup
-	float baseDmg{ 100.f };
-
+	/*
 	// Setup for trace-check.
 	const FName TraceTag("HitTrace");
 	GetWorld()->DebugDrawTraceTag = TraceTag;
 	FCollisionQueryParams collisionQueryParams{ TraceTag, false };
-	FHitResult hitResult{ EForceInit::ForceInit };
+	*/
+	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
+	
 
 	// Check if enemies are inside players attack area
 	if (UGameplayStatics::GetGameMode(GetWorld())) {
@@ -86,31 +86,11 @@ void APlayerVamp::Attack()
 					&& AVampireSneakingGameModeBase::GetAngleBetween(playerToEnemy, GetMeshForwardVector()) < AttackAngle
 					// && !(GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), item->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams))
 					) {
-					// UE_LOG(LogTemp, Warning, TEXT("Applied %f damage!"), UGameplayStatics::ApplyDamage(item, baseDmg, GetController(), this, DamageType));
-					UE_LOG(LogTemp, Warning, TEXT("Applied %f damage!"), UGameplayStatics::ApplyPointDamage(item, baseDmg, playerToEnemy, hitResult, GetController(), this, DamageType));
+					UGameplayStatics::ApplyPointDamage(item, AttackDamage, playerToEnemy, hitResult, GetController(), this, DamageType);
 				}
 			}
 		}
 	}
-
-	/*
-	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*1000.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams))
-	{
-		TArray<AActor*> IgnoredActors{};
-		IgnoredActors.Add(this);
-		UE_LOG(LogTemp, Warning, TEXT("Damage applied: %f"), baseDmg);
-		UGameplayStatics::ApplyRadialDamage(GetWorld(), baseDmg, hitResult.ImpactPoint, 10000.f, DamageType, IgnoredActors, this, GetController(), false, ECC_Visibility);
-
-		AEnemy* enemy = Cast<AEnemy>(hitResult.Actor.Get());
-		if (enemy && enemy->GetMovementComponent())
-		{
-			UCharacterMovementComponent *movement = Cast<UCharacterMovementComponent>(enemy->GetMovementComponent());
-			if (movement) {
-				
-			}
-		}
-	}
-	*/
 }
 
 bool APlayerVamp::EnemyInFront()

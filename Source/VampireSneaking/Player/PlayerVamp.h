@@ -45,13 +45,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SuckSpeed = 5.f;
 
-	// Hit force of normal attack.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float HitForce = 10.f;
-
 	// Damage type
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	TSubclassOf<UDamageType> DamageType;
+
+	// Amount of damage on attacks
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float AttackDamage = 30.f;
 
 	// Range of attack from player center
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
@@ -60,4 +60,8 @@ public:
 	// Wideness of attack in angle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	float AttackAngle = 30.f;
+
+	// Hit force of normal attack.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float HitForce = 10.f;
 };

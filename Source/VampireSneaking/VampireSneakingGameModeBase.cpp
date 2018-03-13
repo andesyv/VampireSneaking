@@ -16,8 +16,6 @@ void AVampireSneakingGameModeBase::StartPlay()
 	}
 
 	Super::StartPlay();
-
-	UE_LOG(LogTemp, Warning, TEXT("Number of enemis in enemy list: %d"), EnemyList.Num());
 }
 
 APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
