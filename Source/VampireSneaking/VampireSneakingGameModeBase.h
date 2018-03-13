@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "Player/CustomPlayerController.h"
 #include "Player/BatMode.h"
+#include "Enemy.h"
 #include "VampireSneakingGameModeBase.generated.h"
 
 /**
@@ -19,7 +20,18 @@ class VAMPIRESNEAKING_API AVampireSneakingGameModeBase : public AGameModeBase
 	friend class ACustomPlayerController;
 	
 public:
-	
+	//////////////////////////////////////////////////////////////////////////
+	// Utility functions
+
+	static float GetAngleBetween(FVector pos1, FVector pos2);
+
+
+
+public:
+	/** Transitions to calls BeginPlay on actors. */
+	UFUNCTION(BlueprintCallable, Category = Game)
+	virtual void StartPlay() override;
+
 	/**
 	* Called during RestartPlayer to actually spawn the player's pawn, when using a start spot
 	* @param	NewPlayer - Controller for whom this pawn is spawned
@@ -32,6 +44,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RestartLevel();
 
+	// Get a list of enemies in the scene
+	UFUNCTION(BlueprintCallable)
+	TArray<AEnemy*>& GetEnemyList();
+
 	/** The bat mode class used when in bat mode. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Classes)
 	TSubclassOf<ABatMode> BatFormClass;
@@ -43,4 +59,11 @@ protected:
 	// Event called when the player dies.
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayerDies();
+
+	// List of enemies
+	TArray<AEnemy*> EnemyList;
+
+	// Function to remove enemies from list.
+	UFUNCTION()
+	void RemoveFromEnemyList(AActor *DestroyedEnemy);
 };

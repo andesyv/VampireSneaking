@@ -32,15 +32,16 @@ class VAMPIRESNEAKING_API UAIVisionCheck : public UBTService
 {
 	GENERATED_BODY()
 	
-private:
+protected:
 	// This happens every tick.
 	virtual void TickNode (UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory, float DeltaSeconds) override;
-
-	float GetAngleBetween(FVector pos1, FVector pos2);
 
 	AIState GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds, AIState lastState);
 	
 public:
+
+	
+
 	// The state of the behavior tree
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FBlackboardKeySelector State;

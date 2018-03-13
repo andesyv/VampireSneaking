@@ -5,6 +5,13 @@
 #include "GameFramework/Pawn.h"
 #include "GameFramework/Character.h"
 
+void UDamageType_Explosion::HandleDamage(APawn *HitPawn, const FVector &FlingDirection) {
+	UDamageType_Explosion *defaultObject = Cast<UDamageType_Explosion>(UDamageType_Explosion::StaticClass()->GetDefaultObject());
+	if (defaultObject) {
+		HandleDamage(HitPawn, FlingDirection, defaultObject->AppliedForce);
+	}
+}
+
 void UDamageType_Explosion::HandleDamage(APawn *HitPawn, const FVector &FlingDirection, float FlingForce) {
 	if (HitPawn->GetMovementComponent()) {
 		UCharacterMovementComponent *moveComp =	Cast<UCharacterMovementComponent>(HitPawn->GetMovementComponent());
@@ -18,7 +25,7 @@ void UDamageType_Explosion::HandleDamage(APawn *HitPawn, const FVector &FlingDir
 		Char->LaunchCharacter(FlingDirection.GetSafeNormal() * FlingForce, false, false);
 		
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Damage was handled!"));
+	UE_LOG(LogTemp, Warning, TEXT("Damage was handled with %f force!"), FlingForce);
 }
 
 

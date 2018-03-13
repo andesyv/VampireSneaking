@@ -2,6 +2,23 @@
 
 #include "VampireSneakingGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "EngineUtils.h"
+
+void AVampireSneakingGameModeBase::StartPlay()
+{
+	if (EnemyList.Num() > 0) {
+		EnemyList.Empty();
+	}
+	// Add all enemies in the scene to the enemy list.
+	for (TActorIterator<AEnemy> Itr(GetWorld()); Itr; ++Itr) {
+		EnemyList.Add(*Itr);
+		Itr->OnDestroyed.AddDynamic(this, &AVampireSneakingGameModeBase::RemoveFromEnemyList);
+	}
+
+	Super::StartPlay();
+
+	UE_LOG(LogTemp, Warning, TEXT("Number of enemis in enemy list: %d"), EnemyList.Num());
+}
 
 APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
 	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
@@ -30,6 +47,11 @@ void AVampireSneakingGameModeBase::RestartLevel()
 	UGameplayStatics::OpenLevel(GetWorld(), FName{ *GetWorld()->GetMapName() }, true);
 }
 
+TArray<AEnemy*>& AVampireSneakingGameModeBase::GetEnemyList()
+{
+	return EnemyList;
+}
+
 APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVector & Position, const FRotator & Rotation)
 {
 	APawn *returnPawn{ nullptr };
@@ -47,4 +69,19 @@ APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVe
 	}
 
 	return returnPawn;
+}
+
+void AVampireSneakingGameModeBase::RemoveFromEnemyList(AActor * DestroyedEnemy)
+{
+	if (DestroyedEnemy) {
+		AEnemy *enemy = Cast<AEnemy>(DestroyedEnemy);
+		if (enemy) {
+			EnemyList.Remove(enemy);
+		}
+	}
+}
+
+float AVampireSneakingGameModeBase::GetAngleBetween(FVector pos1, FVector pos2)
+{
+	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(pos1, pos2) / (pos1.Size() * pos2.Size())));
 }

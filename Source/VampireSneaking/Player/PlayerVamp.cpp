@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "AI/EnemyAI.h"
 #include "Player/DamageType_Explosion.h"
+#include "VampireSneakingGameModeBase.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -61,16 +62,42 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 
 void APlayerVamp::Attack()
 {
+	// Setup
+	float baseDmg{ 100.f };
+
+	// Setup for trace-check.
 	const FName TraceTag("HitTrace");
 	GetWorld()->DebugDrawTraceTag = TraceTag;
-	FCollisionQueryParams collisionQueryParams{ TraceTag, false , this };
+	FCollisionQueryParams collisionQueryParams{ TraceTag, false };
+	FHitResult hitResult{ EForceInit::ForceInit };
 
-	FHitResult hitResult{};
+	// Check if enemies are inside players attack area
+	if (UGameplayStatics::GetGameMode(GetWorld())) {
+		AVampireSneakingGameModeBase *gamemode = Cast<AVampireSneakingGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+		if (gamemode) {
+			for (auto item : gamemode->GetEnemyList()) {
+				if (item == nullptr) {
+					continue;
+				}
+
+				/// (Exactly the same checks as in "AIVisionCheck.h". Go see there for explanation.
+				FVector playerToEnemy{ item->GetActorLocation() - GetActorLocation() };
+				if (playerToEnemy.Size() < AttackRange
+					&& AVampireSneakingGameModeBase::GetAngleBetween(playerToEnemy, GetMeshForwardVector()) < AttackAngle
+					// && !(GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), item->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams))
+					) {
+					// UE_LOG(LogTemp, Warning, TEXT("Applied %f damage!"), UGameplayStatics::ApplyDamage(item, baseDmg, GetController(), this, DamageType));
+					UE_LOG(LogTemp, Warning, TEXT("Applied %f damage!"), UGameplayStatics::ApplyPointDamage(item, baseDmg, playerToEnemy, hitResult, GetController(), this, DamageType));
+				}
+			}
+		}
+	}
+
+	/*
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*1000.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams))
 	{
 		TArray<AActor*> IgnoredActors{};
 		IgnoredActors.Add(this);
-		float baseDmg{ 100.f };
 		UE_LOG(LogTemp, Warning, TEXT("Damage applied: %f"), baseDmg);
 		UGameplayStatics::ApplyRadialDamage(GetWorld(), baseDmg, hitResult.ImpactPoint, 10000.f, DamageType, IgnoredActors, this, GetController(), false, ECC_Visibility);
 
@@ -79,13 +106,11 @@ void APlayerVamp::Attack()
 		{
 			UCharacterMovementComponent *movement = Cast<UCharacterMovementComponent>(enemy->GetMovementComponent());
 			if (movement) {
-				/*FVector toEnemy{ enemy->GetActorLocation() - GetActorLocation() };
-				toEnemy.GetSafeNormal();*/
-				// movement->AddImpulse(FVector{ enemy->GetActorLocation() - GetActorLocation() }.GetSafeNormal() * HitForce);
 				
 			}
 		}
 	}
+	*/
 }
 
 bool APlayerVamp::EnemyInFront()

@@ -7,6 +7,7 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "VampireSneakingGameModeBase.h"
 
 void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory, float DeltaSeconds) {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -65,7 +66,7 @@ AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float Delta
 	static float timer{ 0.f };
 
 	// Do the checks.
-	if (FMath::Abs(GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
+	if (FMath::Abs(AVampireSneakingGameModeBase::GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
 		&& enemyToPlayer.Size() < enemy->VisionRadius	// Is player inside vision radius?
 		&& !(GetWorld()->LineTraceSingleByChannel(traceResult, enemy->GetActorLocation(), playerController->GetPawn()->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams)))	// Is there anything blocking the line of sight?
 	{
@@ -91,9 +92,4 @@ AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float Delta
 	{
 		return AIState::Idle;
 	}
-}
-
-float UAIVisionCheck::GetAngleBetween(FVector pos1, FVector pos2)
-{
-	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(pos1, pos2) / (pos1.Size() * pos2.Size())));
 }

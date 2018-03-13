@@ -50,6 +50,14 @@ public:
 	float HitForce = 10.f;
 
 	// Damage type
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	TSubclassOf<UDamageType> DamageType;
+
+	// Range of attack from player center
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float AttackRange = 100.f;
+
+	// Wideness of attack in angle
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float AttackAngle = 30.f;
 };
