@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BTSetSpeed.generated.h"
 
+// Forward declarations
+class UBehaviorTreeComponent;
+
 /**
- * 
+ * Sets movement speed of AI.
  */
 UCLASS(Blueprintable, DisplayName = "Set Movement Speed")
 class VAMPIRESNEAKING_API UBTSetSpeed : public UBTTaskNode

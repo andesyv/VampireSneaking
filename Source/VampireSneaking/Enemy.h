@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "Engine/TargetPoint.h"
 #include "Enemy.generated.h"
+
+// Forward declarations
+class ATargetPoint;
 
 UCLASS()
 class VAMPIRESNEAKING_API AEnemy : public ACharacter

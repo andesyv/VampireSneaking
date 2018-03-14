@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
+#include "Player/CustomPlayerController.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {

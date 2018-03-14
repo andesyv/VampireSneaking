@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "Engine/TargetPoint.h"
 #include "BTSwitchPatrolPoint.generated.h"
 
+// Forward declarations
+class ATargetPoint;
+
 /**
- * 
+ * Switches to the next control point.
  */
 UCLASS(Blueprintable, DisplayName = "Iterate patrol point")
 class VAMPIRESNEAKING_API UBTSwitchPatrolPoint : public UBTTaskNode

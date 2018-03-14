@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
 #include "Player/PlayableCharacterBase.h"
-#include "Enemy.h"
 #include "PlayerVamp.generated.h"
+
+// Forward declarations
+class AEnemy;
 
 UCLASS()
 class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase

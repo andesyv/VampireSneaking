@@ -4,6 +4,8 @@
 #include "Enemy.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Vector.h"
 #include "Engine/TargetPoint.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 

@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "AI/EnemyAI.h"
-#include "Engine/TargetPoint.h"
 #include "BTMoveToRandomPositionTask.generated.h"
+
+// Forward declarations
+class AEnemyAI;
+class ATargetPoint;
 
 /**
  * Moves to a random point within radius.

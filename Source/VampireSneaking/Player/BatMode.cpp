@@ -3,6 +3,7 @@
 #include "Player/BatMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/CustomPlayerController.h"
+#include "Components/StaticMeshComponent.h"
 
 
 // Sets default values

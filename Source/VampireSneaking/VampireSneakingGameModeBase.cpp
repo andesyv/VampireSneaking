@@ -3,6 +3,9 @@
 #include "VampireSneakingGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
+#include "Player/BatMode.h"
+#include "Player/CustomPlayerController.h"
+#include "Enemy.h"
 
 void AVampireSneakingGameModeBase::StartPlay()
 {

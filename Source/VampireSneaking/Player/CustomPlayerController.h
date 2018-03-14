@@ -7,7 +7,7 @@
 #include "CustomPlayerController.generated.h"
 
 /**
- * 
+ * A custom playercontroller.
  */
 UCLASS()
 class VAMPIRESNEAKING_API ACustomPlayerController : public APlayerController

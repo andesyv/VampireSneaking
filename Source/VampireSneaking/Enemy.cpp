@@ -2,6 +2,7 @@
 
 #include "Enemy.h"
 #include "Player/DamageType_Explosion.h"
+#include "Engine/TargetPoint.h"
 #include "Player/PlayerVamp.h"
 
 

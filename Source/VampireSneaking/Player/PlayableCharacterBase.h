@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Camera/CameraComponent.h"
-#include "Player/CustomPlayerController.h"
-#include "Components/SkeletalMeshComponent.h"
 #include "PlayableCharacterBase.generated.h"
+
+// Forward declarations
+class USkeletalMeshComponent;
+class UCameraComponent;
+class ACustomPlayerController;
+
 
 /**
 * Character base for all characters that the player should be able to control.

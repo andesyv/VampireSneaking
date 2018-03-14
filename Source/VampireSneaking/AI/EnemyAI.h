@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "EnemyAI.generated.h"
+
+// Forward declarations
+class UBehaviorTreeComponent;
+class UBlackboardComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 

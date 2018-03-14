@@ -7,7 +7,7 @@
 #include "DamageType_Explosion.generated.h"
 
 /**
- * 
+ * Damagetype that is designed to push enemies away.
  */
 UCLASS()
 class VAMPIRESNEAKING_API UDamageType_Explosion : public UDamageType

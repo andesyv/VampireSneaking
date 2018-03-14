@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "Components/StaticMeshComponent.h"
 #include "Player/PlayableCharacterBase.h"
 #include "BatMode.generated.h"
+
+// Forward declarations
+class UStaticMeshComponent;
 
 UCLASS()
 class VAMPIRESNEAKING_API ABatMode : public APlayableCharacterBase

@@ -2,6 +2,8 @@
 
 #include "AI/BTMoveToRandomPositionTask.h"
 #include "AI/Navigation/NavigationSystem.h"
+#include "AI/EnemyAI.h"
+#include "Engine/TargetPoint.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 
 EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)

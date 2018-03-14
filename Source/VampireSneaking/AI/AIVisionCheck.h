@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "AIVisionCheck.generated.h"
+
+// Forward declarations
+class UBlackboardComponent;
 
 /**
  * The state of the AI, for use in the behaviorTree.

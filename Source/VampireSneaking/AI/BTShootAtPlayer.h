@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "Kismet/GameplayStatics.h"
 #include "BTShootAtPlayer.generated.h"
 
 /**

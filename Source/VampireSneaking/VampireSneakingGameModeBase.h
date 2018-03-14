@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "Player/CustomPlayerController.h"
-#include "Player/BatMode.h"
-#include "Enemy.h"
 #include "VampireSneakingGameModeBase.generated.h"
+
+// Forward declarations
+class AEnemy;
+class ABatMode;
+class ACustomPlayerController;
 
 /**
  * The default Gamemode Base for the Project.

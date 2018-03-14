@@ -4,6 +4,7 @@
 #include "Enemy.h"
 #include "AIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
 
 EBTNodeResult::Type UBTSetSpeed::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
