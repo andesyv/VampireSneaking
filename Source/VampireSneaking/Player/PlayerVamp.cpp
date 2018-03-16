@@ -1,10 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Player/PlayerVamp.h"
-#include "Components/InputComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Engine/World.h"
+
 #include "AI/EnemyAI.h"
 #include "Player/DamageType_Explosion.h"
 #include "VampireSneakingGameModeBase.h"
