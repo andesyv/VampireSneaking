@@ -79,7 +79,7 @@ Intermediate/*
 DerivedDataCache/*
 Content/desktop.ini
 !Config/*
-Content/*
+!Content/*
 !Content/Blueprints/
 !Content/Maps/
 !Content/Maps/*
