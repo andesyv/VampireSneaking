@@ -6,6 +6,7 @@
 #include "Engine/TargetPoint.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/PawnSensingComponent.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -27,8 +28,6 @@ void AEnemyAI::Possess(APawn *Pawn) {
 
 	Super::Possess(Pawn);
 
-	possessedPawn = Pawn;
-
 	// Fetch reference to behaviorTreeComponent and enemy.
 	UBehaviorTreeComponent *behaviorTreeComp = Cast<UBehaviorTreeComponent>(BrainComponent);
 	AEnemy *possessedEnemy = Cast<AEnemy>(Pawn);
@@ -48,6 +47,9 @@ void AEnemyAI::Possess(APawn *Pawn) {
 				if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("NextPoint"), Pawn->GetActorLocation())) {
 					UE_LOG(LogTemp, Warning, TEXT("Failed to set start patrol point for EnemyAI: %s"), *GetName());
 				}
+
+				// Setup pawnsensing.
+				possessedEnemy->PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemyAI::SeeEnemy);
 			}
 			else {
 				UE_LOG(LogTemp, Error, TEXT("Enemy behavior tree is missing a blackboard!"));
@@ -56,6 +58,8 @@ void AEnemyAI::Possess(APawn *Pawn) {
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Enemy is missing behavior tree!"));
 		}
+	} else {
+		UE_LOG(LogTemp, Error, TEXT("Missing either something to possess or a behavior tree!"));
 	}
 }
 
@@ -63,7 +67,13 @@ void AEnemyAI::UnPossess()
 {
 	Super::UnPossess();
 
-	possessedPawn = nullptr;
+}
 
+void AEnemyAI::SeeEnemy(APawn *seenPawn) {
+	
+}
+
+void AEnemyAI::DontSeeEnemy() {
+	UE_LOG(LogTemp, Warning, TEXT("But now I don't see you!"))
 }
 

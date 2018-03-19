@@ -27,8 +27,6 @@ private:
 	// Called on unpossession of controller.
 	virtual void UnPossess() override;
 
-	APawn *possessedPawn = nullptr;
-
 public:
 	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -38,5 +36,8 @@ public:
 	// Delegate for move completion.
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
-	const APawn* GetPossessedPawn() { return possessedPawn; }
+	UFUNCTION(Blueprintable)
+	void SeeEnemy(APawn *seenPawn);
+	UFUNCTION(Blueprintable)
+	void DontSeeEnemy();
 };
