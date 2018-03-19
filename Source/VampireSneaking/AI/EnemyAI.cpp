@@ -69,6 +69,8 @@ void AEnemyAI::Possess(APawn *Pawn) {
 }
 
 void AEnemyAI::BeginPlay() {
+	Super::BeginPlay();
+
 	TArray<UAIPerceptionComponent*> comps{};
 	GetComponents<UAIPerceptionComponent>(comps);
 	for (auto item : comps) {
