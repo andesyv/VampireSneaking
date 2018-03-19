@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "Perception/AISenseConfig_Sight.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
@@ -52,9 +53,6 @@ void AEnemyAI::Possess(APawn *Pawn) {
 				if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("NextPoint"), Pawn->GetActorLocation())) {
 					UE_LOG(LogTemp, Warning, TEXT("Failed to set start patrol point for EnemyAI: %s"), *GetName());
 				}
-
-				// Setup pawnsensing.
-				possessedEnemy->PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemyAI::SeeEnemy);
 			}
 			else {
 				UE_LOG(LogTemp, Error, TEXT("Enemy behavior tree is missing a blackboard!"));
@@ -78,9 +76,13 @@ void AEnemyAI::BeginPlay() {
 			AIPerceptionComp = item;
 		}
 	}
+	
+	if (GetPerceptionComp()) {
+		GetPerceptionComp()->OnPerceptionUpdated.AddDynamic(this, &AEnemyAI::UpdatePerception);
+	}
 }
 
-const UAIPerceptionComponent* AEnemyAI::GetPerceptionComp() {
+UAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() {
 	if (AIPerceptionComp) {
 		return AIPerceptionComp;
 	} else {
@@ -94,11 +96,19 @@ void AEnemyAI::UnPossess()
 
 }
 
-void AEnemyAI::SeeEnemy(APawn *seenPawn) {
-	
-}
+void AEnemyAI::UpdatePerception(TArray<AActor*> UpdatedActors) {
+	UE_LOG(LogTemp, Warning, TEXT("Perception updated on!"));
 
-void AEnemyAI::DontSeeEnemy() {
-	UE_LOG(LogTemp, Warning, TEXT("But now I don't see you!"))
+	for (auto item : UpdatedActors) {
+		FActorPerceptionBlueprintInfo perceivedInfo;
+		if (item && GetPerceptionComp() && GetPerceptionComp()->GetActorsPerception(item, perceivedInfo)) {
+			if (perceivedInfo.LastSensedStimuli.Num() > 0) {
+				if (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed()) {
+					UE_LOG(LogTemp, Warning, TEXT("Sensed!"));
+				} else {
+					UE_LOG(LogTemp, Warning, TEXT("Not sensed!"));
+				}
+			}
+		}
+	}
 }
-
