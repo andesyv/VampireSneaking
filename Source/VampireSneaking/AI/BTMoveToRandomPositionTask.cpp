@@ -10,7 +10,7 @@ EBTNodeResult::Type UBTMoveToRandomPositionTask::ExecuteTask(UBehaviorTreeCompon
 {
 	AEnemyAI *enemyAI = Cast<AEnemyAI>(OwnerComp.GetAIOwner());
 
-	if (enemyAI && enemyAI->GetPossessedPawn()) {
+	if (enemyAI && enemyAI->GetPawn()) {
 		bool recreateMoveRequest{ false };
 		do {
 			EPathFollowingRequestResult::Type requestResult{ enemyAI->MoveToLocation(UNavigationSystem::GetRandomPointInNavigableRadius(enemyAI, GetCenterPoint(OwnerComp), Radius, GetMainNavData())) };
@@ -82,8 +82,8 @@ FVector UBTMoveToRandomPositionTask::GetCenterPoint(const UBehaviorTreeComponent
 
 	// If no other return paths has occured, do this.
 	AEnemyAI *enemyAI = Cast<AEnemyAI>(OwnerComp.GetAIOwner());
-	if (enemyAI && enemyAI->GetPossessedPawn()) {
-		return enemyAI->GetPossessedPawn()->GetActorLocation();
+	if (enemyAI && enemyAI->GetPawn()) {
+		return enemyAI->GetPawn()->GetActorLocation();
 	}
 	else {
 		UE_LOG(LogTemp, Error, TEXT("Some kind of error happened!"));
