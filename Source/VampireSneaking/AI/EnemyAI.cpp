@@ -7,12 +7,17 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
+#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
 	// Making a default blackboard and behavior tree. (A behavior tree inherits from BrainComponent)
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
 	BrainComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("Behavior tree"));
+
+	// Assign to Team 1
+    SetGenericTeamId(FGenericTeamId(1));
 }
 
 void AEnemyAI::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) {
@@ -60,6 +65,24 @@ void AEnemyAI::Possess(APawn *Pawn) {
 		}
 	} else {
 		UE_LOG(LogTemp, Error, TEXT("Missing either something to possess or a behavior tree!"));
+	}
+}
+
+void AEnemyAI::BeginPlay() {
+	TArray<UAIPerceptionComponent*> comps{};
+	GetComponents<UAIPerceptionComponent>(comps);
+	for (auto item : comps) {
+		if (item) {
+			AIPerceptionComp = item;
+		}
+	}
+}
+
+const UAIPerceptionComponent* AEnemyAI::GetPerceptionComp() {
+	if (AIPerceptionComp) {
+		return AIPerceptionComp;
+	} else {
+		return nullptr;
 	}
 }
 
