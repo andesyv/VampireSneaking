@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Player/PlayableCharacterBase.h"
+#include "GenericTeamAgentInterface.h"
 #include "PlayerVamp.generated.h"
 
 // Forward declarations
 class AEnemy;
 
 UCLASS()
-class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
+class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -31,6 +32,11 @@ protected:
 	void SuckBlood(float amount, float DeltaTime);
 
 	void Attack();
+
+
+	FGenericTeamId TeamId;
+ 
+    virtual FGenericTeamId GetGenericTeamId() const override;
 
 public:	
 	// Sets default values for this pawn's properties

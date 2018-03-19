@@ -9,6 +9,7 @@
 // Forward declarations
 class UBehaviorTreeComponent;
 class UBlackboardComponent;
+class UAIPerceptionComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 
@@ -20,12 +21,18 @@ class VAMPIRESNEAKING_API AEnemyAI : public AAIController
 {
 	GENERATED_BODY()
 
-private:
+protected:
+	// Start of the game.
+	virtual void BeginPlay() override;
+
 	// Called on possession of controller.
 	virtual void Possess(APawn *Pawn) override;
 
 	// Called on unpossession of controller.
 	virtual void UnPossess() override;
+
+	// Perception component.
+	UAIPerceptionComponent *AIPerceptionComp = nullptr;
 
 public:
 	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -36,8 +43,11 @@ public:
 	// Delegate for move completion.
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
+	const UAIPerceptionComponent* GetPerceptionComp();
+
 	UFUNCTION(Blueprintable)
 	void SeeEnemy(APawn *seenPawn);
+
 	UFUNCTION(Blueprintable)
 	void DontSeeEnemy();
 };
