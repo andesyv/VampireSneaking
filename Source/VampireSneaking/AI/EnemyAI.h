@@ -34,6 +34,10 @@ protected:
 	// Perception component.
 	UAIPerceptionComponent *AIPerceptionComp = nullptr;
 
+	// Called whenever AI Perception updates it's state.
+	UFUNCTION(BlueprintCallable)
+	void UpdatePerception(TArray<AActor*> UpdatedActors);
+
 public:
 	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
@@ -43,11 +47,5 @@ public:
 	// Delegate for move completion.
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
-	const UAIPerceptionComponent* GetPerceptionComp();
-
-	UFUNCTION(Blueprintable)
-	void SeeEnemy(APawn *seenPawn);
-
-	UFUNCTION(Blueprintable)
-	void DontSeeEnemy();
+	UAIPerceptionComponent* const GetPerceptionComp();
 };
