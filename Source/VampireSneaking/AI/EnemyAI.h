@@ -31,12 +31,19 @@ protected:
 	// Called on unpossession of controller.
 	virtual void UnPossess() override;
 
+	// Timerhandle for the searching.
+	FTimerHandle SearchingTimerHandle;
+
+	// For setting the AI to the Idle state
+	UFUNCTION()
+	void SetAIIdleState();
+
 	// Perception component.
 	UAIPerceptionComponent *AIPerceptionComp = nullptr;
 
 	// Called whenever AI Perception updates it's state.
 	UFUNCTION(BlueprintCallable)
-	void UpdatePerception(TArray<AActor*> UpdatedActors);
+	void UpdateState(TArray<AActor*> UpdatedActors);
 
 public:
 	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
