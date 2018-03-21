@@ -92,6 +92,11 @@ void AEnemyAI::UnPossess()
 {
 	Super::UnPossess();
 
+	// Stop behavior tree.
+	UBehaviorTreeComponent *behaviorTreeComp = Cast<UBehaviorTreeComponent>(BrainComponent);
+	if (behaviorTreeComp) {
+		behaviorTreeComp->StopTree();
+	}
 }
 
 void AEnemyAI::SetAIIdleState() {
@@ -153,19 +158,12 @@ bool AEnemyAI::ToggleSucking() {
 
 	if (Blackboard) {
 		if (static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) != AIState::Combat) {
-			if (lastState != AIState::Frozen && static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) == AIState::Frozen) {
-				if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Idle))) {
-					UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
-					return false;
-				}
+			bool StateIsFrozen{ lastState != AIState::Frozen && static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) == AIState::Frozen };
+			if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(StateIsFrozen ? AIState::Idle : AIState::Frozen))) {
+				UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 				return false;
-			} else {
-				if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Frozen))) {
-					UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
-					return false;
-				}
-				return true;
 			}
+			return !StateIsFrozen;
 		}
 	} else {
 		UE_LOG(LogTemp, Warning, TEXT("Missing blackboard!."));
