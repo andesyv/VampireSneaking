@@ -23,9 +23,6 @@ protected:
 	// Currently sucking blood?
 	bool SuckingBlood{ false };
 
-	// If the enemy is frozen.
-	bool EnemyLocked{ false };
-
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
 	
@@ -34,6 +31,9 @@ protected:
 
 	// The actual sucking of the blood.
 	void SuckBlood(float amount, float DeltaTime);
+
+	// Internal toggle of bloodsucking.
+	bool ToggleBloodSucking();
 
 	void Attack();
 
