@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "Perception/PawnSensingComponent.h"
 #include "Enemy.generated.h"
 
 // Forward declarations
@@ -53,10 +52,6 @@ public:
 	// Explosion damage referance
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UDamageType_Explosion> ExplosionDamage;
-
-	// Component for vision and hearing.
-	UPROPERTY(VisibleAnywhere)
-	UPawnSensingComponent *PawnSensingComponent = nullptr;
 
 	bool beingSucked{ false };
 };

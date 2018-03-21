@@ -9,6 +9,7 @@
 
 // Forward declarations
 class AEnemy;
+class ACustomPlayerController;
 
 UCLASS()
 class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IGenericTeamAgentInterface
@@ -18,6 +19,9 @@ class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IG
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Currently sucking blood?
+	bool SuckingBlood{ false };
 
 	// If the enemy is frozen.
 	bool EnemyLocked{ false };
@@ -32,7 +36,6 @@ protected:
 	void SuckBlood(float amount, float DeltaTime);
 
 	void Attack();
-
 
 	FGenericTeamId TeamId;
  
