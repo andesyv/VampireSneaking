@@ -3,15 +3,10 @@
 #include "AI/EnemyAI.h"
 #include "Enemy.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
-#include "Engine/TargetPoint.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Perception/PawnSensingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "Perception/AIPerceptionTypes.h"
-#include "Perception/AISenseConfig_Sight.h"
 #include "Player/PlayableCharacterBase.h"
-#include "AI/AIVisionCheck.h"
 #include "TimerManager.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
@@ -111,7 +106,7 @@ void AEnemyAI::SetAIIdleState() {
 
 void AEnemyAI::UpdateState(TArray<AActor*> UpdatedActors) {
 	for (auto item : UpdatedActors) {
-		if (Cast<APlayableCharacterBase>(item) == nullptr) {
+		if (!item->IsA(APlayableCharacterBase::StaticClass())) {
 			continue;
 		}
 
@@ -123,11 +118,13 @@ void AEnemyAI::UpdateState(TArray<AActor*> UpdatedActors) {
 						GetWorld()->GetTimerManager().ClearTimer(SearchingTimerHandle);
 					}
 
-					if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>((perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed()) ? AIState::Combat : AIState::Searching))) {
+					if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>((perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
+					? AIState::Combat : AIState::Searching))) {
 						UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 					}
 
-					if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed()) ? item : nullptr)) {
+					if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
+					? item : nullptr)) {
 						UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
 					}
 
@@ -137,7 +134,7 @@ void AEnemyAI::UpdateState(TArray<AActor*> UpdatedActors) {
 						}
 
 						if (GetWorld()) {
-							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, 3.f);
+							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
 						}
 					}
 				} else {
@@ -146,4 +143,33 @@ void AEnemyAI::UpdateState(TArray<AActor*> UpdatedActors) {
 			}
 		}
 	}
+}
+
+bool AEnemyAI::ToggleSucking() {
+	UE_LOG(LogTemp, Warning, TEXT("Toogled bloodsucking!"));
+	if (GetWorld() && SearchingTimerHandle.IsValid()) {
+		GetWorld()->GetTimerManager().ClearTimer(SearchingTimerHandle);
+	}
+
+	if (Blackboard) {
+		if (static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) != AIState::Combat) {
+			if (lastState != AIState::Frozen && static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) == AIState::Frozen) {
+				if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Idle))) {
+					UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+					return false;
+				}
+				return false;
+			} else {
+				if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Frozen))) {
+					UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+					return false;
+				}
+				return true;
+			}
+		}
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("Missing blackboard!."));
+		return false;
+	}
+	return false;
 }
