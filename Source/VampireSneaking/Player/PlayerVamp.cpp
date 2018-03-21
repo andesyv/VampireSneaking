@@ -41,6 +41,16 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
 }
 
+bool APlayerVamp::ToggleBloodSucking() {
+	if (suckedEnemy->GetController()) {
+		AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
+		if (enemyAI) {
+			return enemyAI->ToggleSucking();
+		}
+	}
+	return false;
+}
+
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 {
 	// Toggling ability.
@@ -48,24 +58,13 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 		ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(GetController());
 		if (playerCon) {
 			if (playerCon->GetBloodSuckButton() && EnemyInFront()) {
-				if (SuckingBlood == false) {
-					if (suckedEnemy->GetController()) {
-						AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
-						if (enemyAI) {
-							SuckingBlood = enemyAI->ToggleSucking();
-						}
-					}
-				}
+				SuckingBlood = !SuckingBlood ? ToggleBloodSucking() : SuckingBlood;
 			} else {
-				if (SuckingBlood == true) {
-					if (suckedEnemy->GetController()) {
-						AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
-						if (enemyAI) {
-							SuckingBlood = enemyAI->ToggleSucking();
-						}
-					}
-				}
+				SuckingBlood = SuckingBlood ? ToggleBloodSucking() : SuckingBlood;
 			}
+
+			// No need to shorten this logic down even further, just makes it confusing to debug.
+			// SuckingBlood = (playerCon->GetBloodSuckButton() && EnemyInFront()) ? (!SuckingBlood ? ToggleBloodSucking() : SuckingBlood) : (SuckingBlood ? ToggleBloodSucking() : SuckingBlood);
 
 			// Do the sucking.
 			if (SuckingBlood && suckedEnemy) {
@@ -74,39 +73,6 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 			}
 		}
 	}
-
-	/*
-
-	// TODO: Make more efficient?
-	if (EnemyInFront()) {
-		if (EnemyLocked != true) {
-			EnemyLocked = true;
-
-			if (suckedEnemy->GetController()) {
-				AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
-				if (enemyAI) {
-					enemyAI->ToggleSucking();
-				}
-			}
-
-			suckedEnemy->beingSucked = EnemyLocked;
-		}
-		playerController->AddBlood(amount * DeltaTime);
-	}
-	else if (EnemyLocked != false) {
-		EnemyLocked = false;
-
-		if (suckedEnemy->GetController()) {
-			AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
-			if (enemyAI) {
-				enemyAI->ToggleSucking();
-			}
-		}
-
-		suckedEnemy->beingSucked = EnemyLocked;
-		suckedEnemy = nullptr;
-	}
-	*/
 }
 
 void APlayerVamp::Attack()
