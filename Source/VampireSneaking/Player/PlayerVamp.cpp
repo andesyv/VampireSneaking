@@ -43,34 +43,74 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 {
-	// TODO: Make more efficient?
+	// Toggling ability.
 	if (GetController()) {
 		ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(GetController());
 		if (playerCon) {
 			if (playerCon->GetBloodSuckButton() && EnemyInFront()) {
-				if (EnemyLocked != true) {
-					EnemyLocked = true;
-					suckedEnemy->beingSucked = EnemyLocked;
+				if (SuckingBlood == false) {
+					if (suckedEnemy->GetController()) {
+						AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
+						if (enemyAI) {
+							SuckingBlood = enemyAI->ToggleSucking();
+						}
+					}
 				}
-				playerCon->AddBlood(amount * DeltaTime);
+			} else {
+				if (SuckingBlood == true) {
+					if (suckedEnemy->GetController()) {
+						AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
+						if (enemyAI) {
+							SuckingBlood = enemyAI->ToggleSucking();
+						}
+					}
+				}
 			}
-			else if (EnemyLocked != false) {
-				EnemyLocked = false;
-				suckedEnemy->beingSucked = EnemyLocked;
-				suckedEnemy = nullptr;
+
+			// Do the sucking.
+			if (SuckingBlood && suckedEnemy) {
+				playerCon->AddBlood(amount * DeltaTime);
+				// suckedEnemy->DrainBlood;
 			}
 		}
 	}
+
+	/*
+
+	// TODO: Make more efficient?
+	if (EnemyInFront()) {
+		if (EnemyLocked != true) {
+			EnemyLocked = true;
+
+			if (suckedEnemy->GetController()) {
+				AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
+				if (enemyAI) {
+					enemyAI->ToggleSucking();
+				}
+			}
+
+			suckedEnemy->beingSucked = EnemyLocked;
+		}
+		playerController->AddBlood(amount * DeltaTime);
+	}
+	else if (EnemyLocked != false) {
+		EnemyLocked = false;
+
+		if (suckedEnemy->GetController()) {
+			AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
+			if (enemyAI) {
+				enemyAI->ToggleSucking();
+			}
+		}
+
+		suckedEnemy->beingSucked = EnemyLocked;
+		suckedEnemy = nullptr;
+	}
+	*/
 }
 
 void APlayerVamp::Attack()
 {
-	/*
-	// Setup for trace-check.
-	const FName TraceTag("HitTrace");
-	GetWorld()->DebugDrawTraceTag = TraceTag;
-	FCollisionQueryParams collisionQueryParams{ TraceTag, false };
-	*/
 	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
 	
 

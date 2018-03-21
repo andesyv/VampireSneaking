@@ -11,7 +11,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 
-void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory, float DeltaSeconds) {
+void UDEPRECATED_AIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory, float DeltaSeconds) {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
@@ -43,7 +43,7 @@ void UAIVisionCheck::TickNode(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMe
 	}
 }
 
-AIState UAIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds, AIState lastState) {
+AIState UDEPRECATED_AIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, float DeltaSeconds, AIState lastState) {
 
 	if (!GetWorld() || !OwnerComp.GetAIOwner()) {
 		UE_LOG(LogTemp, Error, TEXT("Can't get world and/or can't get enemyAI!"));
