@@ -151,7 +151,6 @@ void AEnemyAI::UpdateState(TArray<AActor*> UpdatedActors) {
 }
 
 bool AEnemyAI::ToggleSucking() {
-	UE_LOG(LogTemp, Warning, TEXT("Toogled bloodsucking!"));
 	if (GetWorld() && SearchingTimerHandle.IsValid()) {
 		GetWorld()->GetTimerManager().ClearTimer(SearchingTimerHandle);
 	}
