@@ -4,32 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
+#include "AI/EnemyAI.h"
 #include "AIVisionCheck.generated.h"
 
 // Forward declarations
 class UBlackboardComponent;
 
 /**
- * The state of the AI, for use in the behaviorTree.
- * (Usable in blueprints and blackboards)
- */
-UENUM(BlueprintType)
-enum class AIState : uint8 {
-	Idle	UMETA(DisplayName = "Idle"),
-	Combat	UMETA(DisplayName = "Combat"),
-	Searching	UMETA(DisplayName = "Searching"),
-	Frozen	UMETA(DisplayName = "Frozen"),
-	
-	// When the check function can't find give a sensible state.
-	NoState	UMETA(DisplayName = "No State"),
-};
-
-/**
  * Class that checks to see if the AI can see the player and what action it shall do.
  * Action to do is se in the State enum.
  */
-UCLASS(Blueprintable, DisplayName = "Vision Check")
-class VAMPIRESNEAKING_API UAIVisionCheck : public UBTService
+UCLASS(deprecated, Blueprintable, DisplayName = "Vision Check")
+class VAMPIRESNEAKING_API UDEPRECATED_AIVisionCheck : public UBTService
 {
 	GENERATED_BODY()
 	

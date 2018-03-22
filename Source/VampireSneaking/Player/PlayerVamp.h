@@ -4,13 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Player/PlayableCharacterBase.h"
+#include "GenericTeamAgentInterface.h"
 #include "PlayerVamp.generated.h"
 
 // Forward declarations
 class AEnemy;
+class ACustomPlayerController;
 
 UCLASS()
-class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
+class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -18,8 +20,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// If the enemy is frozen.
-	bool EnemyLocked{ false };
+	// Currently sucking blood?
+	bool SuckingBlood{ false };
 
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
@@ -30,7 +32,14 @@ protected:
 	// The actual sucking of the blood.
 	void SuckBlood(float amount, float DeltaTime);
 
+	// Internal toggle of bloodsucking.
+	bool ToggleBloodSucking();
+
 	void Attack();
+
+	FGenericTeamId TeamId;
+ 
+    virtual FGenericTeamId GetGenericTeamId() const override;
 
 public:	
 	// Sets default values for this pawn's properties

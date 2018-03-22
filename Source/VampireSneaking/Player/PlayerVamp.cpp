@@ -15,6 +15,8 @@ APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(Ob
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	TeamId = FGenericTeamId(0);
 }
 
 // Called when the game starts or when spawned
@@ -39,23 +41,35 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
 }
 
+bool APlayerVamp::ToggleBloodSucking() {
+	if (suckedEnemy->GetController()) {
+		AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
+		if (enemyAI) {
+			return enemyAI->ToggleSucking();
+		}
+	}
+	return false;
+}
+
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 {
-	// TODO: Make more efficient?
+	// Toggling ability.
 	if (GetController()) {
 		ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(GetController());
 		if (playerCon) {
 			if (playerCon->GetBloodSuckButton() && EnemyInFront()) {
-				if (EnemyLocked != true) {
-					EnemyLocked = true;
-					suckedEnemy->beingSucked = EnemyLocked;
-				}
-				playerCon->AddBlood(amount * DeltaTime);
+				SuckingBlood = !SuckingBlood ? ToggleBloodSucking() : SuckingBlood;
+			} else {
+				SuckingBlood = SuckingBlood ? ToggleBloodSucking() : SuckingBlood;
 			}
-			else if (EnemyLocked != false) {
-				EnemyLocked = false;
-				suckedEnemy->beingSucked = EnemyLocked;
-				suckedEnemy = nullptr;
+
+			// No need to shorten this logic down even further, just makes it confusing to debug.
+			// SuckingBlood = (playerCon->GetBloodSuckButton() && EnemyInFront()) ? (!SuckingBlood ? ToggleBloodSucking() : SuckingBlood) : (SuckingBlood ? ToggleBloodSucking() : SuckingBlood);
+
+			// Do the sucking.
+			if (SuckingBlood && suckedEnemy) {
+				playerCon->AddBlood(amount * DeltaTime);
+				// suckedEnemy->DrainBlood;
 			}
 		}
 	}
@@ -63,12 +77,6 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 
 void APlayerVamp::Attack()
 {
-	/*
-	// Setup for trace-check.
-	const FName TraceTag("HitTrace");
-	GetWorld()->DebugDrawTraceTag = TraceTag;
-	FCollisionQueryParams collisionQueryParams{ TraceTag, false };
-	*/
 	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
 	
 
@@ -111,4 +119,9 @@ bool APlayerVamp::EnemyInFront()
 		}
 	}
 	return false;
+}
+
+FGenericTeamId APlayerVamp::GetGenericTeamId() const
+{
+    return TeamId;
 }
