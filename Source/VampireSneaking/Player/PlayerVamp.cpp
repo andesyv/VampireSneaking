@@ -2,7 +2,6 @@
 
 #include "Player/PlayerVamp.h"
 #include "Kismet/GameplayStatics.h"
-
 #include "AI/EnemyAI.h"
 #include "Player/DamageType_Explosion.h"
 #include "VampireSneakingGameModeBase.h"

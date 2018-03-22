@@ -14,6 +14,25 @@ class UAIPerceptionComponent;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 
 /**
+ * Struct for damage info for the behaviorTree task
+ */
+USTRUCT(BlueprintType)
+struct FExplosionDamageInfo {
+
+	GENERATED_BODY()
+
+	float Damage;
+	FVector FlingDirection;
+	float FlingAmount;
+
+	FExplosionDamageInfo(float _damage = 0.f, const FVector &_flingDirection = FVector{ 0.f, 0.f, 0.f }, float _flingAmount = 1.f)
+	 : Damage( _damage ), FlingDirection( _flingDirection ), FlingAmount( _flingAmount )
+	{
+
+	}
+};
+
+/**
  * The state of the AI, for use in the behaviorTree.
  * (Usable in blueprints and blackboards)
  */
@@ -23,8 +42,9 @@ enum class AIState : uint8 {
 	Combat	UMETA(DisplayName = "Combat"),
 	Searching	UMETA(DisplayName = "Searching"),
 	Frozen	UMETA(DisplayName = "Frozen"),
+	Attacked	UMETA(DisplayName = "Attacked"),
 	
-	// When the check function can't find give a sensible state.
+	// When the check function can't give a sensible state.
 	NoState	UMETA(DisplayName = "No State"),
 };
 
@@ -84,4 +104,8 @@ public:
 	// How long the AI will search for before going back into patrol-mode
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float SearchTime = 3.f;
+
+	// Info for the next hit taken in behaviorTree.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FExplosionDamageInfo DamageInfo = FExplosionDamageInfo{};
 };
