@@ -8,12 +8,16 @@
 #include "Perception/AIPerceptionComponent.h"
 #include "Player/PlayableCharacterBase.h"
 #include "TimerManager.h"
+#include "HealthComponent.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
 	// Making a default blackboard and behavior tree. (A behavior tree inherits from BrainComponent)
 	Blackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard"));
 	BrainComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("Behavior tree"));
+
+	// Make health component.
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
 
 	// Assign to Team 1
     SetGenericTeamId(FGenericTeamId(1));

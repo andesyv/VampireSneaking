@@ -10,6 +10,7 @@
 class UBehaviorTreeComponent;
 class UBlackboardComponent;
 class UAIPerceptionComponent;
+class UHealthComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 
@@ -91,6 +92,10 @@ protected:
 	AIState lastState;
 
 public:
+	// Health and blood component
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UHealthComponent *HealthComponent = nullptr;
+
 	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	/** Called on completing current movement request */

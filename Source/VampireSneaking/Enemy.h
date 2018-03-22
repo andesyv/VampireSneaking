@@ -9,6 +9,7 @@
 
 // Forward declarations
 class ATargetPoint;
+class UHealthComponent;
 
 UCLASS()
 class VAMPIRESNEAKING_API AEnemy : public ACharacter
@@ -20,6 +21,10 @@ public:
 	AEnemy();
 
 public:	
+	// Health and blood component
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UHealthComponent *HealthComponent = nullptr;
+
 	/** Apply damage to this actor.
 	* @see https://www.unrealengine.com/blog/damage-in-ue4
 	* @param DamageAmount		How much damage to apply

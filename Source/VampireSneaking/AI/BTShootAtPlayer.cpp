@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Components/CapsuleComponent.h"
 #include "Player/CustomPlayerController.h"
+#include "HealthComponent.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 {
@@ -41,8 +42,8 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 		APlayableCharacterBase *player = Cast<APlayableCharacterBase>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
 		if (player && player->GetController()) {
 			ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
-			if (playerController) {
-				playerController->TakeDamage(Damage);
+			if (playerController && playerController->HealthComponent) {
+				playerController->HealthComponent->TakeDamage(Damage);
 				timer = 0.f;
 				if (OwnerComp->GetAIOwner() && OwnerComp->GetAIOwner()->GetPawn()) {
 					PlayExplotion(OwnerComp->GetAIOwner()->GetPawn(), player);

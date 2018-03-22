@@ -7,6 +7,7 @@
 #include "VampireSneakingGameModeBase.h"
 #include "Enemy.h"
 #include "Player/CustomPlayerController.h"
+#include "HealthComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -65,8 +66,8 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 			// SuckingBlood = (playerCon->GetBloodSuckButton() && EnemyInFront()) ? (!SuckingBlood ? ToggleBloodSucking() : SuckingBlood) : (SuckingBlood ? ToggleBloodSucking() : SuckingBlood);
 
 			// Do the sucking.
-			if (SuckingBlood && suckedEnemy) {
-				playerCon->AddBlood(amount * DeltaTime);
+			if (SuckingBlood && suckedEnemy && playerCon->HealthComponent) {
+				playerCon->HealthComponent->AddBlood(amount * DeltaTime);
 				// suckedEnemy->DrainBlood;
 			}
 		}

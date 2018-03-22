@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Player/CustomPlayerController.h"
 #include "Components/StaticMeshComponent.h"
+#include "HealthComponent.h"
 
 
 // Sets default values
@@ -40,9 +41,9 @@ void ABatMode::Tick(float DeltaTime)
 {
 	ACharacter::Tick(DeltaTime);
 
-	if (Cast<ACustomPlayerController>(GetController()) && batModel) {
+	if (Cast<ACustomPlayerController>(GetController()) && controller->HealthComponent && batModel) {
 		// Drain blood while using.
-		if (Cast<ACustomPlayerController>(GetController())->AddBlood(FMath::Abs(DrainSpeed) * -DeltaTime) < KINDA_SMALL_NUMBER) {
+		if (controller->HealthComponent->AddBlood(FMath::Abs(DrainSpeed) * -DeltaTime) < KINDA_SMALL_NUMBER) {
 			controller->ChangePawn(0);
 		}
 		
@@ -56,8 +57,8 @@ void ABatMode::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(GetController());
-	if (playerController) {
-		playerController->AddBlood(-ActivationCost);
+	if (playerController && playerController->HealthComponent) {
+		playerController->HealthComponent->AddBlood(-ActivationCost);
 	}
 }
 
