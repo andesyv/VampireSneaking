@@ -6,7 +6,6 @@
 #include "Player/PlayerVamp.h"
 #include "AI/EnemyAI.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
 
 
@@ -35,22 +34,12 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 				enemyAI->DamageInfo = damageInfo;
 
 				if (enemyAI && enemyAI->GetBlackboardComponent()) {
-					// if (!enemyAI->GetBlackboardComponent()->SetValue<UBlackboardKeyType_Bool>(TEXT("QueueAttack"), true)) {
-					// 	UE_LOG(LogTemp, Warning, TEXT("Failed to set bool in blackboard."));
-					// }
 					
-					if (!enemyAI->GetBlackboardComponent()->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat))) {
+					if (!enemyAI->GetBlackboardComponent()->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Attacked))) {
 						UE_LOG(LogTemp, Warning, TEXT("Failed to set enum state in blackboard."));
 					}
 				}
 			}
-
-			// if (player) {
-			// 	UDamageType_Explosion::HandleDamage(this, FlingDirection, player->HitForce);
-			// }
-			// else {
-			// 	UDamageType_Explosion::HandleDamage(this, FlingDirection);
-			// }
 		}
 		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) {
 			FRadialDamageEvent* const RadialDamageEvent = (FRadialDamageEvent*)&DamageEvent;

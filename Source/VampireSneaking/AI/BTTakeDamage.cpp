@@ -9,8 +9,6 @@
 EBTNodeResult::Type UBTTakeDamage::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
     Super::ExecuteTask(OwnerComp, NodeMemory);
 
-    UE_LOG(LogTemp, Warning, TEXT("Take damage!"));
-
     AEnemyAI *enemyAI = Cast<AEnemyAI>(OwnerComp.GetAIOwner());
     if (enemyAI && enemyAI->GetPawn()) {
 
