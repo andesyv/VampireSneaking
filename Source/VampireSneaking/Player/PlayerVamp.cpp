@@ -2,12 +2,10 @@
 
 #include "Player/PlayerVamp.h"
 #include "Kismet/GameplayStatics.h"
-
 #include "AI/EnemyAI.h"
 #include "Player/DamageType_Explosion.h"
 #include "VampireSneakingGameModeBase.h"
 #include "Enemy.h"
-#include "GameFramework/Character.h"
 #include "Player/CustomPlayerController.h"
 
 // Sets default values

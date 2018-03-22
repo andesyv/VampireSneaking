@@ -4,6 +4,9 @@
 #include "Player/DamageType_Explosion.h"
 #include "Engine/TargetPoint.h"
 #include "Player/PlayerVamp.h"
+#include "AI/EnemyAI.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
 
 
 // Sets default values
@@ -24,11 +27,18 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 			FPointDamageEvent* const PointDamageEvent = (FPointDamageEvent*)&DamageEvent;
 			FVector FlingDirection = PointDamageEvent->ShotDirection;
 
-			if (player) {
-				UDamageType_Explosion::HandleDamage(this, FlingDirection, player->HitForce);
-			}
-			else {
-				UDamageType_Explosion::HandleDamage(this, FlingDirection);
+			if (GetController()) {
+				AEnemyAI *enemyAI = Cast<AEnemyAI>(GetController());
+				
+				FExplosionDamageInfo damageInfo{ DamageAmount, FlingDirection, player ? player->HitForce : 1.f };
+				enemyAI->DamageInfo = damageInfo;
+
+				if (enemyAI && enemyAI->GetBlackboardComponent()) {
+					
+					if (!enemyAI->GetBlackboardComponent()->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Attacked))) {
+						UE_LOG(LogTemp, Warning, TEXT("Failed to set enum state in blackboard."));
+					}
+				}
 			}
 		}
 		else if (DamageEvent.IsOfType(FRadialDamageEvent::ClassID)) {
