@@ -15,7 +15,7 @@ ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& Objec
 void ACustomPlayerController::ChangePawn()
 {
 	// If the player is out of blood, they should'nt be able to change into batmode.
-	if (!(HealthComponent && GetPawn() && Cast<APlayerVamp>(GetPawn())) || HealthComponent->IsOutOfBlood()) {
+	if (!ChangeValid()) {
 		return;
 	}
 
@@ -36,7 +36,7 @@ void ACustomPlayerController::ChangePawn()
 void ACustomPlayerController::ChangePawn(int index)
 {
 	// If the player is out of blood, they should'nt be able to change into batmode.
-	if (!(HealthComponent && GetPawn() && Cast<APlayerVamp>(GetPawn())) || HealthComponent->IsOutOfBlood()) {
+	if (!ChangeValid()) {
 		return;
 	}
 
@@ -99,4 +99,9 @@ void ACustomPlayerController::ToggleSuckBlood()
 const bool ACustomPlayerController::GetBloodSuckButton()
 {
 	return PressingBloodSuckButton;
+}
+
+const bool ACustomPlayerController::ChangeValid() const
+{
+	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
 }

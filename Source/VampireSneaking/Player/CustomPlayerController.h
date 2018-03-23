@@ -41,7 +41,10 @@ protected:
 	virtual void SetupInputComponent() override;
 
 	// Is the player sucking blood?
-	bool PressingBloodSuckButton{ false };
+	bool PressingBloodSuckButton{ false };	
+
+	// Check if the player can change
+	const bool ChangeValid() const;
 	
 public:
 
