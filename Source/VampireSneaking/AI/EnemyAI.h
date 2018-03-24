@@ -89,7 +89,12 @@ protected:
 	 */
 	bool ToggleSucking();
 
+	// The state before ToggleSucking. Used in ToggleSucking.
 	AIState lastState;
+
+	// Function called on death.
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Death();
 
 public:
 	// Health and blood component

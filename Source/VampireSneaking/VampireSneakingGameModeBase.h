@@ -19,7 +19,7 @@ class VAMPIRESNEAKING_API AVampireSneakingGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
-	friend class UHealthComponent;
+	friend class ACustomPlayerController;
 	
 public:
 	//////////////////////////////////////////////////////////////////////////

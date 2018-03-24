@@ -38,17 +38,6 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UHealthComponent::Die() {
 	ded = true;
 
-	if (GetOwner()) {	
-	
-		// Call death event (if player).
-		if (GetOwner()->IsA(APlayableCharacterBase::StaticClass()) && Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())) {
-			Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())->PlayerDies();
-		}
-		
-		// Destroy actor.
-		GetOwner()->Destroy();
-	}
-
 	// Call death event.
 	OnDeath.Broadcast();
 }

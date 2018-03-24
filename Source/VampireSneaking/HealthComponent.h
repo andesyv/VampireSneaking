@@ -50,6 +50,7 @@ protected:
 	UFUNCTION()
 		void Die();
 
+	// Iz ded
 	bool ded{ false };
 
 public:

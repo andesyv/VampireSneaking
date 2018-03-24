@@ -10,6 +10,11 @@
 ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	// Make health component.
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
+
+	// Add death event.
+	if (HealthComponent) {
+		HealthComponent->OnDeath.AddDynamic(this, &ACustomPlayerController::Death);
+	}
 }
 
 void ACustomPlayerController::ChangePawn()
@@ -104,4 +109,20 @@ const bool ACustomPlayerController::GetBloodSuckButton()
 const bool ACustomPlayerController::ChangeValid() const
 {
 	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
+}
+
+void ACustomPlayerController::Death_Implementation() {
+	// Call death event.
+	if (GetWorld() && GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()) {
+		GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()->PlayerDies();
+	}
+
+	// Destory all pawns.
+	UnPossess();
+	for (auto pawn : ControllablePawns) {
+		pawn->Destroy();
+	}
+
+	// Destroy yoself!
+	Destroy();
 }

@@ -5,6 +5,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
 #include "AI/EnemyAI.h"
+#include "HealthComponent.h"
 
 EBTNodeResult::Type UBTTakeDamage::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
     Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -20,6 +21,12 @@ EBTNodeResult::Type UBTTakeDamage::ExecuteTask(UBehaviorTreeComponent& OwnerComp
             UDamageType_Explosion::HandleDamage(enemyAI->GetPawn(), enemyAI->DamageInfo.FlingDirection);
         } else {
             UDamageType_Explosion::HandleDamage(enemyAI->GetPawn(), enemyAI->DamageInfo.FlingDirection, enemyAI->DamageInfo.FlingAmount);
+        }
+
+        if (enemyAI->HealthComponent) {
+            if (enemyAI->HealthComponent->TakeDamage(enemyAI->DamageInfo.Damage) < KINDA_SMALL_NUMBER) {
+                return EBTNodeResult::Aborted;
+            }
         }
 
         UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();

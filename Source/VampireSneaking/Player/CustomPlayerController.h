@@ -45,6 +45,10 @@ protected:
 
 	// Check if the player can change
 	const bool ChangeValid() const;
+
+	// Function called when dying.
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Death();
 	
 public:
 

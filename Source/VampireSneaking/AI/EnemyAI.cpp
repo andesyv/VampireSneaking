@@ -19,6 +19,11 @@ AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectIn
 	// Make health component.
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
 
+	// Add death event.
+	if (HealthComponent) {
+		HealthComponent->OnDeath.AddDynamic(this, &AEnemyAI::Death);
+	}
+
 	// Assign to Team 1
     SetGenericTeamId(FGenericTeamId(1));
 }
@@ -173,4 +178,13 @@ bool AEnemyAI::ToggleSucking() {
 		return false;
 	}
 	return false;
+}
+
+void AEnemyAI::Death_Implementation() {
+	APawn *enemy = GetPawn();
+	if (enemy) {
+		UnPossess();
+		enemy->Destroy();
+	}
+	Destroy();
 }

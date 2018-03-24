@@ -66,9 +66,16 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 			// SuckingBlood = (playerCon->GetBloodSuckButton() && EnemyInFront()) ? (!SuckingBlood ? ToggleBloodSucking() : SuckingBlood) : (SuckingBlood ? ToggleBloodSucking() : SuckingBlood);
 
 			// Do the sucking.
-			if (SuckingBlood && suckedEnemy && playerCon->HealthComponent) {
+			if (SuckingBlood && suckedEnemy && playerCon->HealthComponent && suckedEnemy->GetController()) {
 				playerCon->HealthComponent->AddBlood(amount * DeltaTime);
-				// suckedEnemy->DrainBlood;
+				AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
+				if (enemyAI && enemyAI->HealthComponent) {
+					enemyAI->HealthComponent->AddBlood(-amount * DeltaTime);
+				} else {
+					UE_LOG(LogTemp, Warning, TEXT("Can't fetch healthcomponent on enemyAI."));
+				}				
+			} else if (SuckingBlood) {
+				UE_LOG(LogTemp, Warning, TEXT("Can't fetch suckedEnemy's controller."));
 			}
 		}
 	}
