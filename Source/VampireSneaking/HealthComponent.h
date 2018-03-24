@@ -21,13 +21,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	/*
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	*/
+public:
 
-	
+
 
 
 	///////////////////////////////////////////////////////////////////////////////
@@ -44,7 +40,7 @@ protected:
 
 	// Should the player/enemy take no damage? (Cheat)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-		bool Godmode = false;
+		bool CHEAT_Godmode = false;
 
 	// Function called when the player/enemy dies
 	UFUNCTION()
@@ -68,7 +64,11 @@ public:
 
 	// Take damage.
 	UFUNCTION(BlueprintCallable, Category = "Health")
-		const float TakeDamage(float damage);
+		const float TakeDamage(float amount);
+
+	// The exact opposite of TakeDamage. (For consistency)
+	UFUNCTION(BlueprintCallable, Category = "Health")
+		const float AddHealth(float amount);
 
 	// Delegate called on death.
 	UPROPERTY(BlueprintAssignable, Category = "Health")
@@ -88,6 +88,10 @@ protected:
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
 		float MaxBlood = 100.f;
+
+	// Should the player/enemy use no blood on abilities? (Cheat)
+	UPROPERTY(EditDefaultsOnly, Category = "Blood")
+		bool CHEAT_InfiniteBlood = false;
 
 	// If the player/enemy is out of blood.
 	UPROPERTY(BlueprintGetter = IsOutOfBlood, Category = "Blood")

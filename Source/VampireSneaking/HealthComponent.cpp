@@ -25,16 +25,6 @@ void UHealthComponent::BeginPlay()
 	Health = GetMaxHealth();
 }
 
-/*
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-*/
-
 void UHealthComponent::Die() {
 	ded = true;
 
@@ -60,18 +50,28 @@ const float UHealthComponent::GetPercentageHealth() const
 	return Health / MaxHealth;
 }
 
-const float UHealthComponent::TakeDamage(float damage)
+const float UHealthComponent::TakeDamage(float amount)
 {
-	if (Godmode) {
+	// If the amount is too small, assume it's 0 and skip out.
+	if (FMath::Abs(amount) < KINDA_SMALL_NUMBER) {
 		return Health;
 	}
 
-	Health -= damage;
+	if (CHEAT_Godmode) {
+		return Health;
+	}
+
+	Health -= amount;
 	if (Health <= 0) {
 		Health = 0;
 		Die();
 	}
 	return Health;
+}
+
+const float UHealthComponent::AddHealth(float amount)
+{
+	return TakeDamage(-amount);
 }
 
 const float UHealthComponent::GetBlood() const
@@ -99,12 +99,16 @@ const float UHealthComponent::AddBlood(float amount)
 		return Blood;
 	}
 
+	if (CHEAT_InfiniteBlood) {
+		return Blood;
+	}
+
 	Blood += amount;
 	if (Blood <= 0.f) {
 		Blood = 0.f;
 		OutOfBlood = true;
 
-		if (DieWhenOutOfBlood && !Godmode) {
+		if (DieWhenOutOfBlood && !CHEAT_Godmode) {
 			Die();
 		}
 	} else {
