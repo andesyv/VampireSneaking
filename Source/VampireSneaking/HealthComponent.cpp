@@ -35,6 +35,24 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 }
 */
 
+void UHealthComponent::Die() {
+	ded = true;
+
+	if (GetOwner()) {	
+	
+		// Call death event (if player).
+		if (GetOwner()->IsA(APlayableCharacterBase::StaticClass()) && Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())) {
+			Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())->PlayerDies();
+		}
+		
+		// Destroy actor.
+		GetOwner()->Destroy();
+	}
+
+	// Call death event.
+	OnDeath.Broadcast();
+}
+
 const float UHealthComponent::GetHealth() const
 {
 	return Health;
@@ -55,21 +73,14 @@ const float UHealthComponent::GetPercentageHealth() const
 
 const float UHealthComponent::TakeDamage(float damage)
 {
+	if (Godmode) {
+		return Health;
+	}
+
 	Health -= damage;
 	if (Health <= 0) {
 		Health = 0;
-		ded = true;
-
-		if (GetOwner()) {	
-		
-			// Call death event (if player).
-			if (GetOwner()->IsA(APlayableCharacterBase::StaticClass()) && Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())) {
-				Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode())->PlayerDies();
-			}
-			
-			// Destroy actor.
-			GetOwner()->Destroy();
-		}
+		Die();
 	}
 	return Health;
 }
@@ -94,12 +105,20 @@ const float UHealthComponent::GetPercentageBlood() const
 
 const float UHealthComponent::AddBlood(float amount)
 {
+	// If the amount is too small, assume it's 0 and skip out.
+	if (FMath::Abs(amount) < KINDA_SMALL_NUMBER) {
+		return Blood;
+	}
+
 	Blood += amount;
-	if (Blood < 0.f) {
+	if (Blood <= 0.f) {
 		Blood = 0.f;
 		OutOfBlood = true;
-	}
-	else if (Blood > 0.f) {
+
+		if (DieWhenOutOfBlood && !Godmode) {
+			Die();
+		}
+	} else {
 		OutOfBlood = false;
 	}
 

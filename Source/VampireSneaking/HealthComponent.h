@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDeathEvent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class VAMPIRESNEAKING_API UHealthComponent : public UActorComponent
@@ -34,12 +35,20 @@ public:
 protected:
 
 	// Health
-	UPROPERTY(BlueprintGetter = GetHealth, Category="Health")
+	UPROPERTY(BlueprintGetter = GetHealth, Category ="Health")
 		float Health = 100.f;
 
 	// Max health, and starting health.
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxHealth, Category = "Health")
 		float MaxHealth = 100.f;
+
+	// Should the player/enemy take no damage? (Cheat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+		bool Godmode = false;
+
+	// Function called when the player/enemy dies
+	UFUNCTION()
+		void Die();
 
 	bool ded{ false };
 
@@ -60,6 +69,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 		const float TakeDamage(float damage);
 
+	// Delegate called on death.
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+		FDeathEvent OnDeath;
+
 
 
 
@@ -67,17 +80,21 @@ public:
 	// Blood
 protected:
 
-	// Blood
-	UPROPERTY(BlueprintGetter = GetBlood, Category = "Blood")
+	// Current and starting blood.
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetBlood, Category = "Blood")
 		float Blood = 50.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
 		float MaxBlood = 100.f;
 
-	// If the player is out of blood.
+	// If the player/enemy is out of blood.
 	UPROPERTY(BlueprintGetter = IsOutOfBlood, Category = "Blood")
 		bool OutOfBlood = false;
+
+	// Should the player/enemy die when they run out of blood?
+	UPROPERTY(EditDefaultsOnly, Category = "Blood")
+		bool DieWhenOutOfBlood = false;
 
 public:
 	// Getter for Blood
@@ -96,7 +113,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Blood")
 		const float AddBlood(float amount);
 
-	// Returns true if the player is out of blood.
+	// Returns true if the player/enemy is out of blood.
 	UFUNCTION(BlueprintGetter, Category = "Blood")
 		const bool IsOutOfBlood() const;
 };
