@@ -21,40 +21,36 @@ EBTNodeResult::Type UBTSwitchPatrolPoint::ExecuteTask(UBehaviorTreeComponent & O
 			int ArraySize{ enemy->PatrolPoints.Num() };
 			int emptySpots{ 0 };
 			for (auto item : enemy->PatrolPoints) {
-				if (!item) {
+				if (item == nullptr) {
 					emptySpots++;
 				}
 			}
-			if (ArraySize > emptySpots) {
 
-				do {
-					// Increment. Will loop around to the first index again, even if you remove an index.
-					currentPointIndexInstance = (ArraySize < currentPointIndexInstance) ? 0 : (currentPointIndexInstance + 1) % ArraySize;
-
-					// Check if current index is empty
-				} while (!enemy->PatrolPoints[currentPointIndexInstance]);
-
-				return SetBlackboard(OwnerComp, enemy->PatrolPoints[currentPointIndexInstance], currentPointIndexInstance);
-			}
-			else {
-				TArray<ATargetPoint*> PatrolPoints{};
+			if (ArraySize == emptySpots)  {
+				enemy->PatrolPoints.Empty();
 
 				// Add all ATargetPoint's to the Patrol Points array.
 				for (TActorIterator<ATargetPoint> Itr(GetWorld()); Itr; ++Itr) {
 					if (*Itr) {
-						PatrolPoints.Add(*Itr);
+						enemy->PatrolPoints.Add(*Itr);
 					}
 				}
 
-				if (PatrolPoints.Num() > 0) {
-					PatrolPoints.Sort();
+				ArraySize = enemy->PatrolPoints.Num();
 
-					// Increment. Will loop around to the first index again, even if you remove an index.
-					currentPointIndexInstance = (PatrolPoints.Num() < currentPointIndexInstance) ? 0 : (currentPointIndexInstance + 1) % PatrolPoints.Num();
-
-					return SetBlackboard(OwnerComp, PatrolPoints[currentPointIndexInstance], currentPointIndexInstance);
+				if (ArraySize > 1) {
+					enemy->PatrolPoints.Sort();
 				}
 			}
+
+			do {
+				// Increment. Will loop around to the first index again, even if you remove an index.
+				currentPointIndexInstance = (ArraySize < currentPointIndexInstance) ? 0 : (currentPointIndexInstance + 1) % ArraySize;
+
+				// Check if current index is empty
+			} while (!enemy->PatrolPoints[currentPointIndexInstance]);
+
+			return SetBlackboard(OwnerComp, enemy->PatrolPoints[currentPointIndexInstance], currentPointIndexInstance);
 		}
 	}
 	return EBTNodeResult::Failed;
