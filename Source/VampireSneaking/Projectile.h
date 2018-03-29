@@ -27,7 +27,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, float amount, float DeltaTime);
+	UFUNCTION()
+	void BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	AEnemy *suckedEnemy{ nullptr };
 

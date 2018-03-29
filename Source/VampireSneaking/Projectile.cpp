@@ -2,6 +2,7 @@
 
 #include "Projectile.h"
 #include "Components/PrimitiveComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "Math/UnrealMathUtility.h"
 #include "Enemy.h"
@@ -23,9 +24,10 @@ void AProjectile::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("There's another list, but no one really want to think about this"))
 		UPrimitiveComponent *component = FindComponentByClass<UStaticMeshComponent>();
 	if (component) {
+		component->AddImpulse(GetActorForwardVector() * 100000.f);
 		component->SetPhysicsAngularVelocity(FVector{ FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f) } *1000.f);
 		UE_LOG(LogTemp, Error, TEXT("Bullets either way, suicidal crazed lion."));
-		//component->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
+		component->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
 	}
 	
 }
@@ -37,18 +39,19 @@ void AProjectile::Tick(float DeltaTime)
 
 }
 
-void AProjectile::BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit, float amount, float DeltaTime) {
-	/* if (OtherActor != this && OtherActor->IsA(AEnemy::StaticClass())) {
+void AProjectile::BloodHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit) {
+	if (OtherActor != this && OtherActor->IsA(AEnemy::StaticClass())) {
 		AEnemy *enemy{ Cast<AEnemy>(OtherActor) };
 		//Same as when player sucks blood
 
 		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy);
 		if (enemyAI && enemyAI->HealthComponent) {
-			enemyAI->HealthComponent->AddBlood(-amount * DeltaTime);
+			// steal health here
 		}
 		else {
-			UE_LOG(LogTemp, Warning, TEXT("Can't fetch healthcomponent on enemyAI."));
+			UE_LOG(LogTemp, Warning, TEXT("Everyone gather around for a show, watch as this man dissepear as we know"));
 		}
 		
-	} */
+	}
+	UE_LOG(LogTemp, Warning, TEXT("He used to see dreams but now he's just watching the back of his mind"));
 }
