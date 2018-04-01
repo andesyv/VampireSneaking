@@ -81,7 +81,7 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 	}
 }
 
-void APlayerVamp::Attack()
+void APlayerVamp::Attack_Implementation()
 {
 	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
 	
