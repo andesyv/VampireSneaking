@@ -46,7 +46,7 @@ void AProjectile::BloodHit( UPrimitiveComponent* HitComponent, AActor* OtherActo
 
 		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy);
 		if (enemyAI && enemyAI->HealthComponent) {
-			// lose enemy health here
+			// enemyAI->HealthComponent->AddBlood(-amount * DeltaTime);
 		}
 		else {
 			UE_LOG(LogTemp, Warning, TEXT("The enemy did not lose health"));
