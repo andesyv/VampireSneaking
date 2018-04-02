@@ -21,12 +21,12 @@ AProjectile::AProjectile()
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("There's another list, but no one really want to think about this"))
+	UE_LOG(LogTemp, Warning, TEXT("Starting beginplay"))
 		UPrimitiveComponent *component = FindComponentByClass<UStaticMeshComponent>();
 	if (component) {
 		component->AddImpulse(GetActorForwardVector() * 100000.f);
 		component->SetPhysicsAngularVelocity(FVector{ FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f) } *1000.f);
-		UE_LOG(LogTemp, Error, TEXT("Bullets either way, suicidal crazed lion."));
+		UE_LOG(LogTemp, Error, TEXT("Doest it bother anyone else that someone else has your name?"));
 		component->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
 	}
 	
@@ -46,12 +46,12 @@ void AProjectile::BloodHit( UPrimitiveComponent* HitComponent, AActor* OtherActo
 
 		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy);
 		if (enemyAI && enemyAI->HealthComponent) {
-			// steal health here
+			// lose enemy health here
 		}
 		else {
-			UE_LOG(LogTemp, Warning, TEXT("Everyone gather around for a show, watch as this man dissepear as we know"));
+			UE_LOG(LogTemp, Warning, TEXT("The enemy did not lose health"));
 		}
 		
 	}
-	UE_LOG(LogTemp, Warning, TEXT("He used to see dreams but now he's just watching the back of his mind"));
+	UE_LOG(LogTemp, Warning, TEXT("Function successfully running through"));
 }
