@@ -5,6 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "Math/UnrealMathUtility.h"
+#include "HealthComponent.h"
 #include "Enemy.h"
 #include "AI/EnemyAI.h"
 
@@ -25,7 +26,7 @@ void AProjectile::BeginPlay()
 		UPrimitiveComponent *component = FindComponentByClass<UStaticMeshComponent>();
 	if (component) {
 		component->AddImpulse(GetActorForwardVector() * 100000.f);
-		component->SetPhysicsAngularVelocity(FVector{ FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f) } *1000.f);
+		component->SetPhysicsAngularVelocityInDegrees(FVector{ FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f) } *1000.f);
 		UE_LOG(LogTemp, Error, TEXT("Doest it bother anyone else that someone else has your name?"));
 		component->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
 	}
@@ -46,7 +47,7 @@ void AProjectile::BloodHit( UPrimitiveComponent* HitComponent, AActor* OtherActo
 
 		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy);
 		if (enemyAI && enemyAI->HealthComponent) {
-			// enemyAI->HealthComponent->AddBlood(-amount * DeltaTime);
+			enemyAI->HealthComponent->AddBlood(-50.f);
 		}
 		else {
 			UE_LOG(LogTemp, Warning, TEXT("The enemy did not lose health"));
