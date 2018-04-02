@@ -145,7 +145,7 @@ void APlayerVamp::BloodAttack() {
 		if(world){
 			//Spawning the bullet
 		world->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorForwardVector().Rotation());
-		UE_LOG(LogTemp, Warning, TEXT("If I didn't know better, I guess you're all already dead"));
+		UE_LOG(LogTemp, Warning, TEXT("finished"));
 
 	}
 }
