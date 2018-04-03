@@ -89,6 +89,10 @@ protected:
 	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
 		float MaxBlood = 100.f;
 
+	// Make the maximum amount of blood be the starting blood?
+	UPROPERTY(EditDefaultsOnly, Category = "Blood")
+		bool MaxBloodIsStartingBlood = false;
+
 	// Should the player/enemy use no blood on abilities? (Cheat)
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
 		bool CHEAT_InfiniteBlood = false;
