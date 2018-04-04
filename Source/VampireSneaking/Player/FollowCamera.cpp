@@ -26,19 +26,11 @@ void AFollowCamera::Tick(float DeltaTime)
 
 	if (Target)
 	{
-		SetActorLocation(Target->GetActorLocation());
-	} else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Nothing to follow!"));
+		FVector newPosition{ Target->GetActorLocation() };
+		if (LockZ)
+		{
+			newPosition.Z = GetActorLocation().Z;
+		}
+		SetActorLocation(newPosition);
 	}
 }
-
-void AFollowCamera::SetTranslationAndRotation(const FVector & pos, const FRotator & rot)
-{
-	if (Camera)
-	{
-		Camera->RelativeLocation = pos;
-		Camera->RelativeRotation = rot;
-	}
-}
-

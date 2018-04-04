@@ -27,12 +27,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		UCameraComponent* Camera = nullptr;
 
-	// Update cameras position to the players position?
-	UPROPERTY(EditDefaultsOnly)
-		bool UpdatePosition = true;
+	//// Update cameras position to the players position?
+	//UPROPERTY(EditDefaultsOnly)
+	//	bool UpdatePosition = true;
 
 	// Lock z-coordinate?
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool LockZ = true;
 
 protected:
@@ -42,8 +42,5 @@ protected:
 
 public:	
 	// Called every frame
-	void Tick(float DeltaTime) override;
-
-	void SetTranslationAndRotation(const FVector &pos, const FRotator &rot);
-	
+	void Tick(float DeltaTime) override;	
 };

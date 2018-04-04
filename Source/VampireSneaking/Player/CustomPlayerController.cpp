@@ -6,7 +6,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
-#include "Camera/CameraComponent.h"
 #include "Player/FollowCamera.h"
 
 ACustomPlayerController::ACustomPlayerController() {
@@ -17,35 +16,15 @@ ACustomPlayerController::ACustomPlayerController() {
 	if (HealthComponent) {
 		HealthComponent->OnDeath.AddDynamic(this, &ACustomPlayerController::Death);
 	}
-
-	// Make a dummy root-component.
-	Root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	RootComponent = Root;
-
-	// Make camera
-	MainViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainView"));
-	if (MainViewCamera)
-	{
-		MainViewCamera->SetupAttachment(RootComponent);
-		MainViewCamera->SetRelativeLocation(FVector{ 0.f, 100.f, -100.f });
-		MainViewCamera->SetRelativeRotation(FRotator{70.f, 0.f, 0.f});
-	} else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Camera failed to create itself!"));
-	}
 }
 
 void ACustomPlayerController::Possess(APawn * aPawn)
 {
 	Super::Possess(aPawn);
 
-	if (followCamera)
+	if (followCamera != nullptr)
 	{
 		followCamera->Target = aPawn;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("There's no follow camera?!"));
 	}
 }
 
@@ -54,9 +33,10 @@ void ACustomPlayerController::BeginPlay()
 	if (GetWorld())
 	{
 		followCamera = GetWorld()->SpawnActor<AFollowCamera>(followCameraClass, (GetPawn() != nullptr) ? GetPawn()->GetActorLocation() : FVector{ 0.f, 0.f, 0.f }, FRotator::ZeroRotator);
-		if (GetPawn())
+		if (followCamera != nullptr && GetPawn())
 		{
 			followCamera->Target = GetPawn();
+			SetViewTarget(followCamera);
 		}
 	}
 }
@@ -135,9 +115,6 @@ void ACustomPlayerController::SwapActorLocation(AActor * first, AActor * second)
 		first->SetActorLocation(second->GetActorLocation());
 		second->SetActorLocation(tempLocation);
 	}
-	else {
-		return;
-	}
 }
 
 void ACustomPlayerController::ToggleSuckBlood()
@@ -145,12 +122,12 @@ void ACustomPlayerController::ToggleSuckBlood()
 	PressingBloodSuckButton = !PressingBloodSuckButton;
 }
 
-const bool ACustomPlayerController::GetBloodSuckButton()
+bool ACustomPlayerController::GetBloodSuckButton() const
 {
 	return PressingBloodSuckButton;
 }
 
-const bool ACustomPlayerController::ChangeValid() const
+bool ACustomPlayerController::ChangeValid() const
 {
 	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
 }
@@ -169,13 +146,4 @@ void ACustomPlayerController::Death_Implementation() {
 
 	// Destroy yoself!
 	Destroy();
-}
-
-const UCameraComponent* ACustomPlayerController::GetViewCamera() const {
-	// return (MainViewCamera != nullptr) ? MainViewCamera : nullptr;
-	if (followCamera)
-	{
-		return followCamera->Camera;
-	}
-	return MainViewCamera;
 }

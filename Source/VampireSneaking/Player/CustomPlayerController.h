@@ -9,7 +9,6 @@
 // Forward declarations
 class UHealthComponent;
 class UCameraComponent;
-class USceneComponent;
 class AFollowCamera;
 
 /**
@@ -19,7 +18,7 @@ UCLASS()
 
 class VAMPIRESNEAKING_API ACustomPlayerController : public APlayerController
 {
-	GENERATED_BODY()
+GENERATED_BODY()
 
 	friend class AVampireSneakingGameModeBase;
 	friend class ABatMode;
@@ -41,14 +40,6 @@ protected:
 
 	TArray<APawn*> ControllablePawns{};
 
-	// Main view camera
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* MainViewCamera = nullptr;
-
-	// Root component
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	USceneComponent* Root = nullptr;
-
 	// The camera that follows the player
 	AFollowCamera* followCamera = nullptr;
 
@@ -64,7 +55,7 @@ protected:
 	bool PressingBloodSuckButton{false};
 
 	// Check if the player can change
-	const bool ChangeValid() const;
+	bool ChangeValid() const;
 
 	// Function called when dying.
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
@@ -76,12 +67,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHealthComponent* HealthComponent = nullptr;
 
-	// Follow camera class
+	// FollowCamera class
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AFollowCamera> followCameraClass;
-
-	// Getter for camera.
-	const UCameraComponent* GetViewCamera() const;
 
 	void SwapActorLocation(AActor* first, AActor* second);
 
@@ -89,5 +77,5 @@ public:
 	void ToggleSuckBlood();
 
 	// Getter for blood-sucking button.
-	const bool GetBloodSuckButton();
+	bool GetBloodSuckButton() const;
 };
