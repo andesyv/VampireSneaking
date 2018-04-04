@@ -23,6 +23,10 @@ void UHealthComponent::BeginPlay()
 
 	// Set health.
 	Health = GetMaxHealth();
+
+	if (MaxBloodIsStartingBlood) {
+		MaxBlood = Blood;
+	}
 }
 
 void UHealthComponent::Die() {
