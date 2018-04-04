@@ -41,8 +41,9 @@ void ACustomPlayerController::Possess(APawn * aPawn)
 
 	if (followCamera)
 	{
-		// followCamera->Target = aPawn;
-	} else
+		followCamera->Target = aPawn;
+	}
+	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("There's no follow camera?!"));
 	}
@@ -53,13 +54,10 @@ void ACustomPlayerController::BeginPlay()
 	if (GetWorld())
 	{
 		followCamera = GetWorld()->SpawnActor<AFollowCamera>(followCameraClass, (GetPawn() != nullptr) ? GetPawn()->GetActorLocation() : FVector{ 0.f, 0.f, 0.f }, FRotator::ZeroRotator);
-		// Why do this when you can just edit it in the follow camera blueprint?
-		/*
-		if (followCamera)
+		if (GetPawn())
 		{
-			followCamera->SetTranslationAndRotation(MainViewCamera->RelativeLocation, MainViewCamera->RelativeRotation);
+			followCamera->Target = GetPawn();
 		}
-		*/
 	}
 }
 
