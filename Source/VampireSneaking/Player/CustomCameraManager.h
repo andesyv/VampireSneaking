@@ -20,7 +20,7 @@ protected:
 	* @param	OutVT		ViewTarget to update.
 	* @param	DeltaTime	Delta Time since last camera update (in seconds).
 	*/
-	// virtual void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
+	void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime) override;
 	
 	
 	

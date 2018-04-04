@@ -51,7 +51,7 @@
 //	}
 //}
 
-/*
+
 void ACustomCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
 {
 	if ((PendingViewTarget.Target != NULL) && BlendParams.bLockOutgoing && OutVT.Equal(ViewTarget))
@@ -71,34 +71,39 @@ void ACustomCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime
 	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(GetOwningPlayerController());
 	if (playerController)
 	{
-		UCameraComponent* ViewCam = playerController->GetViewCamera();
-		OutVT.POV.Location = ViewCam->GetComponentLocation();
-		OutVT.POV.Rotation = ViewCam->GetComponentRotation();
-		OutVT.POV.FOV = ViewCam->FieldOfView;
-		OutVT.POV.AspectRatio = ViewCam->AspectRatio;
-		OutVT.POV.bConstrainAspectRatio = ViewCam->bConstrainAspectRatio;
-		OutVT.POV.ProjectionMode = ViewCam->ProjectionMode;
-		OutVT.POV.OrthoWidth = ViewCam->OrthoWidth;
-		OutVT.POV.PostProcessBlendWeight = ViewCam->PostProcessBlendWeight;
-		
-		if (playerController->GetViewCamera()->PostProcessBlendWeight > 0.0f)
+		const UCameraComponent* ViewCam = playerController->GetViewCamera();
+		if (ViewCam)
 		{
-			OutVT.POV.PostProcessSettings = ViewCam->PostProcessSettings;
-		}
-		
-		if (!bDoNotApplyModifiers || this->bAlwaysApplyModifiers)
+			OutVT.POV.Location = ViewCam->GetComponentLocation();
+			OutVT.POV.Rotation = ViewCam->GetComponentRotation();
+			OutVT.POV.FOV = ViewCam->FieldOfView;
+			OutVT.POV.AspectRatio = ViewCam->AspectRatio;
+			OutVT.POV.bConstrainAspectRatio = ViewCam->bConstrainAspectRatio;
+			OutVT.POV.ProjectionMode = ViewCam->ProjectionMode;
+			OutVT.POV.OrthoWidth = ViewCam->OrthoWidth;
+			OutVT.POV.PostProcessBlendWeight = ViewCam->PostProcessBlendWeight;
+
+			if (playerController->GetViewCamera()->PostProcessBlendWeight > 0.0f)
+			{
+				OutVT.POV.PostProcessSettings = ViewCam->PostProcessSettings;
+			}
+
+			if (!bDoNotApplyModifiers || this->bAlwaysApplyModifiers)
+			{
+				ApplyCameraModifiers(DeltaTime, OutVT.POV);
+			}
+
+			SetActorLocationAndRotation(OutVT.POV.Location, OutVT.POV.Rotation, false);
+			UpdateCameraLensEffects(OutVT);
+		} else
 		{
-			ApplyCameraModifiers(DeltaTime, OutVT.POV);
+			Super::UpdateViewTarget(OutVT, DeltaTime);
 		}
-		
-		SetActorLocationAndRotation(OutVT.POV.Location, OutVT.POV.Rotation, false);
-		UpdateCameraLensEffects(OutVT);
 	}
 	else
 	{
 		Super::UpdateViewTarget(OutVT, DeltaTime);
 	}
 }
-*/
 
 
