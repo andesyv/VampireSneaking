@@ -8,25 +8,29 @@
 #include "HealthComponent.h"
 #include "Camera/CameraComponent.h"
 
-ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
-
-	//// Make camera
-	//MainViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Main view"));
-	//if (MainViewCamera)
-	//{
-	//	MainViewCamera->RegisterComponent();
-	//	MainViewCamera->SetRelativeLocation(FVector{ 0.f, 100.f, -100.f });
-	//	MainViewCamera->SetRelativeRotation(FRotator{70.f, 0.f, 0.f});
-	//} else
-	//{
-	//	UE_LOG(LogTemp, Error, TEXT("Camera failed to create itself!"));
-	//}
 
 	// Add death event.
 	if (HealthComponent) {
 		HealthComponent->OnDeath.AddDynamic(this, &ACustomPlayerController::Death);
+	}
+
+	// Make a dummy root-component.
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
+	RootComponent = Root;
+
+	// Make camera
+	MainViewCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("MainView"));
+	if (MainViewCamera)
+	{
+		MainViewCamera->SetupAttachment(RootComponent);
+		MainViewCamera->SetRelativeLocation(FVector{ 0.f, 100.f, -100.f });
+		MainViewCamera->SetRelativeRotation(FRotator{70.f, 0.f, 0.f});
+	} else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Camera failed to create itself!"));
 	}
 }
 
@@ -140,7 +144,7 @@ void ACustomPlayerController::Death_Implementation() {
 	Destroy();
 }
 
-//UCameraComponent* const ACustomPlayerController::GetViewCamera()
-//{
-//	return MainViewCamera;
-//}
+UCameraComponent* ACustomPlayerController::GetViewCamera()
+{
+	return (MainViewCamera != nullptr) ? MainViewCamera : nullptr;
+}

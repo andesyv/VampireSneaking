@@ -9,6 +9,7 @@
 // Forward declarations
 class UHealthComponent;
 class UCameraComponent;
+class USceneComponent;
 
 /**
  * A custom playercontroller.
@@ -25,7 +26,7 @@ public:
 	/**
 	 * Default constructor for ACustomPlayerController
 	 */
-	ACustomPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	ACustomPlayerController();
 
 protected:
 	// Shall only be changed in the ChangePawn function.
@@ -33,9 +34,13 @@ protected:
 
 	TArray<APawn*> ControllablePawns{};
 
-	//// Main view camera
-	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, BlueprintGetter = GetViewCamera)
-	//UCameraComponent *MainViewCamera = nullptr;
+	// Main view camera
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UCameraComponent *MainViewCamera = nullptr;
+
+	// Root component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	USceneComponent *Root = nullptr;
 
 	void ChangePawn();
 	void ChangePawn(int index);
@@ -61,9 +66,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHealthComponent *HealthComponent = nullptr;
 
-	//// Getter for camera.
-	//UFUNCTION(BlueprintGetter)
-	//UCameraComponent* const GetViewCamera();
+	// Getter for camera.
+	UFUNCTION()
+	UCameraComponent* GetViewCamera();
 
 	void SwapActorLocation(AActor *first, AActor *second);
 
