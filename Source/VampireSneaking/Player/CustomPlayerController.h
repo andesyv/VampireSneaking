@@ -10,6 +10,7 @@
 class UHealthComponent;
 class UCameraComponent;
 class USceneComponent;
+class AFollowCamera;
 
 /**
  * A custom playercontroller.
@@ -29,7 +30,12 @@ public:
 	 */
 	ACustomPlayerController();
 
+	void Possess(APawn* aPawn) override;
+
 protected:
+	// Called when the game starts or when spawned
+	void BeginPlay() override;
+
 	// Shall only be changed in the ChangePawn function.
 	uint32 CurrentIndex{0};
 
@@ -42,6 +48,9 @@ protected:
 	// Root component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* Root = nullptr;
+
+	// The camera that follows the player
+	AFollowCamera* followCamera = nullptr;
 
 	void ChangePawn();
 	void ChangePawn(int index);
@@ -66,6 +75,10 @@ public:
 	// Health and blood component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHealthComponent* HealthComponent = nullptr;
+
+	// Follow camera class
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AFollowCamera> followCameraClass;
 
 	// Getter for camera.
 	const UCameraComponent* GetViewCamera() const;

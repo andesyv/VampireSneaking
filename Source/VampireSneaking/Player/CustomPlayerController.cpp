@@ -7,6 +7,7 @@
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Player/FollowCamera.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -31,6 +32,34 @@ ACustomPlayerController::ACustomPlayerController() {
 	} else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Camera failed to create itself!"));
+	}
+}
+
+void ACustomPlayerController::Possess(APawn * aPawn)
+{
+	Super::Possess(aPawn);
+
+	if (followCamera)
+	{
+		// followCamera->Target = aPawn;
+	} else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("There's no follow camera?!"));
+	}
+}
+
+void ACustomPlayerController::BeginPlay()
+{
+	if (GetWorld())
+	{
+		followCamera = GetWorld()->SpawnActor<AFollowCamera>(followCameraClass, (GetPawn() != nullptr) ? GetPawn()->GetActorLocation() : FVector{ 0.f, 0.f, 0.f }, FRotator::ZeroRotator);
+		// Why do this when you can just edit it in the follow camera blueprint?
+		/*
+		if (followCamera)
+		{
+			followCamera->SetTranslationAndRotation(MainViewCamera->RelativeLocation, MainViewCamera->RelativeRotation);
+		}
+		*/
 	}
 }
 
@@ -146,5 +175,9 @@ void ACustomPlayerController::Death_Implementation() {
 
 const UCameraComponent* ACustomPlayerController::GetViewCamera() const {
 	// return (MainViewCamera != nullptr) ? MainViewCamera : nullptr;
+	if (followCamera)
+	{
+		return followCamera->Camera;
+	}
 	return MainViewCamera;
 }
