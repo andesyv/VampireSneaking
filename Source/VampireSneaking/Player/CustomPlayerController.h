@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+	// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -8,6 +8,7 @@
 
 // Forward declarations
 class UHealthComponent;
+class UCameraComponent;
 
 /**
  * A custom playercontroller.
@@ -32,13 +33,17 @@ protected:
 
 	TArray<APawn*> ControllablePawns{};
 
+	//// Main view camera
+	//UPROPERTY(VisibleAnywhere, BlueprintReadWrite, BlueprintGetter = GetViewCamera)
+	//UCameraComponent *MainViewCamera = nullptr;
+
 	void ChangePawn();
 	void ChangePawn(int index);
 
 	void MoveController(int index);
 
 	/** Allows the PlayerController to set up custom input bindings. */
-	virtual void SetupInputComponent() override;
+	void SetupInputComponent() override;
 
 	// Is the player sucking blood?
 	bool PressingBloodSuckButton{ false };	
@@ -55,6 +60,10 @@ public:
 	// Health and blood component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHealthComponent *HealthComponent = nullptr;
+
+	//// Getter for camera.
+	//UFUNCTION(BlueprintGetter)
+	//UCameraComponent* const GetViewCamera();
 
 	void SwapActorLocation(AActor *first, AActor *second);
 
