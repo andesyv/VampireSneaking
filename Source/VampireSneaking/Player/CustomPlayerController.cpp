@@ -144,7 +144,7 @@ void ACustomPlayerController::Death_Implementation() {
 	Destroy();
 }
 
-UCameraComponent* ACustomPlayerController::GetViewCamera()
-{
-	return (MainViewCamera != nullptr) ? MainViewCamera : nullptr;
+const UCameraComponent* ACustomPlayerController::GetViewCamera() const {
+	// return (MainViewCamera != nullptr) ? MainViewCamera : nullptr;
+	return MainViewCamera;
 }
