@@ -8,14 +8,17 @@
 
 // Forward declarations
 class UHealthComponent;
+class UCameraComponent;
+class AFollowCamera;
 
 /**
  * A custom playercontroller.
  */
 UCLASS()
+
 class VAMPIRESNEAKING_API ACustomPlayerController : public APlayerController
 {
-	GENERATED_BODY()
+GENERATED_BODY()
 
 	friend class AVampireSneakingGameModeBase;
 	friend class ABatMode;
@@ -24,13 +27,21 @@ public:
 	/**
 	 * Default constructor for ACustomPlayerController
 	 */
-	ACustomPlayerController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+	ACustomPlayerController();
+
+	void Possess(APawn* aPawn) override;
 
 protected:
+	// Called when the game starts or when spawned
+	void BeginPlay() override;
+
 	// Shall only be changed in the ChangePawn function.
-	uint32 CurrentIndex{ 0 };
+	uint32 CurrentIndex{0};
 
 	TArray<APawn*> ControllablePawns{};
+
+	// The camera that follows the player
+	AFollowCamera* followCamera = nullptr;
 
 	void ChangePawn();
 	void ChangePawn(int index);
@@ -38,29 +49,33 @@ protected:
 	void MoveController(int index);
 
 	/** Allows the PlayerController to set up custom input bindings. */
-	virtual void SetupInputComponent() override;
+	void SetupInputComponent() override;
 
 	// Is the player sucking blood?
-	bool PressingBloodSuckButton{ false };	
+	bool PressingBloodSuckButton{false};
 
 	// Check if the player can change
-	const bool ChangeValid() const;
+	bool ChangeValid() const;
 
 	// Function called when dying.
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Death();
-	
+
 public:
 
 	// Health and blood component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UHealthComponent *HealthComponent = nullptr;
+	UHealthComponent* HealthComponent = nullptr;
 
-	void SwapActorLocation(AActor *first, AActor *second);
+	// FollowCamera class
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AFollowCamera> followCameraClass;
+
+	void SwapActorLocation(AActor* first, AActor* second);
 
 	// Toggle blood sucking.
 	void ToggleSuckBlood();
 
 	// Getter for blood-sucking button.
-	const bool GetBloodSuckButton();
+	bool GetBloodSuckButton() const;
 };
