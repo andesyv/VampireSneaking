@@ -36,6 +36,8 @@ protected:
 	// Internal toggle of bloodsucking.
 	bool ToggleBloodSucking();
 
+	// Player attack function.
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Attack();
 
 	FGenericTeamId TeamId;
