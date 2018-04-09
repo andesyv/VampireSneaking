@@ -81,7 +81,7 @@ protected:
 
 	// Called whenever AI Perception updates it's state.
 	UFUNCTION(BlueprintCallable)
-	void UpdateState(TArray<AActor*> UpdatedActors);
+	void UpdateState(const TArray<AActor*> &UpdatedActors);
 
 	/**
 	 * Toggles the blackboard state enum between Frozen and Idle.

@@ -118,7 +118,7 @@ void AEnemyAI::SetAIIdleState() {
 	}
 }
 
-void AEnemyAI::UpdateState(TArray<AActor*> UpdatedActors) {
+void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 	for (auto item : UpdatedActors) {
 		if (!item->IsA(APlayableCharacterBase::StaticClass())) {
 			continue;

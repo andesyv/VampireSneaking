@@ -6,14 +6,38 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
+#include "Player/FollowCamera.h"
 
-ACustomPlayerController::ACustomPlayerController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health component"));
 
 	// Add death event.
 	if (HealthComponent) {
 		HealthComponent->OnDeath.AddDynamic(this, &ACustomPlayerController::Death);
+	}
+}
+
+void ACustomPlayerController::Possess(APawn * aPawn)
+{
+	Super::Possess(aPawn);
+
+	if (followCamera != nullptr)
+	{
+		followCamera->Target = aPawn;
+	}
+}
+
+void ACustomPlayerController::BeginPlay()
+{
+	if (GetWorld())
+	{
+		followCamera = GetWorld()->SpawnActor<AFollowCamera>(followCameraClass, (GetPawn() != nullptr) ? GetPawn()->GetActorLocation() : FVector{ 0.f, 0.f, 0.f }, FRotator::ZeroRotator);
+		if (followCamera != nullptr && GetPawn())
+		{
+			followCamera->Target = GetPawn();
+			SetViewTarget(followCamera);
+		}
 	}
 }
 
@@ -91,9 +115,6 @@ void ACustomPlayerController::SwapActorLocation(AActor * first, AActor * second)
 		first->SetActorLocation(second->GetActorLocation());
 		second->SetActorLocation(tempLocation);
 	}
-	else {
-		return;
-	}
 }
 
 void ACustomPlayerController::ToggleSuckBlood()
@@ -101,12 +122,12 @@ void ACustomPlayerController::ToggleSuckBlood()
 	PressingBloodSuckButton = !PressingBloodSuckButton;
 }
 
-const bool ACustomPlayerController::GetBloodSuckButton()
+bool ACustomPlayerController::GetBloodSuckButton() const
 {
 	return PressingBloodSuckButton;
 }
 
-const bool ACustomPlayerController::ChangeValid() const
+bool ACustomPlayerController::ChangeValid() const
 {
 	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
 }
