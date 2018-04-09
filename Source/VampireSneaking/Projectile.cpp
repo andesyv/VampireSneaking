@@ -5,6 +5,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "Math/UnrealMathUtility.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/Pawn.h"
 #include "HealthComponent.h"
 #include "Enemy.h"
 #include "AI/EnemyAI.h"
@@ -22,14 +24,22 @@ AProjectile::AProjectile()
 void AProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	UE_LOG(LogTemp, Warning, TEXT("Starting beginplay"))
-		UPrimitiveComponent *component = FindComponentByClass<UStaticMeshComponent>();
-	if (component) {
-		component->AddImpulse(GetActorForwardVector() * 100000.f);
-		component->SetPhysicsAngularVelocityInDegrees(FVector{ FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f) } *1000.f);
-		UE_LOG(LogTemp, Error, TEXT("Doest it bother anyone else that someone else has your name?"));
-		component->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
+	UE_LOG(LogTemp, Warning, TEXT("Starting beginplay"));
+	TArray<UStaticMeshComponent*> meshArray;
+	// UPrimitiveComponent* component = FindComponentByClass<UStaticMeshComponent>();
+	GetComponents<UStaticMeshComponent>(meshArray);
+	for (auto item : meshArray) {
+		UE_LOG(LogTemp, Warning, TEXT("This is %s"), *item->GetFName().ToString());
+		if (item) {
+		
+			item->AddImpulse(GetActorForwardVector() * 100000.f);
+			item->SetPhysicsAngularVelocityInDegrees(FVector{ FMath::RandRange(0.1f, 1.f)  , FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f)*1000.f });
+			UE_LOG(LogTemp, Error, TEXT("You did it"));
+			item->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
 	}
+	}
+	
+		
 	
 }
 
@@ -45,14 +55,17 @@ void AProjectile::BloodHit( UPrimitiveComponent* HitComponent, AActor* OtherActo
 		AEnemy *enemy{ Cast<AEnemy>(OtherActor) };
 		//Same as when player sucks blood
 
-		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy);
-		if (enemyAI && enemyAI->HealthComponent) {
-			enemyAI->HealthComponent->AddBlood(-50.f);
-		}
-		else {
-			UE_LOG(LogTemp, Warning, TEXT("The enemy did not lose health"));
+		if (enemy->GetController()) {
+
+			AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy->GetController());
+			if (enemyAI && enemyAI->HealthComponent) {
+				enemyAI->HealthComponent->AddBlood(-50.f);
+				UE_LOG(LogTemp, Warning, TEXT("The enemy lost health"));
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("The enemy did not lose health"));
+			}
 		}
 		
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Function successfully running through"));
 }

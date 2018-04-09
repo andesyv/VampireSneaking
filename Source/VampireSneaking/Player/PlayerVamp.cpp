@@ -144,7 +144,7 @@ void APlayerVamp::BloodAttack() {
 		UWorld *world = GetWorld();
 		if(world){
 			//Spawning the bullet
-		world->SpawnActor<AProjectile>(AProjectile::StaticClass(), GetActorLocation(), GetActorForwardVector().Rotation());
+		world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation(), GetActorForwardVector().Rotation());
 		UE_LOG(LogTemp, Warning, TEXT("finished"));
 
 	}
