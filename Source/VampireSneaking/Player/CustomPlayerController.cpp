@@ -139,6 +139,7 @@ void ACustomPlayerController::SetInvisWalls()
 {
 	// Raycast from camera to player
 	TArray<FHitResult> Hits{};
+	TArray<AActor*> newWalls{};
 	if (followCamera && followCamera->ViewBlockingTrace(Hits))
 	{
 		for (auto item : Hits)
@@ -148,16 +149,32 @@ void ACustomPlayerController::SetInvisWalls()
 				auto *wall = Cast<AWall>(item.Actor);
 				if (wall)
 				{
-					wall->SetMaterialVisible(false);
-					UE_LOG(LogTemp, Warning, TEXT("Found %s"), *wall->GetFName().ToString())
+					// If wall is not in the invisible walls array, change it to not be visible.
+					newWalls.Add(wall);
+					if (!InvisibleWalls.Contains(wall))
+					{
+						wall->SetMaterialVisible(false);
+					}
 				}
 			}
 		}
 	}
 
-	// Get list of view-blocking objects
+	// If wall is not in tracehit array, make it visible again.
+	for (auto item : InvisibleWalls)
+	{
+		if (!newWalls.Contains(item))
+		{
+			auto *wall = Cast<AWall>(item);
+			if (wall)
+			{
+				wall->SetMaterialVisible(true);
+			}
+		}
+	}
 
-	// Set material property of view-blocking objects
+	// Set the invisible walls list to be the newly traced items:
+	InvisibleWalls = newWalls;
 }
 
 void ACustomPlayerController::Death_Implementation() {

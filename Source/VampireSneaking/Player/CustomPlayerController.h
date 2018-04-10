@@ -65,6 +65,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetInvisWalls();
 
+	// Array for storing all currently invisible walls.
+	TArray<AActor*> InvisibleWalls{};
+
 	// SetInvisWalls timer handle
 	FTimerHandle SetInvisWallsHandle;
 

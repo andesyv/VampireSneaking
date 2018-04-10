@@ -8,7 +8,6 @@
 
 // Forward declarations
 class UMaterialInstanceDynamic;
-class UMaterialInterface;
 class UStaticMeshComponent;
 
 // Fade state
@@ -45,19 +44,17 @@ protected:
 	// The current state. (Fading, showing or finished)
 	FadeState CurrentFadeStatus;
 
+	// Ticking function for material visibility.
+	void TickMaterial(float DeltaTime);
+
 public:	
 	// Called every frame
 	void Tick(float DeltaTime) override;
-
-	// Dynamic material reference
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UMaterialInterface* Material;
 
 	// Fade/show speed.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float FadeSpeed = 1.f;
 
+	// Sets the visibility for the material.
 	void SetMaterialVisible(bool Visibility);
-	
-	void TickMaterial(float DeltaTime);
 };

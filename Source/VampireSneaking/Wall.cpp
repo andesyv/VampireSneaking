@@ -41,7 +41,6 @@ void AWall::BeginPlay()
 	TArray<FMaterialParameterInfo> MaterialParameters;
 	TArray<FGuid> ParameterIds;
 	DynamicMaterial->GetAllScalarParameterInfo(MaterialParameters, ParameterIds);
-	UE_LOG(LogTemp, Warning, TEXT("This is %s"), *DynamicMaterial->GetFName().ToString());
 }
 
 // Called every frame
@@ -70,40 +69,12 @@ void AWall::TickMaterial(float DeltaTime)
 	// Add temporary amount of visibility.
 	float newValue{ fadeValue + ((CurrentFadeStatus == FadeState::Showing) ? -FadeSpeed * DeltaTime : FadeSpeed * DeltaTime)};
 
-	UE_LOG(LogTemp, Warning, TEXT("newValue is %f"), newValue);
-	switch (CurrentFadeStatus)
-	{
-	case FadeState::Finished:
-		UE_LOG(LogTemp, Warning, TEXT("Currently done!"));
-		break;
-	case FadeState::Fading:
-		UE_LOG(LogTemp, Warning, TEXT("Currently fading!"));
-		break;
-	case FadeState::Showing:
-		UE_LOG(LogTemp, Warning, TEXT("Currently showing!"));
-		break;
-	default:
-		UE_LOG(LogTemp, Warning, TEXT("What?!"));
-	}
-
 	// Clamp amount between 0 and 1.
 	if (newValue > 1.f || newValue < 0.f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Clamped!"));
 		newValue = (newValue > 1.f) ? 1.f : 0.f;
 		CurrentFadeStatus = FadeState::Finished;
 	}
-	/*
-	if (newValue > 1.f)
-	{
-		newValue = 1.f;
-		CurrentFadeStatus = FadeState::Finished;
-	}
-	else if (newValue < 0.f)
-	{
-		newValue = 0.f;
-		CurrentFadeStatus = FadeState::Finished;
-	}*/
 	
 	// Set fadeValue equal to the new temporary value
 	fadeValue = newValue;
