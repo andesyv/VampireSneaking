@@ -7,6 +7,8 @@
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
 #include "Player/FollowCamera.h"
+#include "Wall.h"
+#include "TimerManager.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -39,6 +41,7 @@ void ACustomPlayerController::BeginPlay()
 			SetViewTarget(followCamera);
 		}
 	}
+	GetWorldTimerManager().SetTimer(SetInvisWallsHandle, this, &ACustomPlayerController::SetInvisWalls, 0.1f, true);
 }
 
 void ACustomPlayerController::ChangePawn()
@@ -130,6 +133,31 @@ bool ACustomPlayerController::GetBloodSuckButton() const
 bool ACustomPlayerController::ChangeValid() const
 {
 	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
+}
+
+void ACustomPlayerController::SetInvisWalls()
+{
+	// Raycast from camera to player
+	TArray<FHitResult> Hits{};
+	if (followCamera && followCamera->ViewBlockingTrace(Hits))
+	{
+		for (auto item : Hits)
+		{
+			if (item.Actor.Get() != nullptr)
+			{
+				auto *wall = Cast<AWall>(item.Actor);
+				if (wall)
+				{
+					wall->SetMaterialVisible(false);
+					UE_LOG(LogTemp, Warning, TEXT("Found %s"), *wall->GetFName().ToString())
+				}
+			}
+		}
+	}
+
+	// Get list of view-blocking objects
+
+	// Set material property of view-blocking objects
 }
 
 void ACustomPlayerController::Death_Implementation() {

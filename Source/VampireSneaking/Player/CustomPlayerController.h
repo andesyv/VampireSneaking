@@ -61,6 +61,13 @@ protected:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Death();
 
+	// Checks for walls to be turned invisible
+	UFUNCTION(BlueprintCallable)
+	void SetInvisWalls();
+
+	// SetInvisWalls timer handle
+	FTimerHandle SetInvisWallsHandle;
+
 public:
 
 	// Health and blood component

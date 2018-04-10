@@ -2,7 +2,9 @@
 
 #include "FollowCamera.h"
 #include "Camera/CameraComponent.h"
-
+#include "Engine/World.h"
+#include "GameFramework/Character.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AFollowCamera::AFollowCamera()
@@ -33,4 +35,35 @@ void AFollowCamera::Tick(float DeltaTime)
 		}
 		SetActorLocation(newPosition);
 	}
+}
+
+bool AFollowCamera::ViewBlockingTrace(TArray<FHitResult>& OutHits)
+{
+	UWorld *world = GetWorld();
+	if (world && Target && Camera)
+	{
+		if (Target->IsA(ACharacter::StaticClass()))
+		{
+			FCollisionShape SphereShape{};
+			auto *Player = Cast<ACharacter>(Target);
+			
+			if (Player && Player->GetRootComponent())
+			{
+				auto *capsule = Cast<UCapsuleComponent>(Player->GetRootComponent());
+				if (capsule)
+				{
+					SphereShape.SetCapsule(capsule->GetScaledCapsuleRadius(), capsule->GetScaledCapsuleHalfHeight());
+				}
+			}
+
+			return world->SweepMultiByChannel(OutHits, FVector{ Camera->RelativeLocation + GetActorLocation() }, Target->GetActorLocation(), FQuat::Identity, ECC_Camera, SphereShape);
+		}
+		else
+		{
+			// If the target isn't the player, just normal trace
+			return world->LineTraceMultiByChannel(OutHits, FVector{ Camera->RelativeLocation + GetActorLocation() }, Target->GetActorLocation(), ECC_Camera);
+		}
+		
+	}
+	return false;
 }
