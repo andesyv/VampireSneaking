@@ -2,6 +2,8 @@
 
 #include "Wall.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Components/StaticMeshComponent.h"
+#include "ConstructorHelpers.h"
 
 
 // Sets default values
@@ -10,7 +12,22 @@ AWall::AWall()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	
+	// Make cube and make it root.
+	CubeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cube"));
+	RootComponent = CubeMesh;
+
+	// Add basic cube shape to the meshComponent
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
+	if (MeshAsset.Succeeded())
+	{
+		UStaticMesh* Asset = MeshAsset.Object;
+
+		CubeMesh->SetStaticMesh(Asset);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("ObjectFinder failed to find basic cube!"));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -18,7 +35,12 @@ void AWall::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
+	// DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
+	DynamicMaterial = CubeMesh->CreateDynamicMaterialInstance(0);
+
+	TArray<FMaterialParameterInfo> MaterialParameters;
+	TArray<FGuid> ParameterIds;
+	DynamicMaterial->GetAllScalarParameterInfo(MaterialParameters, ParameterIds);
 	UE_LOG(LogTemp, Warning, TEXT("This is %s"), *DynamicMaterial->GetFName().ToString());
 }
 
@@ -46,7 +68,7 @@ void AWall::TickMaterial(float DeltaTime)
 	}
 
 	// Add temporary amount of visibility.
-	float newValue{ fadeValue + (CurrentFadeStatus == FadeState::Showing) ? FadeSpeed * DeltaTime : -FadeSpeed * DeltaTime};
+	float newValue{ fadeValue + ((CurrentFadeStatus == FadeState::Showing) ? -FadeSpeed * DeltaTime : FadeSpeed * DeltaTime)};
 
 	UE_LOG(LogTemp, Warning, TEXT("newValue is %f"), newValue);
 	switch (CurrentFadeStatus)

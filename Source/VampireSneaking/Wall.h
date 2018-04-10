@@ -9,6 +9,7 @@
 // Forward declarations
 class UMaterialInstanceDynamic;
 class UMaterialInterface;
+class UStaticMeshComponent;
 
 // Fade state
 enum class FadeState
@@ -31,11 +32,15 @@ protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
 
+	// Mesh component to the wall.
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent *CubeMesh;
+
 	// Dynamic material reference
 	UMaterialInstanceDynamic *DynamicMaterial{nullptr};
 
 	// Current fade value
-	float fadeValue{1.f};
+	float fadeValue{0.f};
 
 	// The current state. (Fading, showing or finished)
 	FadeState CurrentFadeStatus;
