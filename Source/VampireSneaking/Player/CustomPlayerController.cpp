@@ -7,6 +7,8 @@
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
 #include "Player/FollowCamera.h"
+#include "Wall.h"
+#include "TimerManager.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -39,6 +41,7 @@ void ACustomPlayerController::BeginPlay()
 			SetViewTarget(followCamera);
 		}
 	}
+	GetWorldTimerManager().SetTimer(SetInvisWallsHandle, this, &ACustomPlayerController::SetInvisWalls, 0.1f, true);
 }
 
 void ACustomPlayerController::ChangePawn()
@@ -130,6 +133,48 @@ bool ACustomPlayerController::GetBloodSuckButton() const
 bool ACustomPlayerController::ChangeValid() const
 {
 	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
+}
+
+void ACustomPlayerController::SetInvisWalls()
+{
+	// Raycast from camera to player
+	TArray<FHitResult> Hits{};
+	TArray<AActor*> newWalls{};
+	if (followCamera && followCamera->ViewBlockingTrace(Hits))
+	{
+		for (auto item : Hits)
+		{
+			if (item.Actor.Get() != nullptr)
+			{
+				auto *wall = Cast<AWall>(item.Actor);
+				if (wall)
+				{
+					// If wall is not in the invisible walls array, change it to not be visible.
+					newWalls.Add(wall);
+					if (!InvisibleWalls.Contains(wall))
+					{
+						wall->SetMaterialVisible(false);
+					}
+				}
+			}
+		}
+	}
+
+	// If wall is not in tracehit array, make it visible again.
+	for (auto item : InvisibleWalls)
+	{
+		if (!newWalls.Contains(item))
+		{
+			auto *wall = Cast<AWall>(item);
+			if (wall)
+			{
+				wall->SetMaterialVisible(true);
+			}
+		}
+	}
+
+	// Set the invisible walls list to be the newly traced items:
+	InvisibleWalls = newWalls;
 }
 
 void ACustomPlayerController::Death_Implementation() {

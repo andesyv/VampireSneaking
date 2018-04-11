@@ -2,12 +2,14 @@
 
 #include "FollowCamera.h"
 #include "Camera/CameraComponent.h"
-
+#include "Engine/World.h"
+#include "GameFramework/Character.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AFollowCamera::AFollowCamera()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Make empty root component
@@ -26,11 +28,40 @@ void AFollowCamera::Tick(float DeltaTime)
 
 	if (Target)
 	{
-		FVector newPosition{ Target->GetActorLocation() };
+		FVector newPosition{Target->GetActorLocation()};
 		if (LockZ)
 		{
 			newPosition.Z = GetActorLocation().Z;
 		}
 		SetActorLocation(newPosition);
 	}
+}
+
+bool AFollowCamera::ViewBlockingTrace(TArray<FHitResult>& OutHits)
+{
+	UWorld* world = GetWorld();
+	if (world && Target && Camera)
+	{
+		if (Target->IsA(ACharacter::StaticClass()))
+		{
+			FCollisionShape SphereShape{};
+			auto* Player = Cast<ACharacter>(Target);
+
+			if (Player && Player->GetRootComponent())
+			{
+				auto* capsule = Cast<UCapsuleComponent>(Player->GetRootComponent());
+				if (capsule)
+				{
+					SphereShape.SetCapsule(capsule->GetScaledCapsuleRadius(), capsule->GetScaledCapsuleHalfHeight());
+				}
+			}
+
+			return world->SweepMultiByChannel(OutHits, FVector{Camera->RelativeLocation + GetActorLocation()},
+			                                  Target->GetActorLocation(), FQuat::Identity, ECC_Camera, SphereShape);
+		}
+		// If the target isn't the player, just normal trace
+		return world->LineTraceMultiByChannel(OutHits, FVector{Camera->RelativeLocation + GetActorLocation()},
+		                                      Target->GetActorLocation(), ECC_Camera);
+	}
+	return false;
 }
