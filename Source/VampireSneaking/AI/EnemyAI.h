@@ -61,20 +61,27 @@ class VAMPIRESNEAKING_API AEnemyAI : public AAIController
 
 protected:
 	// Start of the game.
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 	// Called on possession of controller.
-	virtual void Possess(APawn *Pawn) override;
+	void Possess(APawn *Pawn) override;
 
 	// Called on unpossession of controller.
-	virtual void UnPossess() override;
+	void UnPossess() override;
 
 	// Timerhandle for the searching.
 	FTimerHandle SearchingTimerHandle;
 
+	// Timerhandle for trueVision range.
+	FTimerHandle VisionRangeTimerHandle;
+
+	// Targeted actor
+	TArray<AActor*> TargetedActors{};
+
 	// For setting the AI to the Idle state
 	UFUNCTION()
 	void SetAIIdleState();
+	void ClearTimer(const FTimerHandle& timerHandle) const;
 
 	// Perception component.
 	UAIPerceptionComponent *AIPerceptionComp = nullptr;
@@ -82,6 +89,12 @@ protected:
 	// Called whenever AI Perception updates it's state.
 	UFUNCTION(BlueprintCallable)
 	void UpdateState(const TArray<AActor*> &UpdatedActors);
+
+	float TrueVisionRadius = 150.f;
+
+	// Check if player is outside trueVision range
+	UFUNCTION(BlueprintCallable)
+	void CheckIfOutsideVisionRange();
 
 	/**
 	 * Toggles the blackboard state enum between Frozen and Idle.
