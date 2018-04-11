@@ -21,23 +21,9 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:
-
-
-
-
-	
-
-
-
-
-
-
-protected:
-
 	// Current and starting blood.
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetBlood, Category = "Blood")
-		float Blood = 50.f;
+		float Blood = 100.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
@@ -59,9 +45,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
 		bool DieWhenOutOfBlood = false;
 
-
 	// Should the player/enemy take no damage? (Cheat)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blood")
 		bool CHEAT_Godmode = false;
 
 	// Function called when the player/enemy dies
@@ -90,13 +75,12 @@ public:
 	// Returns true if the player/enemy is out of blood.
 	UFUNCTION(BlueprintGetter, Category = "Blood")
 		const bool IsOutOfBlood() const;
-
 	
 	// Take damage.
-	UFUNCTION(BlueprintCallable, Category = "Health")
+	UFUNCTION(BlueprintCallable, Category = "Blood")
 		const float TakeDamage(float amount);
 
 	// Delegate called on death.
-	UPROPERTY(BlueprintAssignable, Category = "Health")
+	UPROPERTY(BlueprintAssignable, Category = "Blood")
 		FDeathEvent OnDeath;
 };
