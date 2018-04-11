@@ -35,7 +35,6 @@ void AWall::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	// DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
 	DynamicMaterial = CubeMesh->CreateDynamicMaterialInstance(0);
 }
 
