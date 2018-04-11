@@ -119,7 +119,7 @@ void AEnemyAI::SetAIIdleState() {
 	}
 }
 
-void AEnemyAI::ClearTimer(const FTimerHandle &timerHandle) const
+void AEnemyAI::ClearTimer(FTimerHandle &timerHandle) const
 {
 	if (GetWorld() && timerHandle.IsValid() && GetWorld()->GetTimerManager().IsTimerActive(timerHandle)) {
 		GetWorld()->GetTimerManager().ClearTimer(timerHandle);
@@ -139,33 +139,27 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 					ClearTimer(SearchingTimerHandle);
 					ClearTimer(VisionRangeTimerHandle);
 
-					AActor *CurrentTarget{ nullptr };
-
 					if (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Saw player!"));
 						if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat))) {
 							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 						}
 
-						CurrentTarget = item;
 						if (!TargetedActors.Contains(item))
 						{
 							TargetedActors.Add(item);
-						}
-
+						}	
+						
 						if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item)) {
 							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
 						}
 					}
-					else if (GetPawn() && FVector{ item->GetActorLocation() - GetPawn()->GetActorLocation() }.Size() > TrueVisionRadius)
+					else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Player is gone!"));
 						if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
 							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 						}
 						
-						CurrentTarget = nullptr;
 						if (TargetedActors.Contains(item))
 						{
 							TargetedActors.Remove(item);
@@ -185,7 +179,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 					}
 					else
 					{
-						UE_LOG(LogTemp, Warning, TEXT("Player is lost but inside True vision field!"));
+						// UE_LOG(LogTemp, Warning, TEXT("Player is lost but inside True vision field!"));
 						if (GetWorld()) {
 							GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange, 0.3f, true);
 						}
@@ -218,19 +212,25 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 	}
 }
 
+float AEnemyAI::GetLengthBetween(AActor * first, AActor * second)
+{
+	if (first != nullptr && second != nullptr)
+	{
+		FVector betweenVector{ first->GetActorLocation() - second->GetActorLocation() };
+		return betweenVector.Size();
+	}
+	return -1.f;
+}
+
 void AEnemyAI::CheckIfOutsideVisionRange()
 {
-	/*if (GetWorld() && SearchingTimerHandle.IsValid()) {
-		GetWorld()->GetTimerManager().ClearTimer(SearchingTimerHandle);
-	}*/
-	UE_LOG(LogTemp, Warning, TEXT("RunningCheckTest!"));
 	for (auto item : TargetedActors)
 	{
-		if (item && GetPawn() && FVector{ item->GetActorLocation() - GetPawn()->GetActorLocation() }.Size() > TrueVisionRadius)
+		if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Player is outside vision range and also lost!"));
-			TArray<AActor*> TargetedActorsTemp = TargetedActors;
-			UpdateState(TargetedActorsTemp);
+			// UE_LOG(LogTemp, Warning, TEXT("Player is outside vision range and also lost!"));
+			const TArray<AActor*> ArrayCopy{ TargetedActors };
+			UpdateState(ArrayCopy);
 			break;
 		}
 	}

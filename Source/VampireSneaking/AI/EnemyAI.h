@@ -81,7 +81,9 @@ protected:
 	// For setting the AI to the Idle state
 	UFUNCTION()
 	void SetAIIdleState();
-	void ClearTimer(const FTimerHandle& timerHandle) const;
+
+	// For clearing a timer.
+	void ClearTimer(FTimerHandle& timerHandle) const;
 
 	// Perception component.
 	UAIPerceptionComponent *AIPerceptionComp = nullptr;
@@ -91,6 +93,8 @@ protected:
 	void UpdateState(const TArray<AActor*> &UpdatedActors);
 
 	float TrueVisionRadius = 150.f;
+
+	static float GetLengthBetween(AActor *first, AActor *second);
 
 	// Check if player is outside trueVision range
 	UFUNCTION(BlueprintCallable)
