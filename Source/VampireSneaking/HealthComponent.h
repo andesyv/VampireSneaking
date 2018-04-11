@@ -29,7 +29,7 @@ public:
 	///////////////////////////////////////////////////////////////////////////////
 	// Health
 protected:
-
+/*
 	// Health
 	UPROPERTY(BlueprintGetter = GetHealth, Category ="Health")
 		float Health = 100.f;
@@ -37,6 +37,7 @@ protected:
 	// Max health, and starting health.
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxHealth, Category = "Health")
 		float MaxHealth = 100.f;
+		*/
 
 	// Should the player/enemy take no damage? (Cheat)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
@@ -51,7 +52,7 @@ protected:
 
 public:
 	// Getter for Health
-	UFUNCTION(BlueprintGetter, Category = "Health")
+	/*UFUNCTION(BlueprintGetter, Category = "Health")
 		const float GetHealth() const;
 
 	// Getter for MaxHealth
@@ -61,6 +62,7 @@ public:
 	// Get Health in percentage
 	UFUNCTION(BlueprintCallable, Category = "Health")
 		const float GetPercentageHealth() const;
+		*/
 
 	// Take damage.
 	UFUNCTION(BlueprintCallable, Category = "Health")

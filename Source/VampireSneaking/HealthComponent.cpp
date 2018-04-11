@@ -22,7 +22,7 @@ void UHealthComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// Set health.
-	Health = GetMaxHealth();
+	Blood = GetMaxBlood();
 
 	if (MaxBloodIsStartingBlood) {
 		MaxBlood = Blood;
@@ -36,7 +36,7 @@ void UHealthComponent::Die() {
 	OnDeath.Broadcast();
 }
 
-const float UHealthComponent::GetHealth() const
+/* const float UHealthComponent::GetHealth() const
 {
 	return Health;
 }
@@ -53,24 +53,25 @@ const float UHealthComponent::GetPercentageHealth() const
 	}
 	return Health / MaxHealth;
 }
+*/
 
 const float UHealthComponent::TakeDamage(float amount)
 {
 	// If the amount is too small, assume it's 0 and skip out.
 	if (FMath::Abs(amount) < KINDA_SMALL_NUMBER) {
-		return Health;
+		return Blood;
 	}
 
 	if (CHEAT_Godmode) {
-		return Health;
+		return Blood;
 	}
 
-	Health -= amount;
-	if (Health <= 0) {
-		Health = 0;
+	Blood -= amount;
+	if (Blood <= 0) {
+		Blood = 0;
 		Die();
 	}
-	return Health;
+	return Blood;
 }
 
 const float UHealthComponent::AddHealth(float amount)
