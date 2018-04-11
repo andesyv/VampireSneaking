@@ -18,6 +18,9 @@ class VAMPIRESNEAKING_API AFollowCamera : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AFollowCamera();
+	
+	// Called every frame
+	void Tick(float DeltaTime) override;
 
 	// Target to follow
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -35,12 +38,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool LockZ = true;
 
-protected:
-	// Root component
+	// Trace a capsule from the camera to the target and check if anything is blocking the view.
+	UFUNCTION(BlueprintCallable)
+	bool ViewBlockingTrace(TArray<FHitResult> &OutHits);
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		USceneComponent* Root = nullptr;
-
-public:	
-	// Called every frame
-	void Tick(float DeltaTime) override;	
 };
