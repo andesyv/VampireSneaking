@@ -26,59 +26,13 @@ public:
 
 
 
-	///////////////////////////////////////////////////////////////////////////////
-	// Health
-protected:
-
-	// Health
-	UPROPERTY(BlueprintGetter = GetHealth, Category ="Health")
-		float Health = 100.f;
-
-	// Max health, and starting health.
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxHealth, Category = "Health")
-		float MaxHealth = 100.f;
-
-	// Should the player/enemy take no damage? (Cheat)
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-		bool CHEAT_Godmode = false;
-
-	// Function called when the player/enemy dies
-	UFUNCTION()
-		void Die();
-
-	// Iz ded
-	bool ded{ false };
-
-public:
-	// Getter for Health
-	UFUNCTION(BlueprintGetter, Category = "Health")
-		const float GetHealth() const;
-
-	// Getter for MaxHealth
-	UFUNCTION(BlueprintGetter, Category = "Health")
-		const float GetMaxHealth() const;
-
-	// Get Health in percentage
-	UFUNCTION(BlueprintCallable, Category = "Health")
-		const float GetPercentageHealth() const;
-
-	// Take damage.
-	UFUNCTION(BlueprintCallable, Category = "Health")
-		const float TakeDamage(float amount);
-
-	// The exact opposite of TakeDamage. (For consistency)
-	UFUNCTION(BlueprintCallable, Category = "Health")
-		const float AddHealth(float amount);
-
-	// Delegate called on death.
-	UPROPERTY(BlueprintAssignable, Category = "Health")
-		FDeathEvent OnDeath;
+	
 
 
 
 
-	///////////////////////////////////////////////////////////////////////////
-	// Blood
+
+
 protected:
 
 	// Current and starting blood.
@@ -105,6 +59,17 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
 		bool DieWhenOutOfBlood = false;
 
+
+	// Should the player/enemy take no damage? (Cheat)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+		bool CHEAT_Godmode = false;
+
+	// Function called when the player/enemy dies
+	UFUNCTION()
+		void Die();
+
+	// Iz ded
+	bool ded{ false };
 public:
 	// Getter for Blood
 	UFUNCTION(BlueprintGetter, Category = "Blood")
@@ -125,4 +90,13 @@ public:
 	// Returns true if the player/enemy is out of blood.
 	UFUNCTION(BlueprintGetter, Category = "Blood")
 		const bool IsOutOfBlood() const;
+
+	
+	// Take damage.
+	UFUNCTION(BlueprintCallable, Category = "Health")
+		const float TakeDamage(float amount);
+
+	// Delegate called on death.
+	UPROPERTY(BlueprintAssignable, Category = "Health")
+		FDeathEvent OnDeath;
 };
