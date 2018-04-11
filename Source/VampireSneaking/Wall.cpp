@@ -37,10 +37,6 @@ void AWall::BeginPlay()
 	
 	// DynamicMaterial = UMaterialInstanceDynamic::Create(Material, this);
 	DynamicMaterial = CubeMesh->CreateDynamicMaterialInstance(0);
-
-	TArray<FMaterialParameterInfo> MaterialParameters;
-	TArray<FGuid> ParameterIds;
-	DynamicMaterial->GetAllScalarParameterInfo(MaterialParameters, ParameterIds);
 }
 
 // Called every frame
