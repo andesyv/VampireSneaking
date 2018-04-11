@@ -73,7 +73,7 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 
 			// Do the sucking.
 			if (SuckingBlood && suckedEnemy && playerCon->HealthComponent && suckedEnemy->GetController()) {
-				playerCon->HealthComponent->AddBlood(amount * DeltaTime);
+				playerCon->HealthComponent->AddBlood(amount/5 * DeltaTime);
 				AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
 				if (enemyAI && enemyAI->HealthComponent) {
 					enemyAI->HealthComponent->AddBlood(-amount * DeltaTime);

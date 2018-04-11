@@ -36,24 +36,7 @@ void UHealthComponent::Die() {
 	OnDeath.Broadcast();
 }
 
-/* const float UHealthComponent::GetHealth() const
-{
-	return Health;
-}
 
-const float UHealthComponent::GetMaxHealth() const
-{
-	return MaxHealth;
-}
-
-const float UHealthComponent::GetPercentageHealth() const
-{
-	if (Health < 0.f) {
-		return 0.f;
-	}
-	return Health / MaxHealth;
-}
-*/
 
 const float UHealthComponent::TakeDamage(float amount)
 {
@@ -74,10 +57,6 @@ const float UHealthComponent::TakeDamage(float amount)
 	return Blood;
 }
 
-const float UHealthComponent::AddHealth(float amount)
-{
-	return TakeDamage(-amount);
-}
 
 const float UHealthComponent::GetBlood() const
 {
