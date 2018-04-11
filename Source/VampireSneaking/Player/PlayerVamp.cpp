@@ -8,6 +8,11 @@
 #include "Enemy.h"
 #include "Player/CustomPlayerController.h"
 #include "HealthComponent.h"
+#include "Projectile.h"
+#include "Math/UnrealMathUtility.h"
+#include "Math/Vector.h"
+#include "Engine/World.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -38,6 +43,7 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
+	PlayerInputComponent->BindAction("BloodAttack", IE_Pressed, this, &APlayerVamp::BloodAttack);
 }
 
 bool APlayerVamp::ToggleBloodSucking() {
@@ -130,4 +136,16 @@ bool APlayerVamp::EnemyInFront()
 FGenericTeamId APlayerVamp::GetGenericTeamId() const
 {
     return TeamId;
+}
+
+void APlayerVamp::BloodAttack() {
+
+	
+		UWorld *world = GetWorld();
+		if(world){
+			//Spawning the bullet
+		world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation(), GetActorForwardVector().Rotation());
+		UE_LOG(LogTemp, Warning, TEXT("finished"));
+
+	}
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Player/PlayableCharacterBase.h"
 #include "GenericTeamAgentInterface.h"
+#include "Engine/World.h"
 #include "PlayerVamp.generated.h"
 
 // Forward declarations
@@ -43,6 +44,10 @@ protected:
  
     virtual FGenericTeamId GetGenericTeamId() const override;
 
+	void BloodAttack();
+
+
+
 public:	
 	// Sets default values for this pawn's properties
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -76,4 +81,7 @@ public:
 	// Hit force of normal attack.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	float HitForce = 10.f;
+
+	UPROPERTY(EditAnywhere, Category = "BloodAttack")
+		TSubclassOf<class AProjectile> ProjectileBlueprint ;
 };
