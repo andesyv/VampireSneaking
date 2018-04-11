@@ -104,12 +104,12 @@ public:
 	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	/** Called on completing current movement request */
-	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 	// Delegate for move completion.
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
-	UAIPerceptionComponent* const GetPerceptionComp();
+	UAIPerceptionComponent* const GetPerceptionComp() const;
 
 	// How long the AI will search for before going back into patrol-mode
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

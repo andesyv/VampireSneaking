@@ -89,12 +89,13 @@ void AEnemyAI::BeginPlay() {
 	}
 }
 
-UAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() {
-	if (AIPerceptionComp) {
+UAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() const
+{
+	if (AIPerceptionComp)
+	{
 		return AIPerceptionComp;
-	} else {
-		return nullptr;
 	}
+	return nullptr;
 }
 
 void AEnemyAI::UnPossess()
