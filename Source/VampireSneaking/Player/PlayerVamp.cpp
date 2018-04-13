@@ -3,16 +3,13 @@
 #include "Player/PlayerVamp.h"
 #include "Kismet/GameplayStatics.h"
 #include "AI/EnemyAI.h"
-#include "Player/DamageType_Explosion.h"
 #include "VampireSneakingGameModeBase.h"
 #include "Enemy.h"
 #include "Player/CustomPlayerController.h"
 #include "HealthComponent.h"
 #include "Projectile.h"
-#include "Math/UnrealMathUtility.h"
 #include "Math/Vector.h"
 #include "Engine/World.h"
-#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

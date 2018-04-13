@@ -89,12 +89,13 @@ void AEnemyAI::BeginPlay() {
 	}
 }
 
-UAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() {
-	if (AIPerceptionComp) {
+UAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() const
+{
+	if (AIPerceptionComp)
+	{
 		return AIPerceptionComp;
-	} else {
-		return nullptr;
 	}
+	return nullptr;
 }
 
 void AEnemyAI::UnPossess()
@@ -118,6 +119,13 @@ void AEnemyAI::SetAIIdleState() {
 	}
 }
 
+void AEnemyAI::ClearTimer(FTimerHandle &timerHandle) const
+{
+	if (GetWorld() && timerHandle.IsValid() && GetWorld()->GetTimerManager().IsTimerActive(timerHandle)) {
+		GetWorld()->GetTimerManager().ClearTimer(timerHandle);
+	}
+}
+
 void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 	for (auto item : UpdatedActors) {
 		if (!item->IsA(APlayableCharacterBase::StaticClass())) {
@@ -128,11 +136,56 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 		if (item && GetPerceptionComp() && GetPerceptionComp()->GetActorsPerception(item, perceivedInfo)) {
 			if (perceivedInfo.LastSensedStimuli.Num() > 0) {
 				if (Blackboard) {
-					if (GetWorld() && SearchingTimerHandle.IsValid()) {
-						GetWorld()->GetTimerManager().ClearTimer(SearchingTimerHandle);
+					ClearTimer(SearchingTimerHandle);
+					ClearTimer(VisionRangeTimerHandle);
+
+					if (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
+					{
+						if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat))) {
+							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+						}
+
+						if (!TargetedActors.Contains(item))
+						{
+							TargetedActors.Add(item);
+						}	
+						
+						if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item)) {
+							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
+						}
+					}
+					else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
+					{
+						if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
+							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+						}
+						
+						if (TargetedActors.Contains(item))
+						{
+							TargetedActors.Remove(item);
+						}
+
+						if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), nullptr)) {
+							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
+						}
+
+						if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), item->GetActorLocation())) {
+							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
+						}
+
+						if (GetWorld()) {
+							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
+						}
+					}
+					else
+					{
+						// UE_LOG(LogTemp, Warning, TEXT("Player is lost but inside True vision field!"));
+						if (GetWorld()) {
+							GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange, 0.3f, true);
+						}
 					}
 
-					if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>((perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
+					/*if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>((perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
 					? AIState::Combat : AIState::Searching))) {
 						UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 					}
@@ -150,13 +203,38 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 						if (GetWorld()) {
 							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
 						}
-					}
+					}*/
 				} else {
 					UE_LOG(LogTemp, Warning, TEXT("Missing blackboard!."));
 				}
 			}
 		}
 	}
+}
+
+float AEnemyAI::GetLengthBetween(AActor * first, AActor * second)
+{
+	if (first != nullptr && second != nullptr)
+	{
+		FVector betweenVector{ first->GetActorLocation() - second->GetActorLocation() };
+		return betweenVector.Size();
+	}
+	return -1.f;
+}
+
+void AEnemyAI::CheckIfOutsideVisionRange()
+{
+	for (auto item : TargetedActors)
+	{
+		if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
+		{
+			// UE_LOG(LogTemp, Warning, TEXT("Player is outside vision range and also lost!"));
+			const TArray<AActor*> ArrayCopy{ TargetedActors };
+			UpdateState(ArrayCopy);
+			break;
+		}
+	}
+
 }
 
 bool AEnemyAI::ToggleSucking() {

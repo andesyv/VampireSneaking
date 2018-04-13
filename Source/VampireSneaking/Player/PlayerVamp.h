@@ -19,7 +19,7 @@ class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IG
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 	// Currently sucking blood?
 	bool SuckingBlood{ false };
@@ -42,7 +42,7 @@ protected:
 
 	FGenericTeamId TeamId;
  
-    virtual FGenericTeamId GetGenericTeamId() const override;
+    FGenericTeamId GetGenericTeamId() const override;
 
 	void BloodAttack();
 
@@ -53,10 +53,10 @@ public:
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Speed of blood sucking (blood/second).
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
