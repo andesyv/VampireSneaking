@@ -20,9 +20,7 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	virtual void Rotate() override;
+	void BeginPlay() override;
 
 public:
 	// Mesh for bat.
@@ -30,10 +28,10 @@ public:
 	UStaticMeshComponent *batModel = nullptr;
 
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// How fast the ability drains blood in blood/second.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
