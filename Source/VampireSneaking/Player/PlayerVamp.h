@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Player/PlayableCharacterBase.h"
-#include "GenericTeamAgentInterface.h"
 #include "Engine/World.h"
 #include "PlayerVamp.generated.h"
 
@@ -12,7 +11,7 @@
 class AEnemy;
 
 UCLASS(Blueprintable, meta = (DisplayName = "Player Vampire"))
-class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IGenericTeamAgentInterface
+class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
 {
 	GENERATED_BODY()
 
@@ -35,10 +34,6 @@ protected:
 	// Player attack function.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Attack();
-
-	FGenericTeamId TeamId;
- 
-    FGenericTeamId GetGenericTeamId() const override;
 
 	void BloodAttack();
 

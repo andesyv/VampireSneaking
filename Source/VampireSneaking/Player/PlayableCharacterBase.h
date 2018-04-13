@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GenericTeamAgentInterface.h"
 #include "PlayableCharacterBase.generated.h"
 
 // Forward declarations
@@ -15,7 +16,7 @@ class UMeshComponent;
 * Character base for all characters that the player should be able to control.
 */
 UCLASS(Abstract, meta = (DisplayName="Playable Character Base"))
-class VAMPIRESNEAKING_API APlayableCharacterBase : public ACharacter
+class VAMPIRESNEAKING_API APlayableCharacterBase : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -43,6 +44,10 @@ protected:
 
 	// Pointer to the skeletalmesh-component.
 	UMeshComponent *meshComponent = nullptr;
+
+	// Team functionality
+	FGenericTeamId TeamId;
+	FGenericTeamId GetGenericTeamId() const override;
 
 public:
 	// Called every frame
