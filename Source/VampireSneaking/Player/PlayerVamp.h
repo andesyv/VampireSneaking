@@ -11,7 +11,7 @@
 // Forward declarations
 class AEnemy;
 
-UCLASS()
+UCLASS(Blueprintable, meta = (DisplayName = "Player Vampire"))
 class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()

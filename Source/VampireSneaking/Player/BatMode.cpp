@@ -2,9 +2,7 @@
 
 #include "Player/BatMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Player/CustomPlayerController.h"
 #include "Components/StaticMeshComponent.h"
-#include "HealthComponent.h"
 
 
 // Sets default values
@@ -26,27 +24,3 @@ void ABatMode::BeginPlay()
 	meshStartRotation = batModel->RelativeRotation;
 	meshComponent = batModel;
 }
-
-// Called every frame
-void ABatMode::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if (controller && controller->HealthComponent && batModel) {
-		// Drain blood while using.
-		if (controller->HealthComponent->AddBlood(FMath::Abs(DrainSpeed) * -DeltaTime) < KINDA_SMALL_NUMBER) {
-			controller->ChangePawn(0);
-		}
-	}
-}
-
-// Called to bind functionality to input
-void ABatMode::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	if (controller && controller->HealthComponent) {
-		controller->HealthComponent->AddBlood(-ActivationCost);
-	}
-}
-
