@@ -2,13 +2,14 @@
 
 #include "Player/CustomPlayerController.h"
 #include "Player/PlayableCharacterBase.h"
-#include "Player/PlayerVamp.h"
+// #include "Player/PlayerVamp.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
 #include "Player/FollowCamera.h"
 #include "Wall.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -46,45 +47,41 @@ void ACustomPlayerController::BeginPlay()
 
 void ACustomPlayerController::ChangePawn()
 {
-	// If the player is out of blood, they should'nt be able to change into batmode.
-	if (!ChangeValid()) {
-		return;
-	}
-
-	if (ControllablePawns.Num() != 0) {
-
-		// Increment counter.
-		CurrentIndex = (CurrentIndex + 1) % ControllablePawns.Num();
-
-		if (ControllablePawns[CurrentIndex]) {
-			MoveController(CurrentIndex);
-		}
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("There aren't any pawns assigned in the controllable pawns array!"));
-	}
+	ChangePawn(-1);
 }
 
 void ACustomPlayerController::ChangePawn(int index)
 {
-	// If the player is out of blood, they should'nt be able to change into batmode.
-	if (!ChangeValid()) {
-		return;
+	if (ControllablePawns.Num() != 0) {
+		if (index >= 0 && index < ControllablePawns.Num() && ControllablePawns[index]) {
+
+			if (GetPawn() && GetPawn() != ControllablePawns[index]) {
+				MoveController(CurrentIndex);
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("Trying to switch to the same pawn!"));
+			}
+
+			CurrentIndex = index;
+		} else {
+
+			// Increment counter.
+			CurrentIndex = (CurrentIndex + 1) % ControllablePawns.Num();
+
+			if (ControllablePawns[CurrentIndex]) {
+				MoveController(CurrentIndex);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("There aren't any pawns assigned in the controllable pawns array!"));
 	}
 
-	if (ControllablePawns.Num() != 0 && index >= 0 && index < ControllablePawns.Num() && ControllablePawns[index]) {
-		if (GetPawn() && GetPawn() != ControllablePawns[index]) {
-			MoveController(CurrentIndex);
-		}
-		else {
-			UE_LOG(LogTemp, Warning, TEXT("Trying to switch to the same pawn!"));
-		}
+	if (GetPawn() && GetWorld())
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransformEffect, FTransform{ FRotator::ZeroRotator, GetPawn()->GetActorLocation() }, true);
 	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("Index out of bounds!"));
-	}
-
-	CurrentIndex = index;
 }
 
 void ACustomPlayerController::MoveController(int index)
@@ -128,11 +125,6 @@ void ACustomPlayerController::ToggleSuckBlood()
 bool ACustomPlayerController::GetBloodSuckButton() const
 {
 	return PressingBloodSuckButton;
-}
-
-bool ACustomPlayerController::ChangeValid() const
-{
-	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
 }
 
 void ACustomPlayerController::SetInvisWalls()

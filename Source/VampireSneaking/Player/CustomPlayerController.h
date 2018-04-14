@@ -8,8 +8,8 @@
 
 // Forward declarations
 class UHealthComponent;
-class UCameraComponent;
 class AFollowCamera;
+class UParticleSystem;
 
 /**
  * A custom playercontroller.
@@ -54,9 +54,6 @@ protected:
 	// Is the player sucking blood?
 	bool PressingBloodSuckButton{false};
 
-	// Check if the player can change
-	bool ChangeValid() const;
-
 	// Function called when dying.
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Death();
@@ -80,6 +77,10 @@ public:
 	// FollowCamera class
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AFollowCamera> followCameraClass;
+
+	// Particle for switching into and out of batmode.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem *TransformEffect;
 
 	void SwapActorLocation(AActor* first, AActor* second);
 
