@@ -21,7 +21,7 @@ protected:
 
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
-	
+
 	// Returns whether there is an enemy in front of the player.
 	bool EnemyInFront();
 
@@ -37,7 +37,7 @@ protected:
 
 	void BloodAttack();
 
-public:	
+public:
 	// Sets default values for this pawn's properties
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
