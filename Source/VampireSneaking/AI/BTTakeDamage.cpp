@@ -6,6 +6,7 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
 #include "AI/EnemyAI.h"
 #include "HealthComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 
 EBTNodeResult::Type UBTTakeDamage::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) {
     Super::ExecuteTask(OwnerComp, NodeMemory);
@@ -31,6 +32,9 @@ EBTNodeResult::Type UBTTakeDamage::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 
         UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
         if (blackboard) {
+			if (!blackboard->SetValue<UBlackboardKeyType_Bool>(ResetAttackCooldown.SelectedKeyName, false)) {
+				UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard!"));
+			}
             if (!blackboard->SetValue<UBlackboardKeyType_Enum>(State.SelectedKeyName, static_cast<int>(AIState::Combat))) {
 			    UE_LOG(LogTemp, Error, TEXT("Failed to set enum state in blackboard!"));
                 return EBTNodeResult::Failed;

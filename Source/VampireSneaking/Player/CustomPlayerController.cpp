@@ -11,6 +11,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "AI/EnemyAI.h"
+#include "BehaviorTree/BehaviorTreeComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -49,6 +53,25 @@ void ACustomPlayerController::BeginPlay()
 void ACustomPlayerController::ChangePawn()
 {
 	ChangePawn(-1);
+}
+
+void ACustomPlayerController::CancelEnemyCooldownReset()
+{
+	for (auto item : EnemiesTargeting)
+	{
+		if (item->GetBrainComponent())
+		{
+			UBehaviorTreeComponent *behaviorTree = Cast<UBehaviorTreeComponent>(item->GetBrainComponent());
+			if (behaviorTree)
+			{
+				UBlackboardComponent *enemyBlackboard = behaviorTree->GetBlackboardComponent();
+				if (enemyBlackboard)
+				{
+					enemyBlackboard->SetValue<UBlackboardKeyType_Bool>(TEXT("ResetAttackCooldown"), false);
+				}
+			}
+		}
+	}
 }
 
 void ACustomPlayerController::ChangePawn(int index)
@@ -95,6 +118,8 @@ void ACustomPlayerController::ChangePawn(int index)
 			// UE_LOG(LogTemp, Warning, TEXT("Velocity is %s"), *particleVelocity.ToString())
 		}
 	}
+
+	CancelEnemyCooldownReset();
 }
 
 APawn* ACustomPlayerController::MoveController_Implementation(int index)

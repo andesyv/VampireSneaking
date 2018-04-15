@@ -13,14 +13,14 @@ UCLASS(Blueprintable, DisplayName = "Shoot at player")
 class VAMPIRESNEAKING_API UBTShootAtPlayer : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
 	// Called when task is executed.
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 	/** ticks this task
 	* this function should be considered as const (don't modify state of object) if node is not instanced! */
-	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
+	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
 protected:
 	float timer{ 0 };
 
@@ -33,7 +33,14 @@ public:
 	// Target to hit.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBlackboardKeySelector TargetActor;
-	
+
+	/**
+	 * Bool
+	 * If the task should reset the cooldown when executed.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBlackboardKeySelector ResetAttackCooldown;
+
 	// Time it takes to shoot.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ShootTime = 1.f;

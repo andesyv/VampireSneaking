@@ -10,6 +10,7 @@
 class UHealthComponent;
 class AFollowCamera;
 class UParticleSystem;
+class AEnemyAI;
 
 /**
  * A custom playercontroller.
@@ -21,7 +22,6 @@ class VAMPIRESNEAKING_API ACustomPlayerController : public APlayerController
 GENERATED_BODY()
 
 	friend class AVampireSneakingGameModeBase;
-	friend class ABatMode;
 
 public:
 	/**
@@ -43,8 +43,18 @@ protected:
 	// The camera that follows the player
 	AFollowCamera* followCamera = nullptr;
 
+	// Inputbinding-friendly version of ChangePawn
 	void ChangePawn();
+
+	/**
+	 * Changes the pawn of the player to a specified index in the ControllablePawns array.
+	 * If a index outside of ControllablePawns is used, it will go into iterate mode instead.
+	 * In iterade mode it will change to the next pawn in the ControllablePawns array.
+	 */
 	void ChangePawn(int index);
+
+	// Make enemies not reset their cooldown when switching from and to batmode.
+	void CancelEnemyCooldownReset();
 
 	// Moves the controller into the specified pawn in the ControllablePawns array
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -83,6 +93,9 @@ public:
 	// Particle for switching into and out of batmode.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UParticleSystem *TransformEffect;
+
+	// List of enemies targeting this player
+	TArray<AEnemyAI*> EnemiesTargeting;
 
 	void SwapActorLocation(AActor* first, AActor* second);
 

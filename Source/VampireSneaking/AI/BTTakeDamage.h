@@ -15,10 +15,14 @@ class VAMPIRESNEAKING_API UBTTakeDamage : public UBTTaskNode
 	GENERATED_BODY()
 	
 	// Called when task is executed.
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 public:
 	// State enum blackboard key
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FBlackboardKeySelector State;
+
+	// Reset attack cooldown blackboard key
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBlackboardKeySelector ResetAttackCooldown;
 };

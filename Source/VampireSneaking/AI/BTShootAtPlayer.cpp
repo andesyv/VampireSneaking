@@ -9,10 +9,19 @@
 #include "Components/CapsuleComponent.h"
 #include "Player/CustomPlayerController.h"
 #include "HealthComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
-{
-	timer = 0;
+{ 
+	UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
+	if (blackboard && blackboard->GetValue<UBlackboardKeyType_Bool>(ResetAttackCooldown.SelectedKeyName))
+	{
+		timer = 0;
+		if (!blackboard->SetValue<UBlackboardKeyType_Bool>(ResetAttackCooldown.SelectedKeyName, true))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Unable to set bool blackboard parameter."));
+		}
+	}
 	bNotifyTick = 1;
 	return EBTNodeResult::InProgress;
 }
@@ -60,7 +69,6 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 		UE_LOG(LogTemp, Error, TEXT("Can't receive blackboard!"));
 	}
 	FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
-	return;
 }
 
 void UBTShootAtPlayer::PlayExplotion(AActor *enemy, AActor *player)

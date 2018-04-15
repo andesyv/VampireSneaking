@@ -9,6 +9,7 @@
 #include "Player/PlayableCharacterBase.h"
 #include "TimerManager.h"
 #include "HealthComponent.h"
+#include "Player/CustomPlayerController.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -153,6 +154,16 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 						if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item)) {
 							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
 						}
+
+						APlayableCharacterBase *player = Cast<APlayableCharacterBase>(item);
+						if (player && player->GetController())
+						{
+							ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
+							if (playerController)
+							{
+								playerController->EnemiesTargeting.Add(this);
+							}
+						}
 					}
 					else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 					{
@@ -176,6 +187,16 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 						if (GetWorld()) {
 							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
 						}
+
+						APlayableCharacterBase *player = Cast<APlayableCharacterBase>(item);
+						if (player && player->GetController())
+						{
+							ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
+							if (playerController)
+							{
+								playerController->EnemiesTargeting.Remove(this);
+							}
+						}
 					}
 					else
 					{
@@ -184,26 +205,6 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange, 0.3f, true);
 						}
 					}
-
-					/*if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>((perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
-					? AIState::Combat : AIState::Searching))) {
-						UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
-					}
-
-					if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
-					? item : nullptr)) {
-						UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
-					}
-
-					if (!perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed()) {
-						if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), item->GetActorLocation())) {
-							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
-						}
-
-						if (GetWorld()) {
-							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
-						}
-					}*/
 				} else {
 					UE_LOG(LogTemp, Warning, TEXT("Missing blackboard!."));
 				}
