@@ -31,7 +31,7 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::AttackCheck);
 	PlayerInputComponent->BindAction("BloodAttack", IE_Pressed, this, &APlayerVamp::BloodAttack);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerVamp::Dash);
 }
@@ -77,6 +77,14 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 	}
 }
 
+void APlayerVamp::AttackCheck()
+{
+	if (TimeBeforeNextAttack <= 0.f)
+	{
+		Attack();
+	}
+}
+
 void APlayerVamp::Attack_Implementation()
 {
 	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
@@ -102,13 +110,16 @@ void APlayerVamp::Attack_Implementation()
 			}
 		}
 	}
+
+	// Set cooldown.
+	TimeBeforeNextAttack = AttackCooldown;
 }
 
 bool APlayerVamp::EnemyInFront()
 {
 	const FName TraceTag("SuckTrace");
 	GetWorld()->DebugDrawTraceTag = TraceTag;
-	FCollisionQueryParams collisionQueryParams{ TraceTag, false , this };
+	const FCollisionQueryParams collisionQueryParams{ TraceTag, false , this };
 
 	FHitResult hitResult{};
 	if (GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() + GetMeshForwardVector()*100.f, ECollisionChannel::ECC_WorldDynamic, collisionQueryParams))

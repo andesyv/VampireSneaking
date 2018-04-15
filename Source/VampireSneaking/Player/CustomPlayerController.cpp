@@ -57,9 +57,11 @@ void ACustomPlayerController::ChangePawn()
 
 void ACustomPlayerController::CancelEnemyCooldownReset()
 {
-	for (auto item : EnemiesTargeting)
+	// Make a copy of the array in case it changes in runtime. (That has to be some fast switching if that's the case..)
+	const TArray<AEnemyAI*> enemiesTargetingCopy{ EnemiesTargeting };
+	for (auto item : enemiesTargetingCopy)
 	{
-		if (item->GetBrainComponent())
+		if (item && item->GetBrainComponent())
 		{
 			UBehaviorTreeComponent *behaviorTree = Cast<UBehaviorTreeComponent>(item->GetBrainComponent());
 			if (behaviorTree)
@@ -67,7 +69,10 @@ void ACustomPlayerController::CancelEnemyCooldownReset()
 				UBlackboardComponent *enemyBlackboard = behaviorTree->GetBlackboardComponent();
 				if (enemyBlackboard)
 				{
-					enemyBlackboard->SetValue<UBlackboardKeyType_Bool>(TEXT("ResetAttackCooldown"), false);
+					if (!enemyBlackboard->SetValue<UBlackboardKeyType_Bool>(TEXT("ResetAttackCooldown"), false))
+					{
+						UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard!"));
+					}
 				}
 			}
 		}

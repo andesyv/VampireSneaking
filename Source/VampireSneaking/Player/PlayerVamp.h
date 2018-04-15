@@ -31,6 +31,10 @@ protected:
 	// Internal toggle of bloodsucking.
 	bool ToggleBloodSucking();
 
+	// Check if the attack is off cooldown, and if so run attack
+	UFUNCTION(BlueprintCallable)
+	void AttackCheck();
+
 	// Player attack function.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Attack();
@@ -70,6 +74,10 @@ public:
 	// Hit force of normal attack.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	float HitForce = 10.f;
+
+	// Cooldown before the player can attack again.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float AttackCooldown = 1.5f;
 
 	UPROPERTY(EditAnywhere, Category = "BloodAttack")
 		TSubclassOf<class AProjectile> ProjectileBlueprint ;

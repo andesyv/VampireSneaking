@@ -48,6 +48,14 @@ void APlayableCharacterBase::Tick(float DeltaTime)
 	if (controller && meshComponent) {
 		Rotate();
 	}
+
+	if (TimeBeforeNextAttack < 0.f)
+	{
+		TimeBeforeNextAttack = 0.f;
+	} else if (TimeBeforeNextAttack > 0.f)
+	{
+		TimeBeforeNextAttack -= DeltaTime;
+	}
 }
 
 // Called to bind functionality to input

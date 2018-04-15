@@ -45,6 +45,9 @@ protected:
 	// Pointer to the skeletalmesh-component.
 	UMeshComponent *meshComponent = nullptr;
 
+	// Time before the player can attack again.
+	float TimeBeforeNextAttack{ 0.f };
+
 	// Team functionality
 	FGenericTeamId TeamId;
 	FGenericTeamId GetGenericTeamId() const override;
