@@ -46,7 +46,8 @@ protected:
 	void ChangePawn();
 	void ChangePawn(int index);
 
-	void MoveController(int index);
+	// Moves the controller into the specified pawn in the ControllablePawns array
+	APawn* MoveController(int index);
 
 	/** Allows the PlayerController to set up custom input bindings. */
 	void SetupInputComponent() override;

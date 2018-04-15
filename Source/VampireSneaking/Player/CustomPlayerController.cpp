@@ -2,7 +2,6 @@
 
 #include "Player/CustomPlayerController.h"
 #include "Player/PlayableCharacterBase.h"
-// #include "Player/PlayerVamp.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
@@ -10,6 +9,7 @@
 #include "Wall.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/SpringArmComponent.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -52,11 +52,12 @@ void ACustomPlayerController::ChangePawn()
 
 void ACustomPlayerController::ChangePawn(int index)
 {
+	APawn* CurrentPawn{ nullptr };
 	if (ControllablePawns.Num() != 0) {
 		if (index >= 0 && index < ControllablePawns.Num() && ControllablePawns[index]) {
 
 			if (GetPawn() && GetPawn() != ControllablePawns[index]) {
-				MoveController(CurrentIndex);
+				CurrentPawn = MoveController(CurrentIndex);
 			}
 			else {
 				UE_LOG(LogTemp, Warning, TEXT("Trying to switch to the same pawn!"));
@@ -69,7 +70,7 @@ void ACustomPlayerController::ChangePawn(int index)
 			CurrentIndex = (CurrentIndex + 1) % ControllablePawns.Num();
 
 			if (ControllablePawns[CurrentIndex]) {
-				MoveController(CurrentIndex);
+				CurrentPawn = MoveController(CurrentIndex);
 			}
 		}
 	}
@@ -78,13 +79,20 @@ void ACustomPlayerController::ChangePawn(int index)
 		UE_LOG(LogTemp, Error, TEXT("There aren't any pawns assigned in the controllable pawns array!"));
 	}
 
-	if (GetPawn() && GetWorld())
+	if (GetPawn() && GetWorld() && followCamera)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransformEffect, FTransform{ FRotator::ZeroRotator, GetPawn()->GetActorLocation() }, true);
+		TArray<USpringArmComponent*> Comps{};
+		followCamera->GetComponents<USpringArmComponent>(Comps);
+		if (Comps.Num() >= 1)
+		{
+			// FTransform spawnTrans{ FRotator::ZeroRotator, GetPawn()->GetActorLocation() + FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f };
+			/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransformEffect, spawnTrans, true);*/
+			UGameplayStatics::SpawnEmitterAttached(TransformEffect, followCamera->GetRootComponent(), NAME_None, FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f);
+		}
 	}
 }
 
-void ACustomPlayerController::MoveController(int index)
+APawn* ACustomPlayerController::MoveController(int index)
 {
 	APawn *currentlyPossessed = GetPawn();
 	UnPossess();
@@ -95,6 +103,8 @@ void ACustomPlayerController::MoveController(int index)
 
 	// Transfer stats
 	ControllablePawns[index]->GetMovementComponent()->Velocity = currentlyPossessed->GetVelocity();
+
+	return ControllablePawns[index];
 }
 
 void ACustomPlayerController::SetupInputComponent()
