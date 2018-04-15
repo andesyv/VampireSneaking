@@ -129,13 +129,13 @@ void APlayerVamp::BloodAttack() {
 		UWorld *world = GetWorld();
 		if(world){
 			//Spawning the bullet
-		world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation(), GetActorForwardVector().Rotation());
+		world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation(), GetMeshForwardVector().Rotation());
 
 	}
 }
 
 void APlayerVamp::Dash() {
- FVector AddForce = GetActorRotation().Vector() * 100000;
+ FVector AddForce = GetMeshForwardVector() * 100000;
 
 	LaunchCharacter(AddForce, false, true);
 	
