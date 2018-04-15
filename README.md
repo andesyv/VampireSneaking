@@ -7,5 +7,7 @@ It's a sneaking game including a vampire. Very spoopy.
 
  - Move around with WASD.
  - The player rotates to always look at where the mouse is pointing.
- - Turn into a bat by holding down shift, while a bat you move faster and is invisible to enemies (it drains blood while using it).
- - Stand right behind an enemy and press right click to drain blood. The enemy freezes whilst being drained.
+ - Use left mouse button to do a melee attack.
+ - Turn into a swarm of bats by holding down shift.
+ - Stand right behind an enemy and hold right mouse button to drain blood. The enemy freezes whilst being drained.
+ - Press spacebar to initiate a dodge in the direction you are facing.
