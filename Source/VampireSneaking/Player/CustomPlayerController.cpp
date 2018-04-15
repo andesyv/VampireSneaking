@@ -97,7 +97,7 @@ void ACustomPlayerController::ChangePawn(int index)
 	}
 }
 
-APawn* ACustomPlayerController::MoveController(int index)
+APawn* ACustomPlayerController::MoveController_Implementation(int index)
 {
 	APawn *currentlyPossessed = GetPawn();
 	UnPossess();

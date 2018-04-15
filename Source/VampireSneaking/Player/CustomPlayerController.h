@@ -47,6 +47,7 @@ protected:
 	void ChangePawn(int index);
 
 	// Moves the controller into the specified pawn in the ControllablePawns array
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	APawn* MoveController(int index);
 
 	/** Allows the PlayerController to set up custom input bindings. */
