@@ -148,15 +148,8 @@ void APlayerVamp::BloodAttack() {
 }
 
 void APlayerVamp::Dash() {
-	  FVector ForwardDir = GetActorForwardVector();
-	 GetVelocity() += ForwardDir * 3000;
+ FVector AddForce = GetActorRotation().Vector() * 100000;
 
-	  FVector ForwardWithZ = (ForwardDir + FVector(0, 0, 1)).GetSafeNormal();
-
-
-
- FVector AddForce = ForwardDir * 3000;
-
-	LaunchCharacter(AddForce, true, true);
-	UE_LOG(LogTemp, Warning, TEXT("Launched"));
+	LaunchCharacter(AddForce, false, true);
+	
 }
