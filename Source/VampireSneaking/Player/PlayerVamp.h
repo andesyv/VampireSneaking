@@ -84,4 +84,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "BloodAttack")
 		TSubclassOf<class AProjectile> ProjectileBlueprint ;
+
+	 UFUNCTION()
+		void Dash(); 
+	
 };

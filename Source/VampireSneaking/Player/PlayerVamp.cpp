@@ -41,6 +41,7 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
 	PlayerInputComponent->BindAction("BloodAttack", IE_Pressed, this, &APlayerVamp::BloodAttack);
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerVamp::Dash);
 }
 
 bool APlayerVamp::ToggleBloodSucking() {
@@ -142,7 +143,13 @@ void APlayerVamp::BloodAttack() {
 		if(world){
 			//Spawning the bullet
 		world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation(), GetActorForwardVector().Rotation());
-		UE_LOG(LogTemp, Warning, TEXT("finished"));
 
 	}
+}
+
+void APlayerVamp::Dash() {
+ FVector AddForce = GetActorRotation().Vector() * 100000;
+
+	LaunchCharacter(AddForce, false, true);
+	
 }
