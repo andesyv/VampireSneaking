@@ -10,6 +10,7 @@
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -87,7 +88,11 @@ void ACustomPlayerController::ChangePawn(int index)
 		{
 			// FTransform spawnTrans{ FRotator::ZeroRotator, GetPawn()->GetActorLocation() + FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f };
 			/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransformEffect, spawnTrans, true);*/
-			UGameplayStatics::SpawnEmitterAttached(TransformEffect, followCamera->GetRootComponent(), NAME_None, FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f);
+			UParticleSystemComponent *particleSystem = UGameplayStatics::SpawnEmitterAttached(TransformEffect, followCamera->GetRootComponent(), NAME_None, FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f);
+			FVector particleVelocity{ CurrentPawn->GetVelocity().GetSafeNormal()};
+			particleSystem->SetVectorRandParameter(TEXT("VelocityModifier"), particleVelocity.RotateAngleAxis(20.f, FVector{ 0.f, 0.f, 1.f }), particleVelocity.RotateAngleAxis(-20.f, FVector{ 0.f, 0.f, 1.f }));
+			particleSystem->SetVectorParameter(TEXT("SmokeVelocity"), CurrentPawn->GetVelocity());
+			// UE_LOG(LogTemp, Warning, TEXT("Velocity is %s"), *particleVelocity.ToString())
 		}
 	}
 }
