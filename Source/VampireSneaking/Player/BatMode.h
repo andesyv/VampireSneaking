@@ -8,8 +8,9 @@
 
 // Forward declarations
 class UStaticMeshComponent;
+class UParticleSystemComponent;
 
-UCLASS()
+UCLASS(Blueprintable, meta = (DisplayName = "Bat Mode"))
 class VAMPIRESNEAKING_API ABatMode : public APlayableCharacterBase
 {
 	GENERATED_BODY()
@@ -18,29 +19,19 @@ public:
 	// Sets default values for this character's properties
 	ABatMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+	void PossessedBy(AController* NewController) override;
+	void UnPossessed() override;
+
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
-	virtual void Rotate() override;
+	// Particle component
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UParticleSystemComponent *ParticleSystem;
 
 public:
 	// Mesh for bat.
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent *batModel = nullptr;
-
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	// How fast the ability drains blood in blood/second.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float DrainSpeed = 10.f;
-
-	// Activation cost for batmode
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ActivationCost = 10.f;
-
+	UStaticMeshComponent *BatModel = nullptr;
 };

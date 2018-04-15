@@ -16,14 +16,6 @@ APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(Ob
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	TeamId = FGenericTeamId(0);
-}
-
-// Called when the game starts or when spawned
-void APlayerVamp::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 // Called every frame
@@ -129,11 +121,6 @@ bool APlayerVamp::EnemyInFront()
 		}
 	}
 	return false;
-}
-
-FGenericTeamId APlayerVamp::GetGenericTeamId() const
-{
-    return TeamId;
 }
 
 void APlayerVamp::BloodAttack() {

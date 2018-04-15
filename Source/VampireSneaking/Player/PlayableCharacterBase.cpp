@@ -2,7 +2,6 @@
 
 #include "Player/PlayableCharacterBase.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Camera/CameraComponent.h"
 #include "Player/CustomPlayerController.h"
 
 // Sets default values
@@ -10,6 +9,8 @@ APlayableCharacterBase::APlayableCharacterBase(const FObjectInitializer& ObjectI
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	TeamId = FGenericTeamId(0);
 }
 
 // Called when the game starts or when spawned
@@ -17,18 +18,26 @@ void APlayableCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	TArray<USkeletalMeshComponent*> skeletonMeshes{};
-	GetComponents<USkeletalMeshComponent>(skeletonMeshes);
-	if (skeletonMeshes.Num() > 1) {
-		UE_LOG(LogTemp, Error, TEXT("This character got %d skeleton meshes!!"), skeletonMeshes.Num());
-	}
-	else if (skeletonMeshes.Num() < 1) {
-		UE_LOG(LogTemp, Error, TEXT("This character got no skeleton mesh!!"));
-		return;
-	}
+	try {
+		TArray<USkeletalMeshComponent*> skeletonMeshes{};
+		GetComponents<USkeletalMeshComponent>(skeletonMeshes);
+		// check(skeletonMeshes.Num() == 1);
+		if (skeletonMeshes.Num() != 1)
+		{
+			throw FString{ "Skeletonmeshes should equal exactly 1!" };
+		}
 
-	meshStartRotation = skeletonMeshes[0]->RelativeRotation;
-	meshComponent = skeletonMeshes[0];
+		meshStartRotation = skeletonMeshes[0]->RelativeRotation;
+		meshComponent = skeletonMeshes[0];
+	}
+	catch (const FString &error)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Caught error: \"%s\""), *error);
+	}
+	catch (...)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Unknown error!"));
+	}
 }
 
 // Called every frame
@@ -78,4 +87,9 @@ void APlayableCharacterBase::Rotate()
 		direction.Z = 0;
 		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation });
 	}
+}
+
+FGenericTeamId APlayableCharacterBase::GetGenericTeamId() const
+{
+	return TeamId;
 }

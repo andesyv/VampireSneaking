@@ -9,6 +9,7 @@
 // Forward declarations
 class USceneComponent;
 class UCameraComponent;
+class USpringArmComponent;
 
 UCLASS()
 class VAMPIRESNEAKING_API AFollowCamera : public AActor
@@ -25,6 +26,10 @@ public:
 	// Target to follow
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* Target = nullptr;
+
+	// Spring arm
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+		USpringArmComponent* SpringArm = nullptr;
 
 	// Camera component
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

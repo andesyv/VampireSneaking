@@ -2,13 +2,15 @@
 
 #include "Player/CustomPlayerController.h"
 #include "Player/PlayableCharacterBase.h"
-#include "Player/PlayerVamp.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
 #include "Player/FollowCamera.h"
 #include "Wall.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -46,48 +48,56 @@ void ACustomPlayerController::BeginPlay()
 
 void ACustomPlayerController::ChangePawn()
 {
-	// If the player is out of blood, they should'nt be able to change into batmode.
-	if (!ChangeValid()) {
-		return;
-	}
-
-	if (ControllablePawns.Num() != 0) {
-
-		// Increment counter.
-		CurrentIndex = (CurrentIndex + 1) % ControllablePawns.Num();
-
-		if (ControllablePawns[CurrentIndex]) {
-			MoveController(CurrentIndex);
-		}
-	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("There aren't any pawns assigned in the controllable pawns array!"));
-	}
+	ChangePawn(-1);
 }
 
 void ACustomPlayerController::ChangePawn(int index)
 {
-	// If the player is out of blood, they should'nt be able to change into batmode.
-	if (!ChangeValid()) {
-		return;
+	APawn* CurrentPawn{ nullptr };
+	if (ControllablePawns.Num() != 0) {
+		if (index >= 0 && index < ControllablePawns.Num() && ControllablePawns[index]) {
+
+			if (GetPawn() && GetPawn() != ControllablePawns[index]) {
+				CurrentPawn = MoveController(CurrentIndex);
+			}
+			else {
+				UE_LOG(LogTemp, Warning, TEXT("Trying to switch to the same pawn!"));
+			}
+
+			CurrentIndex = index;
+		} else {
+
+			// Increment counter.
+			CurrentIndex = (CurrentIndex + 1) % ControllablePawns.Num();
+
+			if (ControllablePawns[CurrentIndex]) {
+				CurrentPawn = MoveController(CurrentIndex);
+			}
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("There aren't any pawns assigned in the controllable pawns array!"));
 	}
 
-	if (ControllablePawns.Num() != 0 && index >= 0 && index < ControllablePawns.Num() && ControllablePawns[index]) {
-		if (GetPawn() && GetPawn() != ControllablePawns[index]) {
-			MoveController(CurrentIndex);
-		}
-		else {
-			UE_LOG(LogTemp, Warning, TEXT("Trying to switch to the same pawn!"));
+	if (GetPawn() && GetWorld() && followCamera)
+	{
+		TArray<USpringArmComponent*> Comps{};
+		followCamera->GetComponents<USpringArmComponent>(Comps);
+		if (Comps.Num() >= 1)
+		{
+			// FTransform spawnTrans{ FRotator::ZeroRotator, GetPawn()->GetActorLocation() + FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f };
+			/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransformEffect, spawnTrans, true);*/
+			UParticleSystemComponent *particleSystem = UGameplayStatics::SpawnEmitterAttached(TransformEffect, followCamera->GetRootComponent(), NAME_None, FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f);
+			FVector particleVelocity{ CurrentPawn->GetVelocity().GetSafeNormal()};
+			particleSystem->SetVectorRandParameter(TEXT("VelocityModifier"), particleVelocity.RotateAngleAxis(20.f, FVector{ 0.f, 0.f, 1.f }), particleVelocity.RotateAngleAxis(-20.f, FVector{ 0.f, 0.f, 1.f }));
+			particleSystem->SetVectorParameter(TEXT("SmokeVelocity"), CurrentPawn->GetVelocity());
+			// UE_LOG(LogTemp, Warning, TEXT("Velocity is %s"), *particleVelocity.ToString())
 		}
 	}
-	else {
-		UE_LOG(LogTemp, Error, TEXT("Index out of bounds!"));
-	}
-
-	CurrentIndex = index;
 }
 
-void ACustomPlayerController::MoveController(int index)
+APawn* ACustomPlayerController::MoveController_Implementation(int index)
 {
 	APawn *currentlyPossessed = GetPawn();
 	UnPossess();
@@ -98,6 +108,8 @@ void ACustomPlayerController::MoveController(int index)
 
 	// Transfer stats
 	ControllablePawns[index]->GetMovementComponent()->Velocity = currentlyPossessed->GetVelocity();
+
+	return ControllablePawns[index];
 }
 
 void ACustomPlayerController::SetupInputComponent()
@@ -128,11 +140,6 @@ void ACustomPlayerController::ToggleSuckBlood()
 bool ACustomPlayerController::GetBloodSuckButton() const
 {
 	return PressingBloodSuckButton;
-}
-
-bool ACustomPlayerController::ChangeValid() const
-{
-	return HealthComponent && GetPawn() && !(HealthComponent->IsOutOfBlood() && GetPawn()->IsA(APlayerVamp::StaticClass()));
 }
 
 void ACustomPlayerController::SetInvisWalls()

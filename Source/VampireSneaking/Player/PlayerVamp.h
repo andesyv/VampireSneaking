@@ -4,29 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Player/PlayableCharacterBase.h"
-#include "GenericTeamAgentInterface.h"
 #include "Engine/World.h"
 #include "PlayerVamp.generated.h"
 
 // Forward declarations
 class AEnemy;
-class ACustomPlayerController;
 
-UCLASS()
-class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase, public IGenericTeamAgentInterface
+UCLASS(Blueprintable, meta = (DisplayName = "Player Vampire"))
+class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
 {
 	GENERATED_BODY()
 
 protected:
-	// Called when the game starts or when spawned
-	void BeginPlay() override;
-
 	// Currently sucking blood?
 	bool SuckingBlood{ false };
 
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
-	
+
 	// Returns whether there is an enemy in front of the player.
 	bool EnemyInFront();
 
@@ -40,15 +35,9 @@ protected:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Attack();
 
-	FGenericTeamId TeamId;
- 
-    FGenericTeamId GetGenericTeamId() const override;
-
 	void BloodAttack();
 
-
-
-public:	
+public:
 	// Sets default values for this pawn's properties
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 

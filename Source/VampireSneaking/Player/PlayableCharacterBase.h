@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GenericTeamAgentInterface.h"
 #include "PlayableCharacterBase.generated.h"
 
 // Forward declarations
-class USkeletalMeshComponent;
-class UCameraComponent;
 class ACustomPlayerController;
+class UMeshComponent;
 
 
 /**
 * Character base for all characters that the player should be able to control.
 */
 UCLASS(Abstract, meta = (DisplayName="Playable Character Base"))
-class VAMPIRESNEAKING_API APlayableCharacterBase : public ACharacter
+class VAMPIRESNEAKING_API APlayableCharacterBase : public ACharacter, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -37,24 +37,26 @@ protected:
 	ACustomPlayerController *controller;
 
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 	// Extra rotation added to the mouse rotation. Get's set in BeginPlay, do not change in runtime.
 	FRotator meshStartRotation{ 0.f, 0.f, 0.f };
 
 	// Pointer to the skeletalmesh-component.
-	USkeletalMeshComponent *meshComponent = nullptr;
+	UMeshComponent *meshComponent = nullptr;
+
+	// Team functionality
+	FGenericTeamId TeamId;
+	FGenericTeamId GetGenericTeamId() const override;
 
 public:
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Helper function to get the forward vector of the mesh, relative to the mesh's rotation.
 	UFUNCTION(BlueprintCallable)
 	FVector GetMeshForwardVector() const;
-
-
 };

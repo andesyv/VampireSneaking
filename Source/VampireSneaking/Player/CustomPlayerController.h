@@ -8,8 +8,8 @@
 
 // Forward declarations
 class UHealthComponent;
-class UCameraComponent;
 class AFollowCamera;
+class UParticleSystem;
 
 /**
  * A custom playercontroller.
@@ -46,16 +46,15 @@ protected:
 	void ChangePawn();
 	void ChangePawn(int index);
 
-	void MoveController(int index);
+	// Moves the controller into the specified pawn in the ControllablePawns array
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	APawn* MoveController(int index);
 
 	/** Allows the PlayerController to set up custom input bindings. */
 	void SetupInputComponent() override;
 
 	// Is the player sucking blood?
 	bool PressingBloodSuckButton{false};
-
-	// Check if the player can change
-	bool ChangeValid() const;
 
 	// Function called when dying.
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
@@ -80,6 +79,10 @@ public:
 	// FollowCamera class
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AFollowCamera> followCameraClass;
+
+	// Particle for switching into and out of batmode.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem *TransformEffect;
 
 	void SwapActorLocation(AActor* first, AActor* second);
 
