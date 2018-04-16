@@ -52,6 +52,9 @@ protected:
 	FGenericTeamId TeamId;
 	FGenericTeamId GetGenericTeamId() const override;
 
+	// Currently sucking blood?
+	bool SuckingBlood{ false };
+
 public:
 	// Called every frame
 	void Tick(float DeltaTime) override;

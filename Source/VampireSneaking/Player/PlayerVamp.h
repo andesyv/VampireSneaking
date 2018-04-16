@@ -16,9 +16,6 @@ class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
 	GENERATED_BODY()
 
 protected:
-	// Currently sucking blood?
-	bool SuckingBlood{ false };
-
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
 
@@ -29,7 +26,7 @@ protected:
 	void SuckBlood(float amount, float DeltaTime);
 
 	// Internal toggle of bloodsucking.
-	bool ToggleBloodSucking();
+	bool ToggleBloodSucking() const;
 
 	// Check if the attack is off cooldown, and if so run attack
 	UFUNCTION(BlueprintCallable)

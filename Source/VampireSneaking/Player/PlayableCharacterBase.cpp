@@ -45,7 +45,7 @@ void APlayableCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (controller && meshComponent) {
+	if (!SuckingBlood && controller && meshComponent) {
 		Rotate();
 	}
 
@@ -79,11 +79,19 @@ FVector APlayableCharacterBase::GetMeshForwardVector() const
 
 void APlayableCharacterBase::MoveX(float amount)
 {
+	if (SuckingBlood)
+	{
+		return;
+	}
 	AddMovementInput(GetActorRightVector(), amount);
 }
 
 void APlayableCharacterBase::MoveY(float amount)
 {
+	if (SuckingBlood)
+	{
+		return;
+	}
 	AddMovementInput(GetActorForwardVector(), amount);
 }
 

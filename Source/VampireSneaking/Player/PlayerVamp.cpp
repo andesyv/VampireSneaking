@@ -36,7 +36,8 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerVamp::Dash);
 }
 
-bool APlayerVamp::ToggleBloodSucking() {
+bool APlayerVamp::ToggleBloodSucking() const
+{
 	if (suckedEnemy->GetController()) {
 		AEnemyAI *enemyAI = Cast<AEnemyAI>(suckedEnemy->GetController());
 		if (enemyAI) {
