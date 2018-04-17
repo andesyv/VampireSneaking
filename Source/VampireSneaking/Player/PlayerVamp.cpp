@@ -147,7 +147,7 @@ void APlayerVamp::BloodAttack() {
 }
 
 void APlayerVamp::Dash() {
- FVector AddForce = GetMeshForwardVector() * 1000;
+ FVector AddForce = GetMeshForwardVector() * 3000;
 
 	LaunchCharacter(AddForce, false, true);
 	
