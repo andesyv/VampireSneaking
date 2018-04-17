@@ -45,7 +45,7 @@ void AFollowCamera::Tick(float DeltaTime)
 bool AFollowCamera::ViewBlockingTrace(TArray<FHitResult>& OutHits)
 {
 	UWorld* world = GetWorld();
-	if (world && Target && Camera)
+	if (world && Target && SpringArm)
 	{
 		if (Target->IsA(ACharacter::StaticClass()))
 		{
@@ -61,11 +61,11 @@ bool AFollowCamera::ViewBlockingTrace(TArray<FHitResult>& OutHits)
 				}
 			}
 
-			return world->SweepMultiByChannel(OutHits, FVector{Camera->RelativeLocation + GetActorLocation()},
+			return world->SweepMultiByChannel(OutHits, FVector{SpringArm->GetForwardVector() * -SpringArm->TargetArmLength + GetActorLocation()},
 			                                  Target->GetActorLocation(), FQuat::Identity, ECC_Camera, SphereShape);
 		}
 		// If the target isn't the player, just normal trace
-		return world->LineTraceMultiByChannel(OutHits, FVector{Camera->RelativeLocation + GetActorLocation()},
+		return world->LineTraceMultiByChannel(OutHits, FVector{SpringArm->GetForwardVector() * -SpringArm->TargetArmLength + GetActorLocation()},
 		                                      Target->GetActorLocation(), ECC_Camera);
 	}
 	return false;
