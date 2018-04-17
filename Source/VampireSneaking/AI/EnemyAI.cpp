@@ -10,6 +10,7 @@
 #include "TimerManager.h"
 #include "HealthComponent.h"
 #include "Player/CustomPlayerController.h"
+#include "Perception/AISenseConfig_Sight.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -87,6 +88,28 @@ void AEnemyAI::BeginPlay() {
 	
 	if (GetPerceptionComp()) {
 		GetPerceptionComp()->OnPerceptionUpdated.AddDynamic(this, &AEnemyAI::UpdateState);
+
+		// Setup sight config.
+		FAISenseID Id = UAISense::GetSenseID(UAISense_Sight::StaticClass());
+		
+		if (!Id.IsValid())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Wrong Sense ID"));
+			return;
+		}
+
+		SightConfig = GetPerceptionComp()->GetSenseConfig(Id);
+		
+		auto *sight = Cast<UAISenseConfig_Sight>(SightConfig);
+		if (sight)
+		{
+			DefaultVisionRange = sight->SightRadius;
+			// LoseRange = sight->LoseSightRadius - DefaultVisionRange;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Cannot find sightConfig!"));
+		}
 	}
 }
 
@@ -108,6 +131,26 @@ void AEnemyAI::UnPossess()
 	if (behaviorTreeComp) {
 		behaviorTreeComp->StopTree();
 	}
+}
+
+bool AEnemyAI::ToggleVisionRange() const
+{
+	UAISenseConfig_Sight *sight = Cast<UAISenseConfig_Sight>(SightConfig);
+	if (sight)
+	{
+		// The enemies should'nt have a harder time loosing sight when in batmode.
+		// sight->LoseSightRadius = sight->SightRadius == DefaultVisionRange ? (DefaultVisionRange + LoseRange) / 2 : DefaultVisionRange + LoseRange;
+		sight->SightRadius = sight->SightRadius == DefaultVisionRange ? DefaultVisionRange / 2 : DefaultVisionRange;
+
+		if (GetPerceptionComp())
+		{
+			GetPerceptionComp()->RequestStimuliListenerUpdate();
+			return true;
+		}
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("Cannot find sightConfig!"));
+	return false;
 }
 
 void AEnemyAI::SetAIIdleState() {

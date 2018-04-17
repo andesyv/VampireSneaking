@@ -62,11 +62,11 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 			}
 		}
 		else {
-			UE_LOG(LogTemp, Error, TEXT("Can't receive actor from blackboard!"));
+			UE_LOG(LogTemp, Error, TEXT("Can't receive actor from blackboard! - In BTShootAyPlayer.cpp"));
 		}
 	}
 	else {
-		UE_LOG(LogTemp, Error, TEXT("Can't receive blackboard!"));
+		UE_LOG(LogTemp, Error, TEXT("Can't receive blackboard! - In BTShootAyPlayer.cpp"));
 	}
 	FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
 }

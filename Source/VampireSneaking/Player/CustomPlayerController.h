@@ -53,6 +53,9 @@ protected:
 	 */
 	void ChangePawn(int index);
 
+	// Toggles the vision ranges of all enemies between full and half.
+	bool ToggleVisionRanges() const;
+
 	// Make enemies not reset their cooldown when switching from and to batmode.
 	void CancelEnemyCooldownReset();
 

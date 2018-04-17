@@ -15,6 +15,7 @@
 #include "AI/EnemyAI.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
+#include "Enemy.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -90,6 +91,7 @@ void ACustomPlayerController::ChangePawn(int index)
 			}
 			else {
 				UE_LOG(LogTemp, Warning, TEXT("Trying to switch to the same pawn!"));
+				return;
 			}
 
 			CurrentIndex = index;
@@ -124,7 +126,45 @@ void ACustomPlayerController::ChangePawn(int index)
 		}
 	}
 
+	// Hinder enemies targeting the player to reset their attack time.
 	CancelEnemyCooldownReset();
+
+	// Toggle vision range of enemies.
+	if (!ToggleVisionRanges())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Could'nt switch between enemy vision ranges!"));
+	}
+}
+
+bool ACustomPlayerController::ToggleVisionRanges() const
+{
+	if (GetWorld() && GetWorld()->GetAuthGameMode())
+	{
+		AVampireSneakingGameModeBase *gamemode = Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (gamemode)
+		{
+			const TArray<AEnemy*> enemies{ gamemode->GetEnemyList() };
+			for (auto item : enemies)
+			{
+				if (item->GetController())
+				{
+					AEnemyAI *enemyAI = Cast<AEnemyAI>(item->GetController());
+					if (enemyAI)
+					{
+						if (enemyAI->ToggleVisionRange())
+						{
+							// Continue to skip the return in the loop.
+							continue;
+						}
+					}
+				}
+				return false;
+			}
+			// This is clearly the best outcome.
+			return true;
+		}
+	}
+	return false;
 }
 
 APawn* ACustomPlayerController::MoveController_Implementation(int index)
