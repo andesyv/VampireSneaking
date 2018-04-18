@@ -18,7 +18,7 @@ AEnemy::AEnemy()
 
 float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
 {
-	float temp = AActor::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	const float temp = AActor::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
 	APlayerVamp *player = Cast<APlayerVamp>(DamageCauser);
 

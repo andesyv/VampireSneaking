@@ -23,15 +23,22 @@ struct FExplosionDamageInfo {
 
 	GENERATED_BODY()
 
-	float Damage;
+		float Damage;
 	FVector FlingDirection;
 	float FlingAmount;
 
 	FExplosionDamageInfo(float _damage = 0.f, const FVector &_flingDirection = FVector{ 0.f, 0.f, 0.f }, float _flingAmount = 1.f)
-	 : Damage( _damage ), FlingDirection( _flingDirection ), FlingAmount( _flingAmount )
+		: Damage(_damage), FlingDirection(_flingDirection), FlingAmount(_flingAmount)
 	{
 
 	}
+};
+
+enum class AddRemoveMode
+{
+	Add,
+	Remove,
+	NoAction,
 };
 
 /**
@@ -109,6 +116,9 @@ protected:
 	// Check if player is outside trueVision range
 	UFUNCTION(BlueprintCallable)
 	void CheckIfOutsideVisionRange();
+
+	// Adds or removes an enemy to the list enemies targeting the player.
+	void AddRemoveTargetingEnemy(AddRemoveMode mode, AActor *playerPtr);
 
 	/**
 	 * Toggles the blackboard state enum between Frozen and Idle.
