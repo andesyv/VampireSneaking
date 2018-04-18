@@ -33,7 +33,7 @@ EBTNodeResult::Type UBTTakeDamage::ExecuteTask(UBehaviorTreeComponent& OwnerComp
         UBlackboardComponent *blackboard = OwnerComp.GetBlackboardComponent();
         if (blackboard) {
 			if (!blackboard->SetValue<UBlackboardKeyType_Bool>(ResetAttackCooldown.SelectedKeyName, false)) {
-				UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard!"));
+				UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard! - In BTTakeDamage.cpp"));
 			}
             if (!blackboard->SetValue<UBlackboardKeyType_Enum>(State.SelectedKeyName, static_cast<int>(AIState::Combat))) {
 			    UE_LOG(LogTemp, Error, TEXT("Failed to set enum state in blackboard!"));
@@ -42,7 +42,6 @@ EBTNodeResult::Type UBTTakeDamage::ExecuteTask(UBehaviorTreeComponent& OwnerComp
             return EBTNodeResult::Succeeded;
         }
     }
-
     return EBTNodeResult::Failed;
 }
 

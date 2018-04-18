@@ -134,7 +134,7 @@ void ACustomPlayerController::CancelEnemyCooldownReset()
 				{
 					if (!enemyBlackboard->SetValue<UBlackboardKeyType_Bool>(TEXT("ResetAttackCooldown"), false))
 					{
-						UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard!"));
+						UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard on %s!"), *item->GetFName().ToString());
 					}
 				}
 			}
