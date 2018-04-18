@@ -227,7 +227,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							UE_LOG(LogTemp, Error, TEXT("Wrong Sense ID"));
 							return;
 						}
-						if (!stimulus.IsValid())
+						if (!stimulus.IsValid() || stimulus.IsExpired())
 						{
 							continue;
 						}
@@ -255,6 +255,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 
 							if (stimulus.WasSuccessfullySensed())
 							{
+								UE_LOG(LogTemp, Warning, TEXT("AI sees the player."));
 								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat))) {
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 								}
@@ -272,6 +273,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							}
 							else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 							{
+								UE_LOG(LogTemp, Warning, TEXT("AI has seen the player, but lost him."));
 								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 								}
@@ -302,7 +304,17 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 						}
 						else if (stimulus.Type == HearingConfig)
 						{
-							
+							if (static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) != AIState::Combat)
+							{
+								UE_LOG(LogTemp, Warning, TEXT("AI heard the player."));
+								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+								}
+
+								if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), stimulus.StimulusLocation)) {
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
+								}
+							}
 						}
 					}
 
@@ -371,6 +383,8 @@ void AEnemyAI::StimulusExpired(FAIStimulus & stimulus)
 		return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Stimulus %s was destroyed!"), *stimulus.Type.Name.ToString());
+
 	const FAISenseID SightConfigId = UAISense::GetSenseID(UAISense_Sight::StaticClass());
 	const FAISenseID HearingConfigId = UAISense::GetSenseID(UAISense_Hearing::StaticClass());
 
@@ -387,23 +401,35 @@ void AEnemyAI::StimulusExpired(FAIStimulus & stimulus)
 
 		for (auto item : perceivedInfo.LastSensedStimuli)
 		{
-			// If both the sight stimuli and the hearing stimuli for this AI has expired, set it's state to Idle.
-			if (stimulus.Type == SightConfigId && item.Type == HearingConfigId && item.IsExpired())
+			if (!item.IsValid())
 			{
-				SetIdle = true;
+				continue;
 			}
-			else if (stimulus.Type == HearingConfigId && item.Type == SightConfigId && item.IsExpired())
+
+			// If both the sight stimuli and the hearing stimuli for this AI has expired, set it's state to Idle.
+			// if (item.IsExpired() || !item.IsValid())
+			UE_LOG(LogTemp, Warning, TEXT("Stimuli is expired or not valid. Type is %s"), *item.Type.Name.ToString());
+			if (stimulus.Type == SightConfigId && item.Type == HearingConfigId)
 			{
-				SetIdle = true;
+				if (!item.IsExpired())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("One of the stimuli is still active, aborting."))
+					return;
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Sight is no more."))
+			}
+			else if (stimulus.Type == HearingConfigId && item.Type == SightConfigId)
+			{
+				if (!item.IsExpired())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("One of the stimuli is still active, aborting."))
+						return;
+				}
+				UE_LOG(LogTemp, Warning, TEXT("Hearing is no more."))
 			}
 		}
 		
 		// If even one of the actors are still being searched for, cancel out.
-		if (!SetIdle)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("One of the stimuli is still active, aborting."))
-			return;
-		}
 	}
 
 	SetAIIdleState();
