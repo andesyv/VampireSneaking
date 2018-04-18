@@ -9,9 +9,10 @@
 // Forward declarations
 class UBehaviorTreeComponent;
 class UBlackboardComponent;
-class UAIPerceptionComponent;
+class UCustomAIPerceptionComponent;
 class UHealthComponent;
 class UAISenseConfig;
+struct FAIStimulus;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 
@@ -23,7 +24,7 @@ struct FExplosionDamageInfo {
 
 	GENERATED_BODY()
 
-		float Damage;
+	float Damage;
 	FVector FlingDirection;
 	float FlingAmount;
 
@@ -103,11 +104,14 @@ protected:
 	void ClearTimer(FTimerHandle& timerHandle) const;
 
 	// Perception component.
-	UAIPerceptionComponent *AIPerceptionComp = nullptr;
+	UCustomAIPerceptionComponent *AIPerceptionComp = nullptr;
 
 	// Called whenever AI Perception updates it's state.
 	UFUNCTION(BlueprintCallable)
 	void UpdateState(const TArray<AActor*> &UpdatedActors);
+
+	// Called whenever a stimulus expires.
+	void StimulusExpired(FAIStimulus &stimulus);
 
 	float TrueVisionRadius = 150.f;
 
@@ -146,7 +150,7 @@ public:
 	// Delegate for move completion.
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
-	UAIPerceptionComponent* const GetPerceptionComp() const;
+	UCustomAIPerceptionComponent* const GetPerceptionComp() const;
 
 	// Toggles the vision range of the enemy between half and full.
 	bool ToggleVisionRange() const;

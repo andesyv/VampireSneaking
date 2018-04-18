@@ -5,13 +5,14 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Perception/AIPerceptionComponent.h"
+#include "AI/CustomAIPerceptionComponent.h"
 #include "Player/PlayableCharacterBase.h"
 #include "TimerManager.h"
 #include "HealthComponent.h"
 #include "Player/CustomPlayerController.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AISense_Hearing.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -79,8 +80,8 @@ void AEnemyAI::Possess(APawn *Pawn) {
 void AEnemyAI::BeginPlay() {
 	Super::BeginPlay();
 
-	TArray<UAIPerceptionComponent*> comps{};
-	GetComponents<UAIPerceptionComponent>(comps);
+	TArray<UCustomAIPerceptionComponent*> comps{};
+	GetComponents<UCustomAIPerceptionComponent>(comps);
 	for (auto item : comps) {
 		if (item) {
 			AIPerceptionComp = item;
@@ -89,6 +90,7 @@ void AEnemyAI::BeginPlay() {
 	
 	if (GetPerceptionComp()) {
 		GetPerceptionComp()->OnPerceptionUpdated.AddDynamic(this, &AEnemyAI::UpdateState);
+		GetPerceptionComp()->StimulusExpired.AddDynamic(this, &AEnemyAI::StimulusExpired);
 
 		// Setup sight config.
 		FAISenseID Id = UAISense::GetSenseID(UAISense_Sight::StaticClass());
@@ -114,7 +116,7 @@ void AEnemyAI::BeginPlay() {
 	}
 }
 
-UAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() const
+UCustomAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() const
 {
 	if (AIPerceptionComp)
 	{
@@ -214,8 +216,47 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 		if (item && GetPerceptionComp() && GetPerceptionComp()->GetActorsPerception(item, perceivedInfo)) {
 			if (perceivedInfo.LastSensedStimuli.Num() > 0) {
 				if (Blackboard) {
-					ClearTimer(SearchingTimerHandle);
-					ClearTimer(VisionRangeTimerHandle);
+					for (const auto &stimulus : perceivedInfo.LastSensedStimuli)
+					{
+						FAISenseID SightConfig = UAISense::GetSenseID(UAISense_Sight::StaticClass());
+						FAISenseID HearingConfig = UAISense::GetSenseID(UAISense_Hearing::StaticClass());
+
+						if (!SightConfig.IsValid() || !HearingConfig.IsValid())
+						{
+							UE_LOG(LogTemp, Error, TEXT("Wrong Sense ID"));
+							return;
+						}
+						if (!stimulus.IsValid())
+						{
+							continue;
+						}
+
+						// Clear the searchingtimer as this function will either end up with combat or searching state.
+						ClearTimer(SearchingTimerHandle);
+
+						if (stimulus.Type == SightConfig)
+						{
+							/* TODO: 
+							 * IsExpired is true when the stimuli has hit it's max age.
+							 * Therefore you should try to find a check to see if the stimuli isn't currently being updated, instead.
+							 */
+							if (!stimulus.IsExpired())
+							{
+								/**
+								 *Clear timer only when the sight stimulus hasn't expired.
+								 * When it has expired it means that it's not currently being used. (player outside vision field)
+								*/
+								ClearTimer(VisionRangeTimerHandle);
+							} else
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Stimulus is expired!"));
+							}
+						}
+						else if (stimulus.Type == HearingConfig)
+						{
+							
+						}
+					}
 
 					if (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
 					{
@@ -272,6 +313,11 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 			}
 		}
 	}
+}
+
+void AEnemyAI::StimulusExpired(FAIStimulus & stimulus)
+{
+	// Should get called whenever stimuls expires.
 }
 
 float AEnemyAI::GetLengthBetween(AActor * first, AActor * second)
