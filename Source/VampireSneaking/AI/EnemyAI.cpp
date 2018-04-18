@@ -153,7 +153,8 @@ bool AEnemyAI::ToggleVisionRange() const
 	return false;
 }
 
-void AEnemyAI::SetAIIdleState() {
+void AEnemyAI::SetAIIdleState() const
+{
 	if (Blackboard) {
 		if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Idle))) {
 			UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));

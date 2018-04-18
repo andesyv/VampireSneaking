@@ -90,7 +90,7 @@ protected:
 
 	// For setting the AI to the Idle state
 	UFUNCTION()
-	void SetAIIdleState();
+	void SetAIIdleState() const;
 
 	// For clearing a timer.
 	void ClearTimer(FTimerHandle& timerHandle) const;
