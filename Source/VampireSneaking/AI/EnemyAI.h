@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "EnemyAI.generated.h"
 
 // Forward declarations
@@ -12,7 +13,6 @@ class UBlackboardComponent;
 class UCustomAIPerceptionComponent;
 class UHealthComponent;
 class UAISenseConfig;
-struct FAIStimulus;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 
@@ -111,6 +111,7 @@ protected:
 	void UpdateState(const TArray<AActor*> &UpdatedActors);
 
 	// Called whenever a stimulus expires.
+	UFUNCTION(BlueprintCallable)
 	void StimulusExpired(FAIStimulus &stimulus);
 
 	float TrueVisionRadius = 150.f;
