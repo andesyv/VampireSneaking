@@ -207,17 +207,23 @@ void AEnemyAI::AddRemoveTargetingEnemy(AddRemoveMode mode, AActor* playerPtr)
 	}
 }
 
-void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
-	for (auto item : UpdatedActors) {
-		if (!item->IsA(APlayableCharacterBase::StaticClass())) {
+void AEnemyAI::UpdateState(const TArray<AActor*>& UpdatedActors)
+{
+	for (auto item : UpdatedActors)
+	{
+		if (!item->IsA(APlayableCharacterBase::StaticClass()))
+		{
 			continue;
 		}
 
 		FActorPerceptionBlueprintInfo perceivedInfo;
-		if (item && GetPerceptionComp() && GetPerceptionComp()->GetActorsPerception(item, perceivedInfo)) {
-			if (perceivedInfo.LastSensedStimuli.Num() > 0) {
-				if (Blackboard) {
-					for (const auto &stimulus : perceivedInfo.LastSensedStimuli)
+		if (item && GetPerceptionComp() && GetPerceptionComp()->GetActorsPerception(item, perceivedInfo))
+		{
+			if (perceivedInfo.LastSensedStimuli.Num() > 0)
+			{
+				if (Blackboard)
+				{
+					for (const auto& stimulus : perceivedInfo.LastSensedStimuli)
 					{
 						FAISenseID SightConfig = UAISense::GetSenseID(UAISense_Sight::StaticClass());
 						FAISenseID HearingConfig = UAISense::GetSenseID(UAISense_Hearing::StaticClass());
@@ -232,31 +238,12 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							continue;
 						}
 
-						// Clear the searchingtimer as this function will either end up with combat or searching state.
-						ClearTimer(SearchingTimerHandle);
-
 						if (stimulus.Type == SightConfig)
 						{
-							///* TODO: 
-							// * IsExpired is true when the stimuli has hit it's max age.
-							// * Therefore you should try to find a check to see if the stimuli isn't currently being updated, instead.
-							// */
-							//if (!stimulus.IsExpired())
-							//{
-							//	/**
-							//	 *Clear timer only when the sight stimulus hasn't expired.
-							//	 * When it has expired it means that it's not currently being used. (player outside vision field)
-							//	*/
-							//	ClearTimer(VisionRangeTimerHandle);
-							//} else
-							//{
-							//	UE_LOG(LogTemp, Warning, TEXT("Stimulus is expired!"));
-							//}
-
 							if (stimulus.WasSuccessfullySensed())
 							{
-								UE_LOG(LogTemp, Warning, TEXT("AI sees the player."));
-								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat))) {
+								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat)))
+								{
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 								}
 
@@ -265,7 +252,8 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 									TargetedActors.Add(item);
 								}
 
-								if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item)) {
+								if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item))
+								{
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
 								}
 
@@ -273,8 +261,8 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							}
 							else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 							{
-								UE_LOG(LogTemp, Warning, TEXT("AI has seen the player, but lost him."));
-								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
+								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching)))
+								{
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 								}
 
@@ -283,12 +271,14 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 									TargetedActors.Remove(item);
 								}
 
-								if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), nullptr)) {
+								if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), nullptr))
+								{
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
 								}
 
 								// Can be stimulis position, but would'nt really change much.
-								if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), item->GetActorLocation())) {
+								if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), item->GetActorLocation()))
+								{
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
 								}
 
@@ -297,8 +287,10 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							else
 							{
 								// UE_LOG(LogTemp, Warning, TEXT("Player is lost but inside True vision field!"));
-								if (GetWorld()) {
-									GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange, 0.3f, true);
+								if (GetWorld())
+								{
+									GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange,
+									                                       0.3f, true);
 								}
 							}
 						}
@@ -306,68 +298,21 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 						{
 							if (static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) != AIState::Combat)
 							{
-								UE_LOG(LogTemp, Warning, TEXT("AI heard the player."));
-								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
+								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching)))
+								{
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 								}
 
-								if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), stimulus.StimulusLocation)) {
+								if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), stimulus.StimulusLocation))
+								{
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
 								}
 							}
 						}
 					}
-
-					//if (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
-					//{
-					//	if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat))) {
-					//		UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
-					//	}
-
-					//	if (!TargetedActors.Contains(item))
-					//	{
-					//		TargetedActors.Add(item);
-					//	}	
-					//	
-					//	if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item)) {
-					//		UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
-					//	}
-
-					//	AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
-					//}
-					//else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
-					//{
-					//	if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
-					//		UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
-					//	}
-					//	
-					//	if (TargetedActors.Contains(item))
-					//	{
-					//		TargetedActors.Remove(item);
-					//	}
-
-					//	if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), nullptr)) {
-					//		UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
-					//	}
-
-					//	if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), item->GetActorLocation())) {
-					//		UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
-					//	}
-
-					//	if (GetWorld()) {
-					//		GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
-					//	}
-
-					//	AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
-					//}
-					//else
-					//{
-					//	// UE_LOG(LogTemp, Warning, TEXT("Player is lost but inside True vision field!"));
-					//	if (GetWorld()) {
-					//		GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange, 0.3f, true);
-					//	}
-					//}
-				} else {
+				}
+				else
+				{
 					UE_LOG(LogTemp, Warning, TEXT("Missing blackboard!."));
 				}
 			}
@@ -377,13 +322,10 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 
 void AEnemyAI::StimulusExpired(FAIStimulus & stimulus)
 {
-	// Should get called whenever stimuls expires.
 	if (GetPerceptionComp() == nullptr)
 	{
 		return;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Stimulus %s was destroyed!"), *stimulus.Type.Name.ToString());
 
 	const FAISenseID SightConfigId = UAISense::GetSenseID(UAISense_Sight::StaticClass());
 	const FAISenseID HearingConfigId = UAISense::GetSenseID(UAISense_Hearing::StaticClass());
@@ -392,46 +334,32 @@ void AEnemyAI::StimulusExpired(FAIStimulus & stimulus)
 	GetPerceptionComp()->GetKnownPerceivedActors(UAISense_Sight::StaticClass(), ActorsPerceived);
 
 	for (auto actor : ActorsPerceived)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Actor %s"), *actor->GetFName().ToString());
-		
-		bool SetIdle{ false };
+	{		
 		FActorPerceptionBlueprintInfo perceivedInfo;
 		GetPerceptionComp()->GetActorsPerception(actor, perceivedInfo);
 
 		for (auto item : perceivedInfo.LastSensedStimuli)
 		{
+			// If it's invalid, it means it hasn't been instantiated yet,
+			// which means it's definetively not still being searched for.
 			if (!item.IsValid())
 			{
 				continue;
 			}
-
-			// If both the sight stimuli and the hearing stimuli for this AI has expired, set it's state to Idle.
-			// if (item.IsExpired() || !item.IsValid())
-			UE_LOG(LogTemp, Warning, TEXT("Stimuli is expired or not valid. Type is %s"), *item.Type.Name.ToString());
-			if (stimulus.Type == SightConfigId && item.Type == HearingConfigId)
+			
+			// If even one of the actors are still being searched for, cancel out.
+			if ((stimulus.Type == SightConfigId && item.Type == HearingConfigId) || (stimulus.Type == HearingConfigId && item.Type == SightConfigId))
 			{
 				if (!item.IsExpired())
 				{
 					UE_LOG(LogTemp, Warning, TEXT("One of the stimuli is still active, aborting."))
 					return;
 				}
-				UE_LOG(LogTemp, Warning, TEXT("Sight is no more."))
-			}
-			else if (stimulus.Type == HearingConfigId && item.Type == SightConfigId)
-			{
-				if (!item.IsExpired())
-				{
-					UE_LOG(LogTemp, Warning, TEXT("One of the stimuli is still active, aborting."))
-						return;
-				}
-				UE_LOG(LogTemp, Warning, TEXT("Hearing is no more."))
 			}
 		}
-		
-		// If even one of the actors are still being searched for, cancel out.
 	}
 
+	// If both the sight stimuli and the hearing stimuli for this AI has expired, set it's state to Idle.
 	SetAIIdleState();
 }
 
