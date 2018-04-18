@@ -56,26 +56,21 @@ void ACustomPlayerController::ChangePawn()
 	ChangePawn(-1);
 }
 
-void ACustomPlayerController::CancelEnemyCooldownReset()
+void ACustomPlayerController::SetParticles(APawn* CurrentPawn) const
 {
-	// Make a copy of the array in case it changes in runtime. (That has to be some fast switching if that's the case..)
-	const TArray<AEnemyAI*> enemiesTargetingCopy{ EnemiesTargeting };
-	for (auto item : enemiesTargetingCopy)
+	if (GetPawn() && GetWorld() && followCamera)
 	{
-		if (item && item->GetBrainComponent())
+		TArray<USpringArmComponent*> Comps{};
+		followCamera->GetComponents<USpringArmComponent>(Comps);
+		if (Comps.Num() >= 1)
 		{
-			UBehaviorTreeComponent *behaviorTree = Cast<UBehaviorTreeComponent>(item->GetBrainComponent());
-			if (behaviorTree)
-			{
-				UBlackboardComponent *enemyBlackboard = behaviorTree->GetBlackboardComponent();
-				if (enemyBlackboard)
-				{
-					if (!enemyBlackboard->SetValue<UBlackboardKeyType_Bool>(TEXT("ResetAttackCooldown"), false))
-					{
-						UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard!"));
-					}
-				}
-			}
+			// FTransform spawnTrans{ FRotator::ZeroRotator, GetPawn()->GetActorLocation() + FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f };
+			/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransformEffect, spawnTrans, true);*/
+			UParticleSystemComponent *particleSystem = UGameplayStatics::SpawnEmitterAttached(TransformEffect, followCamera->GetRootComponent(), NAME_None, FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f);
+			FVector particleVelocity{ CurrentPawn->GetVelocity().GetSafeNormal()};
+			particleSystem->SetVectorRandParameter(TEXT("VelocityModifier"), particleVelocity.RotateAngleAxis(20.f, FVector{ 0.f, 0.f, 1.f }), particleVelocity.RotateAngleAxis(-20.f, FVector{ 0.f, 0.f, 1.f }));
+			particleSystem->SetVectorParameter(TEXT("SmokeVelocity"), CurrentPawn->GetVelocity());
+			// UE_LOG(LogTemp, Warning, TEXT("Velocity is %s"), *particleVelocity.ToString())
 		}
 	}
 }
@@ -110,21 +105,8 @@ void ACustomPlayerController::ChangePawn(int index)
 		UE_LOG(LogTemp, Error, TEXT("There aren't any pawns assigned in the controllable pawns array!"));
 	}
 
-	if (GetPawn() && GetWorld() && followCamera)
-	{
-		TArray<USpringArmComponent*> Comps{};
-		followCamera->GetComponents<USpringArmComponent>(Comps);
-		if (Comps.Num() >= 1)
-		{
-			// FTransform spawnTrans{ FRotator::ZeroRotator, GetPawn()->GetActorLocation() + FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f };
-			/*UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), TransformEffect, spawnTrans, true);*/
-			UParticleSystemComponent *particleSystem = UGameplayStatics::SpawnEmitterAttached(TransformEffect, followCamera->GetRootComponent(), NAME_None, FVector{ Comps[0]->GetUnfixedCameraPosition() - followCamera->GetActorLocation() } *0.2f);
-			FVector particleVelocity{ CurrentPawn->GetVelocity().GetSafeNormal()};
-			particleSystem->SetVectorRandParameter(TEXT("VelocityModifier"), particleVelocity.RotateAngleAxis(20.f, FVector{ 0.f, 0.f, 1.f }), particleVelocity.RotateAngleAxis(-20.f, FVector{ 0.f, 0.f, 1.f }));
-			particleSystem->SetVectorParameter(TEXT("SmokeVelocity"), CurrentPawn->GetVelocity());
-			// UE_LOG(LogTemp, Warning, TEXT("Velocity is %s"), *particleVelocity.ToString())
-		}
-	}
+	// Set switching particles.
+	SetParticles(CurrentPawn);
 
 	// Hinder enemies targeting the player to reset their attack time.
 	CancelEnemyCooldownReset();
@@ -133,6 +115,30 @@ void ACustomPlayerController::ChangePawn(int index)
 	if (!ToggleVisionRanges())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Could'nt switch between enemy vision ranges!"));
+	}
+}
+
+void ACustomPlayerController::CancelEnemyCooldownReset()
+{
+	// Make a copy of the array in case it changes in runtime. (That has to be some fast switching if that's the case..)
+	const TArray<AEnemyAI*> enemiesTargetingCopy{ EnemiesTargeting };
+	for (auto item : enemiesTargetingCopy)
+	{
+		if (item && item->GetBrainComponent())
+		{
+			UBehaviorTreeComponent *behaviorTree = Cast<UBehaviorTreeComponent>(item->GetBrainComponent());
+			if (behaviorTree)
+			{
+				UBlackboardComponent *enemyBlackboard = behaviorTree->GetBlackboardComponent();
+				if (enemyBlackboard)
+				{
+					if (!enemyBlackboard->SetValue<UBlackboardKeyType_Bool>(TEXT("ResetAttackCooldown"), false))
+					{
+						UE_LOG(LogTemp, Error, TEXT("Failed to set bool ResetAttackCooldown in blackboard!"));
+					}
+				}
+			}
+		}
 	}
 }
 

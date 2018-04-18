@@ -45,6 +45,7 @@ protected:
 
 	// Inputbinding-friendly version of ChangePawn
 	void ChangePawn();
+	void SetParticles(APawn* CurrentPawn) const;
 
 	/**
 	 * Changes the pawn of the player to a specified index in the ControllablePawns array.
