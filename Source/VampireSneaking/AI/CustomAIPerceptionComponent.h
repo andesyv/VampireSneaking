@@ -21,5 +21,5 @@ protected:
 	void HandleExpiredStimulus(FAIStimulus& StimulusStore) override;
 	
 public:
-	FStimulusExpiredEvent StimulusExpired;
+	FStimulusExpiredEvent OnStimulusExpired;
 };

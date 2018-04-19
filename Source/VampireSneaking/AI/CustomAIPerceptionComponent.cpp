@@ -4,7 +4,7 @@
 
 void UCustomAIPerceptionComponent::HandleExpiredStimulus(FAIStimulus& StimulusStore) {
 	
-	StimulusExpired.Broadcast(StimulusStore);
+	OnStimulusExpired.Broadcast(StimulusStore);
 
 }
 

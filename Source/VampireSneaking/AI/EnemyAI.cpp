@@ -91,7 +91,7 @@ void AEnemyAI::BeginPlay() {
 	
 	if (GetPerceptionComp()) {
 		GetPerceptionComp()->OnPerceptionUpdated.AddDynamic(this, &AEnemyAI::UpdateState);
-		GetPerceptionComp()->StimulusExpired.AddDynamic(this, &AEnemyAI::StimulusExpired);
+		GetPerceptionComp()->OnStimulusExpired.AddDynamic(this, &AEnemyAI::StimulusExpired);
 
 		// Setup sight config.
 		FAISenseID Id = UAISense::GetSenseID(UAISense_Sight::StaticClass());
