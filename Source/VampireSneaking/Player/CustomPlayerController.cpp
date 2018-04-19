@@ -16,6 +16,7 @@
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 #include "Enemy.h"
+#include "WallFadeComponent.h"
 
 ACustomPlayerController::ACustomPlayerController() {
 	// Make health component.
@@ -199,6 +200,16 @@ void ACustomPlayerController::SetupInputComponent()
 	InputComponent->BindAction("Bite", IE_Released, this, &ACustomPlayerController::ToggleSuckBlood);
 }
 
+const APawn * ACustomPlayerController::GetControllablePawn(int index) const
+{
+	if (ControllablePawns.Num() > 0 && index >= 0 && index < ControllablePawns.Num() && ControllablePawns[index])
+	{
+		return ControllablePawns[index];
+	}
+
+	return nullptr;
+}
+
 void ACustomPlayerController::SwapActorLocation(AActor * first, AActor * second)
 {
 	if (first && second) {
@@ -222,21 +233,26 @@ void ACustomPlayerController::SetInvisWalls()
 {
 	// Raycast from camera to player
 	TArray<FHitResult> Hits{};
-	TArray<AActor*> newWalls{};
+	TArray<UWallFadeComponent*> newWalls{};
 	if (followCamera && followCamera->ViewBlockingTrace(Hits))
 	{
 		for (auto item : Hits)
 		{
 			if (item.Actor.Get() != nullptr)
 			{
-				auto *wall = Cast<AWall>(item.Actor);
-				if (wall)
+				TArray<UWallFadeComponent*> WallComponents;
+				item.Actor->GetComponents<UWallFadeComponent>(WallComponents);
+				for (auto item : WallComponents)
 				{
-					// If wall is not in the invisible walls array, change it to not be visible.
-					newWalls.Add(wall);
-					if (!InvisibleWalls.Contains(wall))
+					if (item)
 					{
-						wall->SetMaterialVisible(false);
+						// If wall is not in the invisible walls array, change it to not be visible.
+						newWalls.Add(item);
+						if (!InvisibleWalls.Contains(item))
+						{
+							item->SetMaterialVisible(false);
+						}
+						break;
 					}
 				}
 			}
@@ -246,13 +262,9 @@ void ACustomPlayerController::SetInvisWalls()
 	// If wall is not in tracehit array, make it visible again.
 	for (auto item : InvisibleWalls)
 	{
-		if (!newWalls.Contains(item))
+		if (item && !newWalls.Contains(item))
 		{
-			auto *wall = Cast<AWall>(item);
-			if (wall)
-			{
-				wall->SetMaterialVisible(true);
-			}
+			item->SetMaterialVisible(true);
 		}
 	}
 

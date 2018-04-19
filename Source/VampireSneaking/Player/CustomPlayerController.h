@@ -10,6 +10,7 @@
 class UHealthComponent;
 class AFollowCamera;
 class UParticleSystem;
+class UWallFadeComponent;
 class AEnemyAI;
 
 /**
@@ -45,7 +46,6 @@ protected:
 
 	// Inputbinding-friendly version of ChangePawn
 	void ChangePawn();
-	void SetParticles(APawn* CurrentPawn) const;
 
 	/**
 	 * Changes the pawn of the player to a specified index in the ControllablePawns array.
@@ -53,6 +53,9 @@ protected:
 	 * In iterade mode it will change to the next pawn in the ControllablePawns array.
 	 */
 	void ChangePawn(int index);
+
+	// Particle effect when switching modes
+	void SetParticles(APawn* CurrentPawn) const;
 
 	// Toggles the vision ranges of all enemies between full and half.
 	bool ToggleVisionRanges() const;
@@ -79,13 +82,12 @@ protected:
 	void SetInvisWalls();
 
 	// Array for storing all currently invisible walls.
-	TArray<AActor*> InvisibleWalls{};
+	TArray<UWallFadeComponent*> InvisibleWalls{};
 
 	// SetInvisWalls timer handle
 	FTimerHandle SetInvisWallsHandle;
 
 public:
-
 	// Health and blood component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHealthComponent* HealthComponent = nullptr;
@@ -99,7 +101,10 @@ public:
 	UParticleSystem *TransformEffect;
 
 	// List of enemies targeting this player
+	// TODO: Encapsulate
 	TArray<AEnemyAI*> EnemiesTargeting;
+
+	const APawn* GetControllablePawn(int index) const;
 
 	void SwapActorLocation(AActor* first, AActor* second);
 

@@ -4,19 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "WallFadeComponent.h"
 #include "Wall.generated.h"
 
 // Forward declarations
 class UMaterialInstanceDynamic;
 class UStaticMeshComponent;
 
-// Fade state
-enum class FadeState
-{
-	Finished,
-	Fading,
-	Showing,
-};
+/**
+ * NB: This class no longer works, but isn't removed yet to not break the game.
+ * The new version is now WallFadeComponent
+ */
 
 UCLASS()
 class VAMPIRESNEAKING_API AWall : public AActor
@@ -53,7 +51,7 @@ public:
 
 	// Fade/show speed.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float FadeSpeed = 1.f;
+	float FadeSpeed = 10.f;
 
 	// Sets the visibility for the material.
 	void SetMaterialVisible(bool Visibility);
