@@ -10,6 +10,8 @@
 #include "TimerManager.h"
 #include "HealthComponent.h"
 #include "Player/CustomPlayerController.h"
+#include "Perception/AISenseConfig_Sight.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -87,6 +89,28 @@ void AEnemyAI::BeginPlay() {
 	
 	if (GetPerceptionComp()) {
 		GetPerceptionComp()->OnPerceptionUpdated.AddDynamic(this, &AEnemyAI::UpdateState);
+
+		// Setup sight config.
+		FAISenseID Id = UAISense::GetSenseID(UAISense_Sight::StaticClass());
+		
+		if (!Id.IsValid())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Wrong Sense ID"));
+			return;
+		}
+
+		SightConfig = GetPerceptionComp()->GetSenseConfig(Id);
+		
+		auto *sight = Cast<UAISenseConfig_Sight>(SightConfig);
+		if (sight)
+		{
+			DefaultVisionRange = sight->SightRadius;
+			// LoseRange = sight->LoseSightRadius - DefaultVisionRange;
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Cannot find sightConfig!"));
+		}
 	}
 }
 
@@ -110,6 +134,26 @@ void AEnemyAI::UnPossess()
 	}
 }
 
+bool AEnemyAI::ToggleVisionRange() const
+{
+	UAISenseConfig_Sight *sight = Cast<UAISenseConfig_Sight>(SightConfig);
+	if (sight)
+	{
+		// The enemies should'nt have a harder time loosing sight when in batmode.
+		// sight->LoseSightRadius = sight->SightRadius == DefaultVisionRange ? (DefaultVisionRange + LoseRange) / 2 : DefaultVisionRange + LoseRange;
+		sight->SightRadius = sight->SightRadius == DefaultVisionRange ? DefaultVisionRange / 2 : DefaultVisionRange;
+
+		if (GetPerceptionComp())
+		{
+			GetPerceptionComp()->RequestStimuliListenerUpdate();
+			return true;
+		}
+	}
+
+	UE_LOG(LogTemp, Error, TEXT("Cannot find sightConfig!"));
+	return false;
+}
+
 void AEnemyAI::SetAIIdleState() {
 	if (Blackboard) {
 		if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Idle))) {
@@ -124,6 +168,38 @@ void AEnemyAI::ClearTimer(FTimerHandle &timerHandle) const
 {
 	if (GetWorld() && timerHandle.IsValid() && GetWorld()->GetTimerManager().IsTimerActive(timerHandle)) {
 		GetWorld()->GetTimerManager().ClearTimer(timerHandle);
+	}
+}
+
+void AEnemyAI::AddRemoveTargetingEnemy(AddRemoveMode mode, AActor* playerPtr)
+{
+	if (mode == AddRemoveMode::NoAction)
+	{
+		return;
+	}
+
+	APlayableCharacterBase *player = Cast<APlayableCharacterBase>(playerPtr);
+	if (player && player->GetController())
+	{
+		ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
+		if (playerController)
+		{
+			if (mode == AddRemoveMode::Add) {
+				if (playerController->EnemiesTargeting.Contains(this))
+				{
+					return;
+				}
+				playerController->EnemiesTargeting.Add(this);
+			}
+			else
+			{
+				if (!playerController->EnemiesTargeting.Contains(this))
+				{
+					return;
+				}
+				playerController->EnemiesTargeting.Remove(this);
+			}
+		}
 	}
 }
 
@@ -155,15 +231,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
 						}
 
-						APlayableCharacterBase *player = Cast<APlayableCharacterBase>(item);
-						if (player && player->GetController())
-						{
-							ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
-							if (playerController)
-							{
-								playerController->EnemiesTargeting.Add(this);
-							}
-						}
+						AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
 					}
 					else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 					{
@@ -188,15 +256,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
 							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
 						}
 
-						APlayableCharacterBase *player = Cast<APlayableCharacterBase>(item);
-						if (player && player->GetController())
-						{
-							ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
-							if (playerController)
-							{
-								playerController->EnemiesTargeting.Remove(this);
-							}
-						}
+						AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
 					}
 					else
 					{
@@ -266,4 +326,9 @@ void AEnemyAI::Death_Implementation() {
 		enemy->Destroy();
 	}
 	Destroy();
+
+	if (GetWorld())
+	{
+		AddRemoveTargetingEnemy(AddRemoveMode::Remove, UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
+	}
 }

@@ -18,26 +18,12 @@ void APlayableCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	try {
-		TArray<USkeletalMeshComponent*> skeletonMeshes{};
-		GetComponents<USkeletalMeshComponent>(skeletonMeshes);
-		// check(skeletonMeshes.Num() == 1);
-		if (skeletonMeshes.Num() != 1)
-		{
-			throw FString{ "Skeletonmeshes should equal exactly 1!" };
-		}
+	TArray<USkeletalMeshComponent*> skeletonMeshes{};
+	GetComponents<USkeletalMeshComponent>(skeletonMeshes);
+	check(skeletonMeshes.Num() == 1 && "Skeletonmeshes should equal exactly 1!");
 
-		meshStartRotation = skeletonMeshes[0]->RelativeRotation;
-		meshComponent = skeletonMeshes[0];
-	}
-	catch (const FString &error)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Caught error: \"%s\""), *error);
-	}
-	catch (...)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Unknown error!"));
-	}
+	meshStartRotation = skeletonMeshes[0]->RelativeRotation;
+	meshComponent = skeletonMeshes[0];
 }
 
 // Called every frame

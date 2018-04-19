@@ -45,6 +45,7 @@ protected:
 
 	// Inputbinding-friendly version of ChangePawn
 	void ChangePawn();
+	void SetParticles(APawn* CurrentPawn) const;
 
 	/**
 	 * Changes the pawn of the player to a specified index in the ControllablePawns array.
@@ -52,6 +53,9 @@ protected:
 	 * In iterade mode it will change to the next pawn in the ControllablePawns array.
 	 */
 	void ChangePawn(int index);
+
+	// Toggles the vision ranges of all enemies between full and half.
+	bool ToggleVisionRanges() const;
 
 	// Make enemies not reset their cooldown when switching from and to batmode.
 	void CancelEnemyCooldownReset();

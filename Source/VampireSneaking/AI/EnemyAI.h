@@ -11,6 +11,7 @@ class UBehaviorTreeComponent;
 class UBlackboardComponent;
 class UAIPerceptionComponent;
 class UHealthComponent;
+class UAISenseConfig;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTaskNodeExecutionDelegate, class UBehaviorTreeComponent*, BehaviorTree);
 
@@ -22,15 +23,22 @@ struct FExplosionDamageInfo {
 
 	GENERATED_BODY()
 
-	float Damage;
+		float Damage;
 	FVector FlingDirection;
 	float FlingAmount;
 
 	FExplosionDamageInfo(float _damage = 0.f, const FVector &_flingDirection = FVector{ 0.f, 0.f, 0.f }, float _flingAmount = 1.f)
-	 : Damage( _damage ), FlingDirection( _flingDirection ), FlingAmount( _flingAmount )
+		: Damage(_damage), FlingDirection(_flingDirection), FlingAmount(_flingAmount)
 	{
 
 	}
+};
+
+enum class AddRemoveMode
+{
+	Add,
+	Remove,
+	NoAction,
 };
 
 /**
@@ -69,6 +77,15 @@ protected:
 	// Called on unpossession of controller.
 	void UnPossess() override;
 
+	/**
+	 * Sight configuration.
+	 * Don't change AI Perception settings in the editor
+	 * during runtime, or this will break.
+	 */
+	UAISenseConfig *SightConfig;
+	float DefaultVisionRange{};
+	// float LoseRange{};
+
 	// Timerhandle for the searching.
 	FTimerHandle SearchingTimerHandle;
 
@@ -100,6 +117,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void CheckIfOutsideVisionRange();
 
+	// Adds or removes an enemy to the list enemies targeting the player.
+	void AddRemoveTargetingEnemy(AddRemoveMode mode, AActor *playerPtr);
+
 	/**
 	 * Toggles the blackboard state enum between Frozen and Idle.
 	 * Returns true if state was changed to Frozen.
@@ -127,6 +147,9 @@ public:
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
 	UAIPerceptionComponent* const GetPerceptionComp() const;
+
+	// Toggles the vision range of the enemy between half and full.
+	bool ToggleVisionRange() const;
 
 	// How long the AI will search for before going back into patrol-mode
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
