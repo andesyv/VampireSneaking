@@ -5,13 +5,15 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyAllTypes.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Perception/AIPerceptionComponent.h"
+#include "AI/CustomAIPerceptionComponent.h"
 #include "Player/PlayableCharacterBase.h"
 #include "TimerManager.h"
 #include "HealthComponent.h"
 #include "Player/CustomPlayerController.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "Kismet/GameplayStatics.h"
+#include "Perception/AISense_Hearing.h"
+#include "Perception/AISense.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -79,8 +81,8 @@ void AEnemyAI::Possess(APawn *Pawn) {
 void AEnemyAI::BeginPlay() {
 	Super::BeginPlay();
 
-	TArray<UAIPerceptionComponent*> comps{};
-	GetComponents<UAIPerceptionComponent>(comps);
+	TArray<UCustomAIPerceptionComponent*> comps{};
+	GetComponents<UCustomAIPerceptionComponent>(comps);
 	for (auto item : comps) {
 		if (item) {
 			AIPerceptionComp = item;
@@ -89,6 +91,7 @@ void AEnemyAI::BeginPlay() {
 	
 	if (GetPerceptionComp()) {
 		GetPerceptionComp()->OnPerceptionUpdated.AddDynamic(this, &AEnemyAI::UpdateState);
+		GetPerceptionComp()->OnStimulusExpired.AddDynamic(this, &AEnemyAI::StimulusExpired);
 
 		// Setup sight config.
 		FAISenseID Id = UAISense::GetSenseID(UAISense_Sight::StaticClass());
@@ -114,7 +117,7 @@ void AEnemyAI::BeginPlay() {
 	}
 }
 
-UAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() const
+UCustomAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() const
 {
 	if (AIPerceptionComp)
 	{
@@ -154,7 +157,8 @@ bool AEnemyAI::ToggleVisionRange() const
 	return false;
 }
 
-void AEnemyAI::SetAIIdleState() {
+void AEnemyAI::SetAIIdleState() const
+{
 	if (Blackboard) {
 		if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Idle))) {
 			UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
@@ -203,74 +207,160 @@ void AEnemyAI::AddRemoveTargetingEnemy(AddRemoveMode mode, AActor* playerPtr)
 	}
 }
 
-void AEnemyAI::UpdateState(const TArray<AActor*> &UpdatedActors) {
-	for (auto item : UpdatedActors) {
-		if (!item->IsA(APlayableCharacterBase::StaticClass())) {
+void AEnemyAI::UpdateState(const TArray<AActor*>& UpdatedActors)
+{
+	for (auto item : UpdatedActors)
+	{
+		if (!item->IsA(APlayableCharacterBase::StaticClass()))
+		{
 			continue;
 		}
 
 		FActorPerceptionBlueprintInfo perceivedInfo;
-		if (item && GetPerceptionComp() && GetPerceptionComp()->GetActorsPerception(item, perceivedInfo)) {
-			if (perceivedInfo.LastSensedStimuli.Num() > 0) {
-				if (Blackboard) {
-					ClearTimer(SearchingTimerHandle);
-					ClearTimer(VisionRangeTimerHandle);
-
-					if (perceivedInfo.LastSensedStimuli[0].WasSuccessfullySensed())
+		if (item && GetPerceptionComp() && GetPerceptionComp()->GetActorsPerception(item, perceivedInfo))
+		{
+			if (perceivedInfo.LastSensedStimuli.Num() > 0)
+			{
+				if (Blackboard)
+				{
+					for (const auto& stimulus : perceivedInfo.LastSensedStimuli)
 					{
-						if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat))) {
-							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
-						}
+						FAISenseID SightConfig = UAISense::GetSenseID(UAISense_Sight::StaticClass());
+						FAISenseID HearingConfig = UAISense::GetSenseID(UAISense_Hearing::StaticClass());
 
-						if (!TargetedActors.Contains(item))
+						if (!SightConfig.IsValid() || !HearingConfig.IsValid())
 						{
-							TargetedActors.Add(item);
-						}	
-						
-						if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item)) {
-							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
+							UE_LOG(LogTemp, Error, TEXT("Wrong Sense ID"));
+							return;
 						}
-
-						AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
-					}
-					else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
-					{
-						if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching))) {
-							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
-						}
-						
-						if (TargetedActors.Contains(item))
+						if (!stimulus.IsValid() || stimulus.IsExpired())
 						{
-							TargetedActors.Remove(item);
+							continue;
 						}
 
-						if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), nullptr)) {
-							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
-						}
+						if (stimulus.Type == SightConfig)
+						{
+							if (stimulus.WasSuccessfullySensed())
+							{
+								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Combat)))
+								{
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+								}
 
-						if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), item->GetActorLocation())) {
-							UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
-						}
+								if (!TargetedActors.Contains(item))
+								{
+									TargetedActors.Add(item);
+								}
 
-						if (GetWorld()) {
-							GetWorld()->GetTimerManager().SetTimer(SearchingTimerHandle, this, &AEnemyAI::SetAIIdleState, SearchTime);
-						}
+								if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), item))
+								{
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
+								}
 
-						AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
+								AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
+							}
+							else if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
+							{
+								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching)))
+								{
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+								}
+
+								if (TargetedActors.Contains(item))
+								{
+									TargetedActors.Remove(item);
+								}
+
+								if (!Blackboard->SetValue<UBlackboardKeyType_Object>(TEXT("TargetActor"), nullptr))
+								{
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard TargetActor."));
+								}
+
+								// Can be stimulis position, but would'nt really change much.
+								if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), item->GetActorLocation()))
+								{
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
+								}
+
+								AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
+							}
+							else
+							{
+								// UE_LOG(LogTemp, Warning, TEXT("Player is lost but inside True vision field!"));
+								if (GetWorld())
+								{
+									GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange,
+									                                       0.3f, true);
+								}
+							}
+						}
+						else if (stimulus.Type == HearingConfig)
+						{
+							if (static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) != AIState::Combat)
+							{
+								if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(AIState::Searching)))
+								{
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
+								}
+
+								if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), stimulus.StimulusLocation))
+								{
+									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
+								}
+							}
+						}
 					}
-					else
-					{
-						// UE_LOG(LogTemp, Warning, TEXT("Player is lost but inside True vision field!"));
-						if (GetWorld()) {
-							GetWorld()->GetTimerManager().SetTimer(VisionRangeTimerHandle, this, &AEnemyAI::CheckIfOutsideVisionRange, 0.3f, true);
-						}
-					}
-				} else {
+				}
+				else
+				{
 					UE_LOG(LogTemp, Warning, TEXT("Missing blackboard!."));
 				}
 			}
 		}
 	}
+}
+
+void AEnemyAI::StimulusExpired(FAIStimulus & stimulus)
+{
+	if (GetPerceptionComp() == nullptr)
+	{
+		return;
+	}
+
+	const FAISenseID SightConfigId = UAISense::GetSenseID(UAISense_Sight::StaticClass());
+	const FAISenseID HearingConfigId = UAISense::GetSenseID(UAISense_Hearing::StaticClass());
+
+	TArray<AActor*> ActorsPerceived{};
+	GetPerceptionComp()->GetKnownPerceivedActors(UAISense_Sight::StaticClass(), ActorsPerceived);
+
+	for (auto actor : ActorsPerceived)
+	{		
+		FActorPerceptionBlueprintInfo perceivedInfo;
+		GetPerceptionComp()->GetActorsPerception(actor, perceivedInfo);
+
+		for (auto item : perceivedInfo.LastSensedStimuli)
+		{
+			// If it's invalid, it means it hasn't been instantiated yet,
+			// which means it's definetively not still being searched for.
+			if (!item.IsValid())
+			{
+				continue;
+			}
+			
+			// If even one of the actors are still being searched for, cancel out.
+			if ((stimulus.Type == SightConfigId && item.Type == HearingConfigId) || (stimulus.Type == HearingConfigId && item.Type == SightConfigId))
+			{
+				if (!item.IsExpired())
+				{
+					UE_LOG(LogTemp, Warning, TEXT("One of the stimuli is still active, aborting."))
+					return;
+				}
+			}
+		}
+	}
+
+	// If both the sight stimuli and the hearing stimuli for this AI has expired, set it's state to Idle.
+	SetAIIdleState();
 }
 
 float AEnemyAI::GetLengthBetween(AActor * first, AActor * second)
@@ -295,7 +385,6 @@ void AEnemyAI::CheckIfOutsideVisionRange()
 			break;
 		}
 	}
-
 }
 
 bool AEnemyAI::ToggleSucking() {

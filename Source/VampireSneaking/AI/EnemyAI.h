@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "EnemyAI.generated.h"
 
 // Forward declarations
 class UBehaviorTreeComponent;
 class UBlackboardComponent;
-class UAIPerceptionComponent;
+class UCustomAIPerceptionComponent;
 class UHealthComponent;
 class UAISenseConfig;
 
@@ -23,7 +24,7 @@ struct FExplosionDamageInfo {
 
 	GENERATED_BODY()
 
-		float Damage;
+	float Damage;
 	FVector FlingDirection;
 	float FlingAmount;
 
@@ -97,17 +98,21 @@ protected:
 
 	// For setting the AI to the Idle state
 	UFUNCTION()
-	void SetAIIdleState();
+	void SetAIIdleState() const;
 
 	// For clearing a timer.
 	void ClearTimer(FTimerHandle& timerHandle) const;
 
 	// Perception component.
-	UAIPerceptionComponent *AIPerceptionComp = nullptr;
+	UCustomAIPerceptionComponent *AIPerceptionComp = nullptr;
 
 	// Called whenever AI Perception updates it's state.
 	UFUNCTION(BlueprintCallable)
 	void UpdateState(const TArray<AActor*> &UpdatedActors);
+
+	// Called whenever a stimulus expires.
+	UFUNCTION(BlueprintCallable)
+	void StimulusExpired(FAIStimulus &stimulus);
 
 	float TrueVisionRadius = 150.f;
 
@@ -146,7 +151,7 @@ public:
 	// Delegate for move completion.
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
-	UAIPerceptionComponent* const GetPerceptionComp() const;
+	UCustomAIPerceptionComponent* const GetPerceptionComp() const;
 
 	// Toggles the vision range of the enemy between half and full.
 	bool ToggleVisionRange() const;
