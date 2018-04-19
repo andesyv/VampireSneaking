@@ -65,4 +65,7 @@ void AProjectile::BloodHit( UPrimitiveComponent* HitComponent, AActor* OtherActo
 		}
 		
 	}
+	else if (OtherActor != this) {
+		Destroy();
+	};
 }
