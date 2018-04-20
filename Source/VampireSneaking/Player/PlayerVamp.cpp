@@ -135,20 +135,22 @@ bool APlayerVamp::EnemyInFront()
 	return false;
 }
 
-void APlayerVamp::BloodAttack() {
-
-	
-		UWorld *world = GetWorld();
-		if(world){
-			//Spawning the bullet
-		world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation() + GetMeshForwardVector()*50.0f, GetMeshForwardVector().Rotation());
-
+void APlayerVamp::BloodAttack()
+{
+	UWorld* world = GetWorld();
+	if (world)
+	{
+		//Spawning the bullet
+		AProjectile* projectile = world->SpawnActor<AProjectile>(ProjectileBlueprint,
+		                                                         GetActorLocation() + GetMeshForwardVector() * 50.0f,
+		                                                         GetMeshForwardVector().Rotation());
+		projectile->Instigator = this;
 	}
 }
 
-void APlayerVamp::Dash() {
- FVector AddForce = GetMeshForwardVector() * 3000;
+void APlayerVamp::Dash()
+{
+	FVector AddForce = GetMeshForwardVector() * 3000;
 
 	LaunchCharacter(AddForce, false, true);
-	
 }

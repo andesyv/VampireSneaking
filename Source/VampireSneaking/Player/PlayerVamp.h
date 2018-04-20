@@ -76,7 +76,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	float AttackCooldown = 1.5f;
 
-	UPROPERTY(EditAnywhere, Category = "BloodAttack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BloodAttack")
 		TSubclassOf<class AProjectile> ProjectileBlueprint ;
 
 	 UFUNCTION()
