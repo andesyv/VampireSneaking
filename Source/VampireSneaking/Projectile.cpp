@@ -51,6 +51,8 @@ void AProjectile::BeginPlay()
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	// UE_LOG(LogTemp, Warning, TEXT("Velocity is: %s"), *CollisionComponent->GetPhysicsLinearVelocity().ToString());
 }
 
 void AProjectile::BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,

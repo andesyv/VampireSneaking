@@ -34,7 +34,7 @@ void APlayableCharacterBase::Tick(float DeltaTime)
 	if (!SuckingBlood && controller && meshComponent) {
 		Rotate();
 	}
-
+	
 	if (TimeBeforeNextAttack < 0.f)
 	{
 		TimeBeforeNextAttack = 0.f;

@@ -10,6 +10,9 @@
 #include "Projectile.h"
 #include "Math/Vector.h"
 #include "Engine/World.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -135,16 +138,68 @@ bool APlayerVamp::EnemyInFront()
 	return false;
 }
 
+FVector APlayerVamp::BallisticTrajectory(const FVector &EndPoint)
+{
+	// The gravity constant g
+	const float g{ 980.f };
+	FVector distance{ EndPoint - GetActorLocation() };
+	// Nullify z as we only need the distance from the ground
+	distance.Z = 0;
+	// The height from the ground.
+	const float h{ GetCapsuleComponent()->GetScaledCapsuleHalfHeight() };
+
+	// I think that calculating VyNegative (which is a - before the last squareroot) would give a result equal to a negative t,
+	// which ofcourse doesn't exist in normal world scenarios. Therefore I don't think it is necessary to calculate it.
+	const double VyPositive = FMath::Sqrt((2 * g * distance.Size() + FMath::Sqrt(4 * g * distance.Size() + 8 * g * h + 1)) / 2.f);
+
+	return FVector{ static_cast<float>(VyPositive), 0.f, static_cast<float>(VyPositive) };
+}
+
 void APlayerVamp::BloodAttack()
 {
+	// TODO: Calculate ballistic trajectory for projctile.
+	// BallisticTrajectory();
+
 	UWorld* world = GetWorld();
-	if (world)
+	if (world && GetController())
 	{
-		//Spawning the bullet
-		AProjectile* projectile = world->SpawnActor<AProjectile>(ProjectileBlueprint,
-		                                                         GetActorLocation() + GetMeshForwardVector() * 50.0f,
-		                                                         GetMeshForwardVector().Rotation());
-		projectile->Instigator = this;
+		APlayerController * playerCon = Cast<APlayerController>(GetController());
+		if (playerCon)
+		{
+			/*FTransform SpawnTransform(Rotation, Origin);
+			auto MyDeferredActor = Cast<ADeferredActor>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, DeferredActorClass, SpawnTransform));
+			if (MyDeferredActor != nullptr)
+			{
+				MyDeferredActor->Init(ShootDir);
+
+				UGameplayStatics::FinishSpawningActor(MyDeferredActor, SpawnTransform);
+			}*/
+			/*AProjectile* projectile{};
+			FHitResult hitResult{};*/
+			//Spawning the bullet
+			//if (playerCon->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult))
+			//{
+			//	FRotator rotation{(GetMeshForwardVector().Rotation().Quaternion() * BallisticTrajectory(hitResult.ImpactPoint)).Rotation()};
+			//	FTransform spawnTransform{ rotation, GetActorLocation() };
+			//	// projectile = world->SpawnActorDeferred<AProjectile>(ProjectileBlueprint, spawnTransform);
+			//	projectile = world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation()/* + GetMeshForwardVector() * 50.0f*/, GetMeshForwardVector().Rotation());
+			//	// projectile->UseCodeInitialSpeed = true;
+			//	// projectile->InitialSpeed = BallisticTrajectory(hitResult.ImpactPoint).Size();
+			//	projectile->CollisionComponent->SetPhysicsLinearVelocity(GetMeshForwardVector().Rotation().Quaternion() * BallisticTrajectory(hitResult.ImpactPoint));
+			//	// projectile->FinishSpawning(spawnTransform);
+			//	UE_LOG(LogTemp, Warning, TEXT("Speed set to: %s"), *BallisticTrajectory(hitResult.ImpactPoint).ToString());
+			//}
+			AProjectile *projectile = world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation()/* + GetMeshForwardVector() * 50.0f*/, GetMeshForwardVector().Rotation());
+			
+			if (projectile == nullptr)
+			{
+				return;
+			}
+
+			projectile->Instigator = this;
+		}
+		// 
+		
 	}
 }
 

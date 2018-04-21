@@ -32,6 +32,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void AttackCheck();
 
+	// Must've calculated this wrong, cause this shit DOESN'T WORK!
+	FVector BallisticTrajectory(const FVector &EndPoint);
+
 	// Player attack function.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Attack();

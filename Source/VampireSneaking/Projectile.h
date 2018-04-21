@@ -13,7 +13,10 @@ class USphereComponent;
 UCLASS()
 class VAMPIRESNEAKING_API AProjectile : public AActor
 {
-GENERATED_BODY()
+
+	GENERATED_BODY()
+
+	friend class APlayerVamp;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -30,6 +33,11 @@ protected:
 	// Collision component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USphereComponent *CollisionComponent;
+
+	// If the projectile should use the InitialSpeed parameter instead of the 
+	// initial speed parameter in the blueprint version of MovementComponent.
+	bool UseCodeInitialSpeed{ false };
+	float InitialSpeed{ 1.f };
 
 public:	
 	// Called every frame
