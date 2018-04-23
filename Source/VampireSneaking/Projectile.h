@@ -47,5 +47,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<USoundBase*> HitSounds;
 
+	// Particle to spawn when the projectile hits something.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem *HitParticleEffect;
 	
 };

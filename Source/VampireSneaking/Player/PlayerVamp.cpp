@@ -157,6 +157,25 @@ FVector APlayerVamp::BallisticTrajectory(const FVector &EndPoint)
 
 void APlayerVamp::BloodAttack()
 {
+	if (controller && controller->HealthComponent)
+	{
+		if (controller->HealthComponent->GetBlood() - BloodProjectileActivationCost > 0.f)
+		{
+			controller->HealthComponent->AddBlood(-BloodProjectileActivationCost);
+		}
+		else
+		{
+			// UE_LOG(LogTemp, Warning, TEXT("Not enough blood."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Can't find controller and/or HealthComponent."));
+		return;
+	}
+
+
 	// TODO: Calculate ballistic trajectory for projctile.
 	// BallisticTrajectory();
 
@@ -166,29 +185,6 @@ void APlayerVamp::BloodAttack()
 		APlayerController * playerCon = Cast<APlayerController>(GetController());
 		if (playerCon)
 		{
-			/*FTransform SpawnTransform(Rotation, Origin);
-			auto MyDeferredActor = Cast<ADeferredActor>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this, DeferredActorClass, SpawnTransform));
-			if (MyDeferredActor != nullptr)
-			{
-				MyDeferredActor->Init(ShootDir);
-
-				UGameplayStatics::FinishSpawningActor(MyDeferredActor, SpawnTransform);
-			}*/
-			/*AProjectile* projectile{};
-			FHitResult hitResult{};*/
-			//Spawning the bullet
-			//if (playerCon->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult))
-			//{
-			//	FRotator rotation{(GetMeshForwardVector().Rotation().Quaternion() * BallisticTrajectory(hitResult.ImpactPoint)).Rotation()};
-			//	FTransform spawnTransform{ rotation, GetActorLocation() };
-			//	// projectile = world->SpawnActorDeferred<AProjectile>(ProjectileBlueprint, spawnTransform);
-			//	projectile = world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation()/* + GetMeshForwardVector() * 50.0f*/, GetMeshForwardVector().Rotation());
-			//	// projectile->UseCodeInitialSpeed = true;
-			//	// projectile->InitialSpeed = BallisticTrajectory(hitResult.ImpactPoint).Size();
-			//	projectile->CollisionComponent->SetPhysicsLinearVelocity(GetMeshForwardVector().Rotation().Quaternion() * BallisticTrajectory(hitResult.ImpactPoint));
-			//	// projectile->FinishSpawning(spawnTransform);
-			//	UE_LOG(LogTemp, Warning, TEXT("Speed set to: %s"), *BallisticTrajectory(hitResult.ImpactPoint).ToString());
-			//}
 			AProjectile *projectile = world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation()/* + GetMeshForwardVector() * 50.0f*/, GetMeshForwardVector().Rotation());
 			
 			if (projectile == nullptr)
@@ -198,8 +194,6 @@ void APlayerVamp::BloodAttack()
 
 			projectile->Instigator = this;
 		}
-		// 
-		
 	}
 }
 

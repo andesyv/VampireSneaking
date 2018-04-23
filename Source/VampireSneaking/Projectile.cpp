@@ -71,6 +71,12 @@ void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AAc
 		UGameplayStatics::PlaySoundAtLocation(this, HitSounds[RandomIndex], GetActorLocation(), FRotator::ZeroRotator);
 	}
 	MakeNoise(1, Instigator, GetActorLocation(), 400);
+
+	// Play a particleeffect
+	if (HitParticleEffect)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticleEffect, GetActorLocation());
+	}
 	
 	MovementComponent->Velocity = FVector::ZeroVector;
 	CollisionComponent->SetSimulatePhysics(false);
@@ -79,7 +85,7 @@ void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AAc
 	FTimerHandle DestroyTimerHandle{};
 	FTimerDelegate TimerDelegate;
 
-	/// Check it, a lambda!
+	/// Check it; a lambda!
 	TimerDelegate.BindLambda([&]() { Destroy(); });
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, TimerDelegate, 1.f, false);
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, TimerDelegate, 1.5f, false);
 }
