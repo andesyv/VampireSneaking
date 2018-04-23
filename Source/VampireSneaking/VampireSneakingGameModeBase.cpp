@@ -3,9 +3,10 @@
 #include "VampireSneakingGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
-#include "Player/BatMode.h"
 #include "Player/CustomPlayerController.h"
 #include "Enemy.h"
+#include "Player/BatMode.h"
+#include "TimerManager.h"
 
 void AVampireSneakingGameModeBase::StartPlay()
 {
@@ -48,6 +49,11 @@ void AVampireSneakingGameModeBase::RestartLevel()
 	UGameplayStatics::OpenLevel(GetWorld(), FName{ *GetWorld()->GetMapName() }, true);
 }
 
+//void AVampireSneakingGameModeBase::RestartPlayer(AController * NewPlayer)
+//{
+//	RestartPlayer(NewPlayer);
+//}
+
 TArray<AEnemy*>& AVampireSneakingGameModeBase::GetEnemyList()
 {
 	return EnemyList;
@@ -70,6 +76,26 @@ APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVe
 	}
 
 	return returnPawn;
+}
+
+void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
+{
+	UE_LOG(LogTemp, Warning, TEXT("A player has diedifieded."));
+	// If this didn't work, the game can't continue properly. Therefore just crash yoself.
+	check(PlayerCon != nullptr);
+
+	if (RespawnTimerHandle.IsValid())
+	{
+		UE_LOG(LogTemp, Error, TEXT("What the shit?"));
+		return;
+	}
+	
+	FTimerDelegate RespawnTimerDelegate;
+	RespawnTimerDelegate.BindUFunction(this, FName{ "RestartPlayer" }, PlayerCon);
+	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnTimerDelegate, 2.f, false);
+	// RestartPlayer(PlayerCon);
+
+	OnPlayerDeath.Broadcast();
 }
 
 void AVampireSneakingGameModeBase::RemoveFromEnemyList(AActor * DestroyedEnemy)

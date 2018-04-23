@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "VampireSneakingGameModeBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerDeath);
+
 // Forward declarations
 class AEnemy;
 class ABatMode;
@@ -32,7 +34,7 @@ public:
 public:
 	/** Transitions to calls BeginPlay on actors. */
 	UFUNCTION(BlueprintCallable, Category = Game)
-	virtual void StartPlay() override;
+	void StartPlay() override;
 
 	/**
 	* Called during RestartPlayer to actually spawn the player's pawn, when using a start spot
@@ -40,11 +42,14 @@ public:
 	* @param	StartSpot - Actor at which to spawn pawn
 	* @return	a pawn of the default pawn class
 	*/
-	virtual APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
 	// Restart the level!
 	UFUNCTION(BlueprintCallable)
 	void RestartLevel();
+
+	// This is literally just a override to have the function in the VampireSneakingGameModeBase class.
+	// void RestartPlayer(AController* NewPlayer) override;
 
 	// Get a list of enemies in the scene
 	UFUNCTION(BlueprintCallable)
@@ -58,9 +63,18 @@ protected:
 	// For spawning the bat.
 	APawn* SpawnBatPawn(UClass *spawnClass, const FVector &Position, const FRotator &Rotation);
 
+	FTimerHandle RespawnTimerHandle;
+
 	// Event called when the player dies.
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayerDies();
+
+	// Blueprint event that is called when the player dies.
+	UPROPERTY(BlueprintAssignable)
+	FPlayerDeath OnPlayerDeath;
+
+	// Function called when player dies.
+	void PlayerDeath(APlayerController* PlayerCon);
 
 	// List of enemies
 	TArray<AEnemy*> EnemyList;

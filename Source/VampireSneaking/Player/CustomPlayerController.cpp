@@ -6,7 +6,6 @@
 #include "VampireSneakingGameModeBase.h"
 #include "HealthComponent.h"
 #include "Player/FollowCamera.h"
-#include "Wall.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -273,10 +272,7 @@ void ACustomPlayerController::SetInvisWalls()
 }
 
 void ACustomPlayerController::Death_Implementation() {
-	// Call death event.
-	if (GetWorld() && GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()) {
-		GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()->PlayerDies();
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Died!"));
 
 	// Destory all pawns.
 	UnPossess();
@@ -284,6 +280,11 @@ void ACustomPlayerController::Death_Implementation() {
 		pawn->Destroy();
 	}
 
+	// Call death event.
+	if (GetWorld() && GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()) {
+		GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()->PlayerDeath(this);
+	}
+
 	// Destroy yoself!
-	Destroy();
+	// Destroy();
 }

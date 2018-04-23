@@ -5,7 +5,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "Math/UnrealMathUtility.h"
-#include "GameFramework/Controller.h"
 #include "GameFramework/Pawn.h"
 #include "HealthComponent.h"
 #include "Enemy.h"
@@ -27,17 +26,17 @@ void AProjectile::BeginPlay()
 	TArray<UStaticMeshComponent*> meshArray;
 	// UPrimitiveComponent* component = FindComponentByClass<UStaticMeshComponent>();
 	GetComponents<UStaticMeshComponent>(meshArray);
-	for (auto item : meshArray) {
-		if (item) {
-		
+	for (auto item : meshArray)
+	{
+		if (item)
+		{
 			item->AddImpulse(GetActorForwardVector() * 100000.f);
-			item->SetPhysicsAngularVelocityInDegrees(FVector{ FMath::RandRange(0.1f, 1.f)  , FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f)*1000.f });
+			item->SetPhysicsAngularVelocityInDegrees(FVector{
+				FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f) * 1000.f
+			});
 			item->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
+		}
 	}
-	}
-	
-		
-	
 }
 
 // Called every frame
