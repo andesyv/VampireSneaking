@@ -70,7 +70,7 @@ void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AAc
 		const auto RandomIndex = FMath::RandRange(0, HitSounds.Num() - 1);
 		UGameplayStatics::PlaySoundAtLocation(this, HitSounds[RandomIndex], GetActorLocation(), FRotator::ZeroRotator);
 	}
-	MakeNoise(1, Instigator, GetActorLocation(), 400);
+	MakeNoise(1, Instigator, GetActorLocation(), 2000.f);
 
 	// Play a particleeffect
 	if (HitParticleEffect)

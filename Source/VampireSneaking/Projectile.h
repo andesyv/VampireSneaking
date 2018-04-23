@@ -9,6 +9,7 @@
 // Forward declarations
 class UProjectileMovementComponent;
 class USphereComponent;
+class UPawnNoiseEmitterComponent;
 
 UCLASS()
 class VAMPIRESNEAKING_API AProjectile : public AActor
@@ -39,6 +40,13 @@ public:
 	void Tick(float DeltaTime) override;
 
 	APawn * Instigator{ nullptr };
+
+	/**
+	 * The range of the sound the projectile makes when it hits something.
+	 * Should be atleast as big as the AI's hearing range.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SoundRange = 2000.f;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
