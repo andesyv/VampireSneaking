@@ -8,6 +8,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "TimerManager.h"
 
 
 // Sets default values
@@ -55,7 +56,7 @@ void AProjectile::Tick(float DeltaTime)
 	// UE_LOG(LogTemp, Warning, TEXT("Velocity is: %s"), *CollisionComponent->GetPhysicsLinearVelocity().ToString());
 }
 
-void AProjectile::BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
+void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
                            FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (OtherActor == this)
@@ -70,6 +71,15 @@ void AProjectile::BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 		UGameplayStatics::PlaySoundAtLocation(this, HitSounds[RandomIndex], GetActorLocation(), FRotator::ZeroRotator);
 	}
 	MakeNoise(1, Instigator, GetActorLocation(), 400);
+	
+	MovementComponent->Velocity = FVector::ZeroVector;
+	CollisionComponent->SetSimulatePhysics(false);
+	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	Destroy();
+	FTimerHandle DestroyTimerHandle{};
+	FTimerDelegate TimerDelegate;
+
+	/// Check it, a lambda!
+	TimerDelegate.BindLambda([&]() { Destroy(); });
+	GetWorldTimerManager().SetTimer(DestroyTimerHandle, TimerDelegate, 1.f, false);
 }

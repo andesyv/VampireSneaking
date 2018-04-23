@@ -34,18 +34,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	USphereComponent *CollisionComponent;
 
-	// If the projectile should use the InitialSpeed parameter instead of the 
-	// initial speed parameter in the blueprint version of MovementComponent.
-	bool UseCodeInitialSpeed{ false };
-	float InitialSpeed{ 1.f };
-
 public:	
 	// Called every frame
 	void Tick(float DeltaTime) override;
 
 	APawn * Instigator{ nullptr };
 
-	UFUNCTION()
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	// Sounds the blood projectile can make when hitting something
