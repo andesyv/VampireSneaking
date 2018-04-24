@@ -32,6 +32,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void AttackCheck();
 
+	// Must've calculated this wrong, cause this shit DOESN'T WORK!
+	FVector BallisticTrajectory(const FVector &EndPoint);
+
 	// Player attack function.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Attack();
@@ -50,36 +53,41 @@ public:
 
 	// Speed of blood sucking (blood/second).
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float SuckSpeed = 5.f;
+	float SuckSpeed = 15.f;
 
 	// Damage type
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	TSubclassOf<UDamageType> DamageType;
 
 	// Amount of damage on attacks
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = ( DisplayName = "Damage"))
 	float AttackDamage = 30.f;
 
 	// Range of attack from player center
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (DisplayName = "Range"))
 	float AttackRange = 100.f;
 
 	// Wideness of attack in angle
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (DisplayName = "Angle"))
 	float AttackAngle = 30.f;
 
 	// Hit force of normal attack.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (DisplayName = "Hit Force"))
 	float HitForce = 10.f;
 
 	// Cooldown before the player can attack again.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (DisplayName = "Cooldown"))
 	float AttackCooldown = 1.5f;
 
-	UPROPERTY(EditAnywhere, Category = "BloodAttack")
-		TSubclassOf<class AProjectile> ProjectileBlueprint ;
+	// Blood projectile class.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blood projectile", meta = (DisplayName = "Projectile Class"))
+	TSubclassOf<class AProjectile> ProjectileBlueprint ;
 
-	 UFUNCTION()
+	// The activation cost of the blood projectile.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blood projectile", meta = ( DisplayName = "Activation Cost"))
+	float BloodProjectileActivationCost = 30.f;
+	
+	UFUNCTION()
 		void Dash(); 
 	
 };

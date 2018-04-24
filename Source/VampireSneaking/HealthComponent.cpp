@@ -32,7 +32,7 @@ void UHealthComponent::Die() {
 	OnDeath.Broadcast();
 }
 
-const float UHealthComponent::TakeDamage(float amount)
+const float UHealthComponent::TakeDamage(const float amount)
 {
 	if (CHEAT_Godmode) {
 		return Blood;
@@ -59,14 +59,14 @@ const float UHealthComponent::GetPercentageBlood() const
 	return Blood / MaxBlood;
 }
 
-const float UHealthComponent::AddBlood(float amount)
+const float UHealthComponent::AddBlood(const float amount)
 {
 	// If the amount is too small, assume it's 0 and skip out.
-	if (FMath::Abs(amount) < KINDA_SMALL_NUMBER) {
+	if (FMath::Abs(amount) < KINDA_SMALL_NUMBER || amount == 0.f) {
 		return Blood;
 	}
 
-	if (CHEAT_InfiniteBlood) {
+	if (CHEAT_Godmode && amount < 0.f) {
 		return Blood;
 	}
 
@@ -75,9 +75,7 @@ const float UHealthComponent::AddBlood(float amount)
 		Blood = 0.f;
 		OutOfBlood = true;
 
-		if (DieWhenOutOfBlood && !CHEAT_Godmode) {
-			Die();
-		}
+		Die();
 	} else {
 		OutOfBlood = false;
 	}

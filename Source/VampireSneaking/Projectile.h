@@ -4,16 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Components/StaticMeshComponent.h"
-#include "Enemy.h"
-#include "Kismet/GameplayStatics.h"
 #include "Projectile.generated.h"
 
+// Forward declarations
+class UProjectileMovementComponent;
+class USphereComponent;
+class UPawnNoiseEmitterComponent;
 
 UCLASS()
 class VAMPIRESNEAKING_API AProjectile : public AActor
 {
+
 	GENERATED_BODY()
+
+	friend class APlayerVamp;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -21,20 +25,38 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
+
+	// Movement component
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UProjectileMovementComponent *MovementComponent;
+
+	// Collision component
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	USphereComponent *CollisionComponent;
 
 public:	
 	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	void Tick(float DeltaTime) override;
 
-	UPROPERTY()
-	TArray<UStaticMeshComponent*> MArray;
+	APawn * Instigator{ nullptr };
 
-	UFUNCTION()
+	/**
+	 * The range of the sound the projectile makes when it hits something.
+	 * Should be atleast as big as the AI's hearing range.
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SoundRange = 2000.f;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
-	AEnemy *suckedEnemy{ nullptr };
+	// Sounds the blood projectile can make when hitting something
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<USoundBase*> HitSounds;
 
-	
+	// Particle to spawn when the projectile hits something.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UParticleSystem *HitParticleEffect;
 	
 };

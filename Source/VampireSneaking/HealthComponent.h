@@ -8,7 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDeathEvent);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent, DisplayName = "Health Component") )
 class VAMPIRESNEAKING_API UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -19,7 +19,7 @@ public:
 
 protected:
 	// Called when the game starts
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 	// Current and starting blood.
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetBlood, Category = "Blood")
@@ -33,17 +33,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
 		bool MaxBloodIsStartingBlood = false;
 
-	// Should the player/enemy use no blood on abilities? (Cheat)
-	UPROPERTY(EditDefaultsOnly, Category = "Blood")
-		bool CHEAT_InfiniteBlood = false;
-
 	// If the player/enemy is out of blood.
 	UPROPERTY(BlueprintGetter = IsOutOfBlood, Category = "Blood")
 		bool OutOfBlood = false;
-
-	// Should the player/enemy die when they run out of blood?
-	UPROPERTY(EditDefaultsOnly, Category = "Blood")
-		bool DieWhenOutOfBlood = false;
 
 	// Should the player/enemy take no damage? (Cheat)
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blood")
