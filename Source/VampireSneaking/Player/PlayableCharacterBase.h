@@ -48,6 +48,9 @@ protected:
 	// Time before the player can attack again.
 	float TimeBeforeNextAttack{ 0.f };
 
+	// Time before the player can dash again.
+	float TimeBeforeNextDash{ 0.f };
+
 	// Team functionality
 	FGenericTeamId TeamId;
 	FGenericTeamId GetGenericTeamId() const override;

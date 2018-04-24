@@ -11,8 +11,6 @@
 #include "Math/Vector.h"
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "Components/SphereComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -34,7 +32,7 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::AttackCheck);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
 	PlayerInputComponent->BindAction("BloodAttack", IE_Pressed, this, &APlayerVamp::BloodAttack);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerVamp::Dash);
 }
@@ -81,16 +79,13 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 	}
 }
 
-void APlayerVamp::AttackCheck()
-{
-	if (TimeBeforeNextAttack <= 0.f)
-	{
-		Attack();
-	}
-}
-
 void APlayerVamp::Attack_Implementation()
 {
+	if (!CHEAT_NoCooldown && TimeBeforeNextAttack > 0.f)
+	{
+		return;
+	}
+
 	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
 	
 
@@ -199,7 +194,14 @@ void APlayerVamp::BloodAttack()
 
 void APlayerVamp::Dash()
 {
-	FVector AddForce = GetMeshForwardVector() * 3000;
+	if (!CHEAT_NoCooldown && TimeBeforeNextDash > 0.f)
+	{
+		return;
+	}
 
+	FVector AddForce = GetMeshForwardVector() * DashDistance;
 	LaunchCharacter(AddForce, false, true);
+
+	// Set cooldown.
+	TimeBeforeNextDash = DashCooldown;
 }

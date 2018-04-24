@@ -28,10 +28,6 @@ protected:
 	// Internal toggle of bloodsucking.
 	bool ToggleBloodSucking() const;
 
-	// Check if the attack is off cooldown, and if so run attack
-	UFUNCTION(BlueprintCallable)
-	void AttackCheck();
-
 	// Must've calculated this wrong, cause this shit DOESN'T WORK!
 	FVector BallisticTrajectory(const FVector &EndPoint);
 
@@ -87,6 +83,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blood projectile", meta = ( DisplayName = "Activation Cost"))
 	float BloodProjectileActivationCost = 30.f;
 	
+	// Distance the dash moves the player.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = ( DisplayName = "Distance"))
+	float DashDistance = 3000.f;
+
+	// Cooldown between dash.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (DisplayName = "Cooldown"))
+	float DashCooldown = 1.5f;
+
+	// CHEAT: No dash cooldown
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash", meta = (DisplayName = "CHEAT: No Cooldown"))
+	bool CHEAT_NoCooldown = false;
+
 	UFUNCTION()
 		void Dash(); 
 	

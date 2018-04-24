@@ -42,6 +42,15 @@ void APlayableCharacterBase::Tick(float DeltaTime)
 	{
 		TimeBeforeNextAttack -= DeltaTime;
 	}
+
+	if (TimeBeforeNextDash < 0.f)
+	{
+		TimeBeforeNextDash = 0.f;
+	}
+	else if (TimeBeforeNextDash > 0.f)
+	{
+		TimeBeforeNextDash -= DeltaTime;
+	}
 }
 
 // Called to bind functionality to input
