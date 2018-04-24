@@ -44,9 +44,6 @@ public:
 	*/
 	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
-	/** Tries to spawn the player's pawn, at the location returned by FindPlayerStart */
-	void RestartPlayer(AController* NewPlayer) override;
-
 	// Restart the level!
 	UFUNCTION(BlueprintCallable)
 	void RestartLevel();

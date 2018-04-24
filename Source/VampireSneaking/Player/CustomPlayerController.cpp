@@ -277,8 +277,6 @@ void ACustomPlayerController::SetInvisWalls()
 }
 
 void ACustomPlayerController::Death_Implementation() {
-	UE_LOG(LogTemp, Warning, TEXT("Died!"));
-
 	// Destory all pawns.
 	UnPossess();
 	for (auto pawn : ControllablePawns) {

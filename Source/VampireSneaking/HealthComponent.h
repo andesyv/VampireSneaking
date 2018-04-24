@@ -21,18 +21,17 @@ protected:
 	// Called when the game starts
 	void BeginPlay() override;
 
-	/** Internal starting blood
-	 * (For internal keeping track of the amount of blood the player/enemy starts with)
-	 */
-	float StartingBlood{};
-
-	// Current and starting blood.
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetBlood, Category = "Blood")
+	// Current blood.
+	UPROPERTY(BlueprintGetter = GetBlood, Category = "Blood")
 		float Blood = 100.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
 		float MaxBlood = 100.f;
+
+	// The amount of blood to start with.
+	UPROPERTY(EditDefaultsOnly, Category = "Blood")
+		float StartingBlood = 100.f;
 
 	// Make the maximum amount of blood be the starting blood?
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")

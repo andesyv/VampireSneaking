@@ -9,7 +9,6 @@
 #include "TimerManager.h"
 #include "AI/EnemyAI.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 #include "HealthComponent.h"
 
 void AVampireSneakingGameModeBase::StartPlay()
@@ -46,20 +45,6 @@ APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AControl
 	}
 
 	return returnValue;
-}
-
-void AVampireSneakingGameModeBase::RestartPlayer(AController * NewPlayer)
-{
-	Super::RestartPlayer(NewPlayer);
-
-	if (NewPlayer)
-	{
-		auto *controller = Cast<ACustomPlayerController>(NewPlayer);
-		if (controller && controller->HealthComponent)
-		{
-			// controller->HealthComponent->Reset();
-		}
-	}
 }
 
 void AVampireSneakingGameModeBase::RestartLevel()
@@ -140,7 +125,6 @@ void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
 
 void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 {
-	UE_LOG(LogTemp, Warning, TEXT("A player has diedifieded."));
 	// If this didn't work, the game can't continue properly. Therefore just crash yoself.
 	check(PlayerCon != nullptr);
 
@@ -153,6 +137,12 @@ void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 	}
 
 	ResetEnemyAI();
+
+	auto *customController = Cast<ACustomPlayerController>(PlayerCon);
+	if (customController && customController->HealthComponent)
+	{
+		customController->HealthComponent->Reset();
+	}
 	
 	FTimerDelegate RespawnTimerDelegate;
 	RespawnTimerDelegate.BindUFunction(this, FName{ "RestartPlayer" }, PlayerCon);
