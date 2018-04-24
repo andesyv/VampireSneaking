@@ -32,6 +32,8 @@ public:
 
 	void Possess(APawn* aPawn) override;
 
+	AActor *LastCheckpoint = nullptr;
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;

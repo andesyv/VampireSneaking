@@ -21,13 +21,17 @@ protected:
 	// Called when the game starts
 	void BeginPlay() override;
 
-	// Current and starting blood.
-	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetBlood, Category = "Blood")
+	// Current blood.
+	UPROPERTY(BlueprintGetter = GetBlood, Category = "Blood")
 		float Blood = 100.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
 	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
 		float MaxBlood = 100.f;
+
+	// The amount of blood to start with.
+	UPROPERTY(EditDefaultsOnly, Category = "Blood")
+		float StartingBlood = 100.f;
 
 	// Make the maximum amount of blood be the starting blood?
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
@@ -75,4 +79,8 @@ public:
 	// Delegate called on death.
 	UPROPERTY(BlueprintAssignable, Category = "Blood")
 		FDeathEvent OnDeath;
+
+	// Reset health/blood to starting health/blood
+	UFUNCTION(BlueprintCallable, Category = "Blood")
+		void Reset();
 };

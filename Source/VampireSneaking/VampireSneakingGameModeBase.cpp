@@ -3,9 +3,13 @@
 #include "VampireSneakingGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "EngineUtils.h"
-#include "Player/BatMode.h"
 #include "Player/CustomPlayerController.h"
 #include "Enemy.h"
+#include "Player/BatMode.h"
+#include "TimerManager.h"
+#include "AI/EnemyAI.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "HealthComponent.h"
 
 void AVampireSneakingGameModeBase::StartPlay()
 {
@@ -70,6 +74,100 @@ APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVe
 	}
 
 	return returnPawn;
+}
+
+void AVampireSneakingGameModeBase::ResetEnemyAI(AEnemy* TargetEnemy)
+{
+	if (TargetEnemy)
+	{
+		ResetEnemyAI_Internal(TargetEnemy);
+	}
+	else
+	{
+		for (const auto &enemy : GetEnemyList())
+		{
+			ResetEnemyAI_Internal(enemy);
+		}
+	}
+}
+
+void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
+{
+	if (enemy && enemy->GetController())
+	{
+		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy->GetController());
+		if (enemyAI && enemyAI->BrainComponent)
+		{
+			UBehaviorTreeComponent * behaviorTree = Cast<UBehaviorTreeComponent>(enemyAI->BrainComponent);
+			if (behaviorTree)
+			{
+				if (behaviorTree->GetBlackboardComponent() && enemy->BehaviorTree)
+				{
+					// Reinitialize blackboard and restart behavior.
+					behaviorTree->GetBlackboardComponent()->InitializeBlackboard(*enemy->BehaviorTree->BlackboardAsset);
+					behaviorTree->RestartTree();
+
+					const auto numberOfKeys = behaviorTree->GetBlackboardComponent()->GetNumKeys();
+					for (uint8 i{0}; i < numberOfKeys; ++i)
+					{
+						// Don't reset patrol values
+						if (behaviorTree->GetBlackboardComponent()->GetKeyName(i) == FName{"NextPoint"} || behaviorTree->GetBlackboardComponent()->GetKeyName(i) == FName{ "CurrentPointIndex" })
+						{
+							continue;
+						}
+						behaviorTree->GetBlackboardComponent()->ClearValue(i);
+					}
+				}
+			}
+		}
+	}
+}
+
+void AVampireSneakingGameModeBase::LocalRestartPlayer(APlayerController* Controller)
+{
+	if (Controller)
+	{
+		auto *CustomController = Cast<ACustomPlayerController>(Controller);
+		if (CustomController && CustomController->LastCheckpoint != nullptr)
+		{
+			FTransform spawnTransform{ CustomController->LastCheckpoint->GetActorTransform() };
+			// Just to make sure the player isn't super big all of a sudden.
+			spawnTransform.SetScale3D(FVector{ 1.f, 1.f, 1.f });
+			RestartPlayerAtTransform(Controller, spawnTransform);
+			return;
+		}
+	}
+	// If all else fails just restart normally.
+	RestartPlayer(Controller);
+}
+
+void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
+{
+	// If this didn't work, the game can't continue properly. Therefore just crash yoself.
+	check(PlayerCon != nullptr);
+
+	check(GetWorld() != nullptr);
+
+	if (RespawnTimerHandle.IsValid() && GetWorld()->GetTimerManager().IsTimerActive(RespawnTimerHandle))
+	{
+		UE_LOG(LogTemp, Error, TEXT("Another player is currently respawning?"));
+		return;
+	}
+
+	ResetEnemyAI();
+
+	auto *customController = Cast<ACustomPlayerController>(PlayerCon);
+	if (customController && customController->HealthComponent)
+	{
+		customController->HealthComponent->Reset();
+	}
+	
+	FTimerDelegate RespawnTimerDelegate;
+	RespawnTimerDelegate.BindUFunction(this, FName{ "LocalRestartPlayer" }, PlayerCon);
+	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, RespawnTimerDelegate, 2.f, false);
+	// RestartPlayer(PlayerCon);
+
+	OnPlayerDeath.Broadcast();
 }
 
 void AVampireSneakingGameModeBase::RemoveFromEnemyList(AActor * DestroyedEnemy)

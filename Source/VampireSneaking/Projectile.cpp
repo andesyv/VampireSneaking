@@ -30,7 +30,7 @@ void AProjectile::BeginPlay()
 
 	MovementComponent->UpdatedComponent = CollisionComponent;
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
-	
+
 
 	//TArray<UStaticMeshComponent*> meshArray;
 	//// UPrimitiveComponent* component = FindComponentByClass<UStaticMeshComponent>();
@@ -77,7 +77,7 @@ void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AAc
 	{
 		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticleEffect, GetActorLocation());
 	}
-	
+
 	MovementComponent->Velocity = FVector::ZeroVector;
 	CollisionComponent->SetSimulatePhysics(false);
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -87,5 +87,6 @@ void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AAc
 
 	/// Check it; a lambda!
 	TimerDelegate.BindLambda([&]() { Destroy(); });
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, TimerDelegate, 1.5f, false);
+	check(GetWorld() != nullptr);
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, TimerDelegate, 1.5f, false);
 }

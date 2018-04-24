@@ -40,7 +40,7 @@ void UBTShootAtPlayer::TickTask(UBehaviorTreeComponent & OwnerComp, uint8 * Node
 
 	if (timer > ShootTime) {
 		Shoot(&OwnerComp);
-	}
+	}	
 	timer += DeltaSeconds;
 }
 
