@@ -70,6 +70,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void PlayerDies();
 
+	UFUNCTION()
+	void LocalRestartPlayer(APlayerController* Controller);
+
 	// Blueprint event that is called when the player dies.
 	UPROPERTY(BlueprintAssignable)
 	FPlayerDeath OnPlayerDeath;

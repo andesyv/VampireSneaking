@@ -123,6 +123,24 @@ void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
 	}
 }
 
+void AVampireSneakingGameModeBase::LocalRestartPlayer(APlayerController* Controller)
+{
+	if (Controller)
+	{
+		auto *CustomController = Cast<ACustomPlayerController>(Controller);
+		if (CustomController && CustomController->LastCheckpoint != nullptr)
+		{
+			FTransform spawnTransform{ CustomController->LastCheckpoint->GetActorTransform() };
+			// Just to make sure the player isn't super big all of a sudden.
+			spawnTransform.SetScale3D(FVector{ 1.f, 1.f, 1.f });
+			RestartPlayerAtTransform(Controller, spawnTransform);
+			return;
+		}
+	}
+	// If all else fails just restart normally.
+	RestartPlayer(Controller);
+}
+
 void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 {
 	// If this didn't work, the game can't continue properly. Therefore just crash yoself.
@@ -145,7 +163,7 @@ void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 	}
 	
 	FTimerDelegate RespawnTimerDelegate;
-	RespawnTimerDelegate.BindUFunction(this, FName{ "RestartPlayer" }, PlayerCon);
+	RespawnTimerDelegate.BindUFunction(this, FName{ "LocalRestartPlayer" }, PlayerCon);
 	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, RespawnTimerDelegate, 2.f, false);
 	// RestartPlayer(PlayerCon);
 
