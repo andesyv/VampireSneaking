@@ -23,6 +23,8 @@ void UHealthComponent::BeginPlay()
 	if (MaxBloodIsStartingBlood) {
 		MaxBlood = Blood;
 	}
+
+	StartingBlood = Blood;
 }
 
 void UHealthComponent::Die() {
@@ -38,6 +40,16 @@ const float UHealthComponent::TakeDamage(const float amount)
 		return Blood;
 	}
 	return AddBlood(-amount);
+}
+
+void UHealthComponent::Reset()
+{
+	if (ded || OutOfBlood)
+	{
+		Blood = StartingBlood;
+		ded = false;
+		OutOfBlood = true;
+	}
 }
 
 

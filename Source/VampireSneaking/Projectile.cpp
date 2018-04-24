@@ -87,5 +87,6 @@ void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AAc
 
 	/// Check it; a lambda!
 	TimerDelegate.BindLambda([&]() { Destroy(); });
-	GetWorldTimerManager().SetTimer(DestroyTimerHandle, TimerDelegate, 1.5f, false);
+	check(GetWorld() != nullptr);
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, TimerDelegate, 1.5f, false);
 }

@@ -21,6 +21,11 @@ protected:
 	// Called when the game starts
 	void BeginPlay() override;
 
+	/** Internal starting blood
+	 * (For internal keeping track of the amount of blood the player/enemy starts with)
+	 */
+	float StartingBlood{};
+
 	// Current and starting blood.
 	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetBlood, Category = "Blood")
 		float Blood = 100.f;
@@ -75,4 +80,8 @@ public:
 	// Delegate called on death.
 	UPROPERTY(BlueprintAssignable, Category = "Blood")
 		FDeathEvent OnDeath;
+
+	// Reset health/blood to starting health/blood
+	UFUNCTION(BlueprintCallable, Category = "Blood")
+		void Reset();
 };

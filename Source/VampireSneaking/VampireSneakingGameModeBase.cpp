@@ -10,6 +10,7 @@
 #include "AI/EnemyAI.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
+#include "HealthComponent.h"
 
 void AVampireSneakingGameModeBase::StartPlay()
 {
@@ -47,15 +48,24 @@ APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AControl
 	return returnValue;
 }
 
+void AVampireSneakingGameModeBase::RestartPlayer(AController * NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+
+	if (NewPlayer)
+	{
+		auto *controller = Cast<ACustomPlayerController>(NewPlayer);
+		if (controller && controller->HealthComponent)
+		{
+			// controller->HealthComponent->Reset();
+		}
+	}
+}
+
 void AVampireSneakingGameModeBase::RestartLevel()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), FName{ *GetWorld()->GetMapName() }, true);
 }
-
-//void AVampireSneakingGameModeBase::RestartPlayer(AController * NewPlayer)
-//{
-//	RestartPlayer(NewPlayer);
-//}
 
 TArray<AEnemy*>& AVampireSneakingGameModeBase::GetEnemyList()
 {
@@ -79,6 +89,21 @@ APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVe
 	}
 
 	return returnPawn;
+}
+
+void AVampireSneakingGameModeBase::ResetEnemyAI(AEnemy* TargetEnemy)
+{
+	if (TargetEnemy)
+	{
+		ResetEnemyAI_Internal(TargetEnemy);
+	}
+	else
+	{
+		for (const auto &enemy : GetEnemyList())
+		{
+			ResetEnemyAI_Internal(enemy);
+		}
+	}
 }
 
 void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
@@ -113,28 +138,15 @@ void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
 	}
 }
 
-void AVampireSneakingGameModeBase::ResetEnemyAI(AEnemy* TargetEnemy)
-{
-	if (TargetEnemy)
-	{
-		ResetEnemyAI_Internal(TargetEnemy);
-	}
-	else
-	{
-		for (const auto &enemy : GetEnemyList())
-		{
-			ResetEnemyAI_Internal(enemy);
-		}
-	}
-}
-
 void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 {
 	UE_LOG(LogTemp, Warning, TEXT("A player has diedifieded."));
 	// If this didn't work, the game can't continue properly. Therefore just crash yoself.
 	check(PlayerCon != nullptr);
 
-	if (RespawnTimerHandle.IsValid())
+	check(GetWorld() != nullptr);
+
+	if (RespawnTimerHandle.IsValid() && GetWorld()->GetTimerManager().IsTimerActive(RespawnTimerHandle))
 	{
 		UE_LOG(LogTemp, Error, TEXT("Another player is currently respawning?"));
 		return;
@@ -144,7 +156,7 @@ void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 	
 	FTimerDelegate RespawnTimerDelegate;
 	RespawnTimerDelegate.BindUFunction(this, FName{ "RestartPlayer" }, PlayerCon);
-	GetWorldTimerManager().SetTimer(RespawnTimerHandle, RespawnTimerDelegate, 2.f, false);
+	GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, RespawnTimerDelegate, 2.f, false);
 	// RestartPlayer(PlayerCon);
 
 	OnPlayerDeath.Broadcast();

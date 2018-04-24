@@ -47,8 +47,8 @@ void ACustomPlayerController::BeginPlay()
 			followCamera->Target = GetPawn();
 			SetViewTarget(followCamera);
 		}
+		GetWorld()->GetTimerManager().SetTimer(SetInvisWallsHandle, this, &ACustomPlayerController::SetInvisWalls, 0.1f, true);
 	}
-	GetWorldTimerManager().SetTimer(SetInvisWallsHandle, this, &ACustomPlayerController::SetInvisWalls, 0.1f, true);
 }
 
 void ACustomPlayerController::ChangePawn()
@@ -75,7 +75,7 @@ void ACustomPlayerController::SetParticles(APawn* CurrentPawn) const
 	}
 }
 
-void ACustomPlayerController::ChangePawn(int index)
+void ACustomPlayerController::ChangePawn(const int index)
 {
 	APawn* CurrentPawn{ nullptr };
 	if (ControllablePawns.Num() != 0) {
@@ -176,6 +176,11 @@ bool ACustomPlayerController::ToggleVisionRanges() const
 APawn* ACustomPlayerController::MoveController_Implementation(int index)
 {
 	APawn *currentlyPossessed = GetPawn();
+	if (currentlyPossessed == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Controller isn't possessing anything!"));
+		return nullptr;
+	}
 	UnPossess();
 
 	SwapActorLocation(Cast<AActor>(currentlyPossessed), Cast<AActor>(ControllablePawns[index]));
@@ -279,6 +284,7 @@ void ACustomPlayerController::Death_Implementation() {
 	for (auto pawn : ControllablePawns) {
 		pawn->Destroy();
 	}
+	ControllablePawns.Empty();
 
 	// Call death event.
 	if (GetWorld() && GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()) {
