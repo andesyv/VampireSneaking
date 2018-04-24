@@ -7,6 +7,9 @@
 #include "Enemy.h"
 #include "Player/BatMode.h"
 #include "TimerManager.h"
+#include "AI/EnemyAI.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
 
 void AVampireSneakingGameModeBase::StartPlay()
 {
@@ -78,6 +81,53 @@ APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVe
 	return returnPawn;
 }
 
+void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
+{
+	if (enemy && enemy->GetController())
+	{
+		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy->GetController());
+		if (enemyAI && enemyAI->BrainComponent)
+		{
+			UBehaviorTreeComponent * behaviorTree = Cast<UBehaviorTreeComponent>(enemyAI->BrainComponent);
+			if (behaviorTree)
+			{
+				if (behaviorTree->GetBlackboardComponent() && enemy->BehaviorTree)
+				{
+					// Reinitialize blackboard and restart behavior.
+					behaviorTree->GetBlackboardComponent()->InitializeBlackboard(*enemy->BehaviorTree->BlackboardAsset);
+					behaviorTree->RestartTree();
+
+					const auto numberOfKeys = behaviorTree->GetBlackboardComponent()->GetNumKeys();
+					for (uint8 i{0}; i < numberOfKeys; ++i)
+					{
+						// Don't reset patrol values
+						if (behaviorTree->GetBlackboardComponent()->GetKeyName(i) == FName{"NextPoint"} || behaviorTree->GetBlackboardComponent()->GetKeyName(i) == FName{ "CurrentPointIndex" })
+						{
+							continue;
+						}
+						behaviorTree->GetBlackboardComponent()->ClearValue(i);
+					}
+				}
+			}
+		}
+	}
+}
+
+void AVampireSneakingGameModeBase::ResetEnemyAI(AEnemy* TargetEnemy)
+{
+	if (TargetEnemy)
+	{
+		ResetEnemyAI_Internal(TargetEnemy);
+	}
+	else
+	{
+		for (const auto &enemy : GetEnemyList())
+		{
+			ResetEnemyAI_Internal(enemy);
+		}
+	}
+}
+
 void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 {
 	UE_LOG(LogTemp, Warning, TEXT("A player has diedifieded."));
@@ -86,9 +136,11 @@ void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 
 	if (RespawnTimerHandle.IsValid())
 	{
-		UE_LOG(LogTemp, Error, TEXT("What the shit?"));
+		UE_LOG(LogTemp, Error, TEXT("Another player is currently respawning?"));
 		return;
 	}
+
+	ResetEnemyAI();
 	
 	FTimerDelegate RespawnTimerDelegate;
 	RespawnTimerDelegate.BindUFunction(this, FName{ "RestartPlayer" }, PlayerCon);

@@ -46,25 +46,30 @@ void AProjectile::Tick(float DeltaTime)
 
 }
 
-void AProjectile::BloodHit( UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit) {
-	if (OtherActor != this && OtherActor->IsA(AEnemy::StaticClass())) {
-		AEnemy *enemy{ Cast<AEnemy>(OtherActor) };
+void AProjectile::BloodHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
+                           FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (OtherActor != this && OtherActor->IsA(AEnemy::StaticClass()))
+	{
+		AEnemy* enemy{Cast<AEnemy>(OtherActor)};
 		//Same as when player sucks blood
 
-		if (enemy->GetController()) {
-
-			AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy->GetController());
-			if (enemyAI && enemyAI->HealthComponent) {
+		if (enemy->GetController())
+		{
+			AEnemyAI* enemyAI = Cast<AEnemyAI>(enemy->GetController());
+			if (enemyAI && enemyAI->HealthComponent)
+			{
 				enemyAI->HealthComponent->AddBlood(-50.f);
 				Destroy();
 			}
-			else {
+			else
+			{
 				UE_LOG(LogTemp, Warning, TEXT("The enemy did not lose health"));
 			}
 		}
-		
 	}
-	else if (OtherActor != this) {
+	else if (OtherActor != this)
+	{
 		Destroy();
-	};
+	}
 }
