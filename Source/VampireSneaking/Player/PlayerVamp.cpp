@@ -10,6 +10,9 @@
 #include "Projectile.h"
 #include "Math/Vector.h"
 #include "Engine/World.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -135,20 +138,68 @@ bool APlayerVamp::EnemyInFront()
 	return false;
 }
 
-void APlayerVamp::BloodAttack() {
+FVector APlayerVamp::BallisticTrajectory(const FVector &EndPoint)
+{
+	// The gravity constant g
+	const float g{ 980.f };
+	FVector distance{ EndPoint - GetActorLocation() };
+	// Nullify z as we only need the distance from the ground
+	distance.Z = 0;
+	// The height from the ground.
+	const float h{ GetCapsuleComponent()->GetScaledCapsuleHalfHeight() };
 
-	
-		UWorld *world = GetWorld();
-		if(world){
-			//Spawning the bullet
-		world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation() + GetMeshForwardVector()*50.0f, GetMeshForwardVector().Rotation());
+	// I think that calculating VyNegative (which is a - before the last squareroot) would give a result equal to a negative t,
+	// which ofcourse doesn't exist in normal world scenarios. Therefore I don't think it is necessary to calculate it.
+	const double VyPositive = FMath::Sqrt((2 * g * distance.Size() + FMath::Sqrt(4 * g * distance.Size() + 8 * g * h + 1)) / 2.f);
 
+	return FVector{ static_cast<float>(VyPositive), 0.f, static_cast<float>(VyPositive) };
+}
+
+void APlayerVamp::BloodAttack()
+{
+	if (controller && controller->HealthComponent)
+	{
+		if (controller->HealthComponent->GetBlood() - BloodProjectileActivationCost > 0.f)
+		{
+			controller->HealthComponent->AddBlood(-BloodProjectileActivationCost);
+		}
+		else
+		{
+			// UE_LOG(LogTemp, Warning, TEXT("Not enough blood."));
+			return;
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Can't find controller and/or HealthComponent."));
+		return;
+	}
+
+
+	// TODO: Calculate ballistic trajectory for projctile.
+	// BallisticTrajectory();
+
+	UWorld* world = GetWorld();
+	if (world && GetController())
+	{
+		APlayerController * playerCon = Cast<APlayerController>(GetController());
+		if (playerCon)
+		{
+			AProjectile *projectile = world->SpawnActor<AProjectile>(ProjectileBlueprint, GetActorLocation()/* + GetMeshForwardVector() * 50.0f*/, GetMeshForwardVector().Rotation());
+			
+			if (projectile == nullptr)
+			{
+				return;
+			}
+
+			projectile->Instigator = this;
+		}
 	}
 }
 
-void APlayerVamp::Dash() {
- FVector AddForce = GetMeshForwardVector() * 3000;
+void APlayerVamp::Dash()
+{
+	FVector AddForce = GetMeshForwardVector() * 3000;
 
 	LaunchCharacter(AddForce, false, true);
-	
 }
