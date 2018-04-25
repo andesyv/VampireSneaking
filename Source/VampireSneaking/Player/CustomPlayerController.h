@@ -59,9 +59,6 @@ protected:
 	// Particle effect when switching modes
 	void SetParticles(APawn* CurrentPawn) const;
 
-	// Toggles the vision ranges of all enemies between full and half.
-	bool ToggleVisionRanges() const;
-
 	// Make enemies not reset their cooldown when switching from and to batmode.
 	void CancelEnemyCooldownReset();
 

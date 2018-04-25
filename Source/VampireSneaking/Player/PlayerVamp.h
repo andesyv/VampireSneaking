@@ -54,6 +54,10 @@ protected:
 	// Initiates the transformation.
 	void BatModeToggle();
 
+	// TODO: Move this function to the utility category in Gamemode.
+	// Toggles the vision ranges of all enemies between full and half.
+	bool ToggleVisionRanges() const;
+
 	// Is the player currently in batmode?
 	bool BatMode{ false };
 
