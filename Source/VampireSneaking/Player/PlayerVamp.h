@@ -9,13 +9,23 @@
 
 // Forward declarations
 class AEnemy;
+class UParticleSystemComponent;
 
 UCLASS(Blueprintable, meta = (DisplayName = "Player Vampire"))
 class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
 {
 	GENERATED_BODY()
 
+private:
+
+	// Internal timer for when the player will be able to initiate into batmode.
+	float TimeBeforeNextBatToggle = 0.f;
+
 protected:
+	// Particle system
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UParticleSystemComponent * ParticleSystem;
+
 	// What enemy is being sucked.
 	AEnemy *suckedEnemy{ nullptr };
 
@@ -41,6 +51,23 @@ protected:
 
 	void BloodAttack();
 
+	// Initiates the transformation.
+	void BatModeToggle();
+
+	// Is the player currently in batmode?
+	bool BatMode{ false };
+
+	// Is the player currently toggling modes?
+	bool TogglingModes{ false };
+
+	// The cooldown between batmode and normal mode.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Batmode", meta = (DisplayName = "Cooldown"))
+	float BatModeCooldown = 1.f;
+
+	FTimerHandle BatModeTimerHandle;
+	// Function for finishing the transformation
+	void BatModeFinish();
+
 public:
 	// Sets default values for this pawn's properties
 	APlayerVamp(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
@@ -65,7 +92,7 @@ public:
 
 	// Range of attack from player center
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (DisplayName = "Range"))
-	float AttackRange = 100.f;
+	float AttackRange = 220;
 
 	// Wideness of attack in angle
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (DisplayName = "Angle"))
@@ -77,8 +104,8 @@ public:
 
 	// Cooldown before the player can attack again.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (DisplayName = "Cooldown"))
-	float AttackCooldown = 1.5f;
-
+	float AttackCooldown = 3.f;
+	
 	// Blood projectile class.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blood projectile", meta = (DisplayName = "Projectile Class"))
 	TSubclassOf<class AProjectile> ProjectileBlueprint ;
