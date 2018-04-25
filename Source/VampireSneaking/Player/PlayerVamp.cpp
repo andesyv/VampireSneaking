@@ -32,7 +32,7 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::Attack);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::AttackCheck);
 	PlayerInputComponent->BindAction("BloodAttack", IE_Pressed, this, &APlayerVamp::BloodAttack);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerVamp::Dash);
 }
@@ -79,13 +79,16 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 	}
 }
 
+void APlayerVamp::AttackCheck()
+{
+	if (CHEAT_NoCooldown || TimeBeforeNextAttack <= 0.f)
+	{
+		Attack();
+	}
+}
+
 void APlayerVamp::Attack_Implementation()
 {
-	if (!CHEAT_NoCooldown && TimeBeforeNextAttack > 0.f)
-	{
-		return;
-	}
-
 	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
 	
 

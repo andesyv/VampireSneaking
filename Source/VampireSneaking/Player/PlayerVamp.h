@@ -30,6 +30,10 @@ protected:
 
 	// Must've calculated this wrong, cause this shit DOESN'T WORK!
 	FVector BallisticTrajectory(const FVector &EndPoint);
+	
+	// Check if the attack is off cooldown, and if so run attack
+	UFUNCTION(BlueprintCallable)
+	void AttackCheck();
 
 	// Player attack function.
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
