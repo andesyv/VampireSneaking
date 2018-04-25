@@ -180,7 +180,30 @@ void AVampireSneakingGameModeBase::RemoveFromEnemyList(AActor * DestroyedEnemy)
 	}
 }
 
-float AVampireSneakingGameModeBase::GetAngleBetween(FVector pos1, FVector pos2)
+float AVampireSneakingGameModeBase::GetAngleBetween(const FVector& pos1, const FVector& pos2)
 {
 	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(pos1, pos2) / (pos1.Size() * pos2.Size())));
+}
+
+bool AVampireSneakingGameModeBase::ToggleVisionRanges() const
+{
+	const TArray<AEnemy*> enemies{ EnemyList };
+	for (auto item : enemies)
+	{
+		if (item->GetController())
+		{
+			AEnemyAI *enemyAI = Cast<AEnemyAI>(item->GetController());
+			if (enemyAI)
+			{
+				if (enemyAI->ToggleVisionRange())
+				{
+					// Continue to skip the return in the loop.
+					continue;
+				}
+			}
+		}
+		return false;
+	}
+	// This is clearly the best outcome.
+	return true;
 }
