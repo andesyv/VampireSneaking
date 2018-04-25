@@ -64,6 +64,10 @@ protected:
 	// Is the player currently toggling modes?
 	bool TogglingModes{ false };
 
+	// Template for transform effect
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Batmode", meta = (DisplayName = "Transform effect"))
+	UParticleSystem *BatModeParticle;
+
 	// The cooldown between batmode and normal mode.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Batmode", meta = (DisplayName = "Cooldown"))
 	float BatModeCooldown = 1.f;

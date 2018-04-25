@@ -239,6 +239,10 @@ void APlayerVamp::BatModeToggle()
 	BatMode = !BatMode;
 	TogglingModes = true;
 	TimeBeforeNextBatToggle = BatModeCooldown;
+	if (BatModeParticle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, BatModeParticle, GetActorLocation(), FRotator::ZeroRotator, FVector{2.f, 2.f, 2.f});
+	}
 
 	if (GetCharacterMovement())
 	{
@@ -265,12 +269,13 @@ void APlayerVamp::BatModeFinish()
 		ParticleSystem->Deactivate();
 	}
 	GetMesh()->ToggleVisibility(false);
-
+	
 	// Toggle vision range of enemies.
 	if (!ToggleVisionRanges())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Could'nt switch between enemy vision ranges!"));
 	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("Bat mode was finished toggled."));
 }
 
