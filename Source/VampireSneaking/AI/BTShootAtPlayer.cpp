@@ -10,6 +10,7 @@
 #include "Player/CustomPlayerController.h"
 #include "HealthComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
+#include "Projectile.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 { 
@@ -46,7 +47,7 @@ void UBTShootAtPlayer::TickTask(UBehaviorTreeComponent & OwnerComp, uint8 * Node
 
 void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 {
-	UBlackboardComponent *blackboard = OwnerComp->GetBlackboardComponent();
+	UBlackboardComponent *blackboard{ const_cast<UBlackboardComponent*>(OwnerComp->GetBlackboardComponent()) };
 	if (blackboard) {
 		APlayableCharacterBase *player = Cast<APlayableCharacterBase>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
 		if (player && player->GetController()) {
@@ -69,6 +70,18 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 		UE_LOG(LogTemp, Error, TEXT("Can't receive blackboard! - In BTShootAyPlayer.cpp"));
 	}
 	FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
+}
+
+void UBTShootAtPlayer::SpawnBullet(UBehaviorTreeComponent* OwnerComp, FRotator BulletOrientation)
+{
+	if (!(OwnerComp && OwnerComp->GetAIOwner() && OwnerComp->GetAIOwner()->GetPawn() && GetWorld()))
+	{
+		return;
+	}
+	FTransform spawnTrans{ BulletOrientation, OwnerComp->GetAIOwner()->GetPawn()->GetActorLocation(), FVector{1.f} };
+	auto *projectile = GetWorld()->SpawnActorDeferred<AEnemyBullet>(ProjectileClass, spawnTrans, OwnerComp->GetAIOwner());
+	projectile->Damage = Damage;
+	projectile->FinishSpawning(spawnTrans);
 }
 
 void UBTShootAtPlayer::PlayExplotion(AActor *enemy, AActor *player)

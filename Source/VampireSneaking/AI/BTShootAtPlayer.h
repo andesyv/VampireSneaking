@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "AI/EnemyBullet.h"
 #include "BTShootAtPlayer.generated.h"
 
 /**
@@ -29,6 +30,8 @@ protected:
 
 	void PlayExplotion(AActor *enemy, AActor *player);
 
+	void SpawnBullet(UBehaviorTreeComponent* OwnerComp, FRotator BulletOrientation);
+
 public:
 	// Target to hit.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -52,4 +55,8 @@ public:
 	// Explotion effect
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UParticleSystem *ExplotionFX = nullptr;
+
+	// Projectile class
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AEnemyBullet> ProjectileClass;
 };
