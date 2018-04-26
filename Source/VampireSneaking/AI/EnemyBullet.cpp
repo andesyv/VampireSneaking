@@ -2,7 +2,7 @@
 
 #include "EnemyBullet.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 #include "Player/PlayerVamp.h"
 #include "Player/CustomPlayerController.h"
 #include "HealthComponent.h"
@@ -14,7 +14,7 @@ AEnemyBullet::AEnemyBullet()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	CollisionComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Collision"));
+	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	RootComponent = CollisionComponent;
 
 	MovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("MovementComponent"));
@@ -26,10 +26,10 @@ void AEnemyBullet::BeginPlay()
 	Super::BeginPlay();
 
 	MovementComponent->UpdatedComponent = CollisionComponent;
-	CollisionComponent->OnComponentHit.AddDynamic(this, &AEnemyBullet::OnHit);
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBullet::OnOverlap);
 }
 
-void AEnemyBullet::OnHit(UPrimitiveComponent * HitComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, FVector NormalImpulse, const FHitResult & Hit)
+void AEnemyBullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	if (OtherActor->IsA(APlayerVamp::StaticClass()))
 	{

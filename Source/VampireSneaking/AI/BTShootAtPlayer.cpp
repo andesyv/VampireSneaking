@@ -10,7 +10,6 @@
 #include "Player/CustomPlayerController.h"
 #include "HealthComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Bool.h"
-#include "Projectile.h"
 
 EBTNodeResult::Type UBTShootAtPlayer::ExecuteTask(UBehaviorTreeComponent & OwnerComp, uint8 * NodeMemory)
 { 
@@ -47,10 +46,15 @@ void UBTShootAtPlayer::TickTask(UBehaviorTreeComponent & OwnerComp, uint8 * Node
 
 void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 {
+	if (OwnerComp == nullptr)
+	{
+		return;
+	}
+
 	UBlackboardComponent *blackboard{ const_cast<UBlackboardComponent*>(OwnerComp->GetBlackboardComponent()) };
 	if (blackboard) {
 		APlayableCharacterBase *player = Cast<APlayableCharacterBase>(blackboard->GetValue<UBlackboardKeyType_Object>(TargetActor.SelectedKeyName));
-		if (player && player->GetController()) {
+		/*if (player && player->GetController()) {
 			ACustomPlayerController *playerController = Cast<ACustomPlayerController>(player->GetController());
 			if (playerController && playerController->HealthComponent) {
 				playerController->HealthComponent->TakeDamage(Damage);
@@ -61,7 +65,18 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 				FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
 				return;
 			}
+		}*/
+		if (player && OwnerComp->GetAIOwner()->GetPawn())
+		{
+			FVector enemyToPlayer{ (player->GetActorLocation() + player->GetVelocity() * 0.2) - OwnerComp->GetAIOwner()->GetPawn()->GetActorLocation() };
+			timer = 0.f;
+
+			SpawnBullet(OwnerComp, enemyToPlayer.Rotation());
+
+			FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+			return;
 		}
+
 		else {
 			UE_LOG(LogTemp, Error, TEXT("Can't receive actor from blackboard! - In BTShootAyPlayer.cpp"));
 		}
