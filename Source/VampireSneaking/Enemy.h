@@ -25,6 +25,24 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHealthComponent *HealthComponent = nullptr;
 
+	/** Spawns a bullet.
+	 * To be used with shooting animation.
+	 * @param BulletOrientation		The orientation of the bullet. x direction is the forward direction.
+	 * @param SpawnPosition			The position to spawn the bullet. Defaults to position of enemy.
+	 * @param Damage				Amount of damage the bullet will deal.
+	 * @param BulletOwner					The owner of the bullet.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void SpawnBullet(FRotator BulletOrientation, FVector SpawnPosition = FVector::ZeroVector, float Damage = 30.f, AActor* BulletOwner = nullptr) const;
+
+	// Blueprint helper function that shoots at the player.
+	UFUNCTION(BlueprintCallable)
+	void ShootAtPlayer();
+
+	// Projectile class
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class AEnemyBullet> ProjectileClass;
+
 	/** Apply damage to this actor.
 	* @see https://www.unrealengine.com/blog/damage-in-ue4
 	* @param DamageAmount		How much damage to apply
@@ -34,9 +52,6 @@ public:
 	* @return					The amount of damage actually applied.
 	*/
 	float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
-
-	// Called to bind functionality to input
-	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// Behavior tree for Enemy. Defines the kind of behavior the Enemy is going to have.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")

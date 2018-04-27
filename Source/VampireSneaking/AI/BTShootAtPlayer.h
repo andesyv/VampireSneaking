@@ -30,7 +30,7 @@ protected:
 
 	void PlayExplotion(AActor *enemy, AActor *player);
 
-	void SpawnBullet(UBehaviorTreeComponent* OwnerComp, FRotator BulletOrientation);
+	void SpawnBullet(UBehaviorTreeComponent* OwnerComp, FRotator BulletOrientation, FVector SpawnPosition) const;
 
 public:
 	// Target to hit.

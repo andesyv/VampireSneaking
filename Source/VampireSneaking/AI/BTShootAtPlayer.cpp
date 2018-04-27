@@ -39,7 +39,7 @@ void UBTShootAtPlayer::TickTask(UBehaviorTreeComponent & OwnerComp, uint8 * Node
 	}
 
 	if (timer > ShootTime) {
-		Shoot(&OwnerComp);
+		// Shoot(&OwnerComp);
 	}	
 	timer += DeltaSeconds;
 }
@@ -71,7 +71,7 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 			FVector enemyToPlayer{ (player->GetActorLocation() + player->GetVelocity() * 0.2) - OwnerComp->GetAIOwner()->GetPawn()->GetActorLocation() };
 			timer = 0.f;
 
-			SpawnBullet(OwnerComp, enemyToPlayer.Rotation());
+			SpawnBullet(OwnerComp, enemyToPlayer.Rotation(), OwnerComp->GetAIOwner()->GetPawn()->GetActorLocation());
 
 			FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
 			return;
@@ -87,13 +87,13 @@ void UBTShootAtPlayer::Shoot_Implementation(UBehaviorTreeComponent *OwnerComp)
 	FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
 }
 
-void UBTShootAtPlayer::SpawnBullet(UBehaviorTreeComponent* OwnerComp, FRotator BulletOrientation)
+void UBTShootAtPlayer::SpawnBullet(UBehaviorTreeComponent* OwnerComp, FRotator BulletOrientation, FVector SpawnPosition) const
 {
-	if (!(OwnerComp && OwnerComp->GetAIOwner() && OwnerComp->GetAIOwner()->GetPawn() && GetWorld()))
+	if (!(OwnerComp && OwnerComp->GetAIOwner() && GetWorld()))
 	{
 		return;
 	}
-	FTransform spawnTrans{ BulletOrientation, OwnerComp->GetAIOwner()->GetPawn()->GetActorLocation(), FVector{1.f} };
+	FTransform spawnTrans{ BulletOrientation, SpawnPosition, FVector{1.f} };
 	auto *projectile = GetWorld()->SpawnActorDeferred<AEnemyBullet>(ProjectileClass, spawnTrans, OwnerComp->GetAIOwner());
 	projectile->Damage = Damage;
 	projectile->FinishSpawning(spawnTrans);

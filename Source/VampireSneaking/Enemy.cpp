@@ -7,6 +7,9 @@
 #include "AI/EnemyAI.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
+#include "AI/BTShootAtPlayer.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/SkeletalMeshComponent.h"
 
 
 // Sets default values
@@ -67,10 +70,39 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
 	return temp;
 }
 
-// Called to bind functionality to input
-void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AEnemy::SpawnBullet(FRotator BulletOrientation, FVector SpawnPosition, float Damage, AActor* BulletOwner) const
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	if (GetWorld() == nullptr)
+		return;
 
+	FTransform spawnTrans{ BulletOrientation, SpawnPosition.IsZero() ? GetActorLocation() : SpawnPosition, FVector{ 1.f } };
+
+	auto *projectile = Instigator != nullptr
+	? GetWorld()->SpawnActorDeferred<AEnemyBullet>(ProjectileClass, spawnTrans, BulletOwner)
+	: GetWorld()->SpawnActorDeferred<AEnemyBullet>(ProjectileClass, spawnTrans);
+
+	if (projectile == nullptr)
+		return;
+
+	projectile->Damage = Damage;
+	projectile->FinishSpawning(spawnTrans);
+}
+
+void AEnemy::ShootAtPlayer()
+{
+	APawn *player = UGameplayStatics::GetPlayerPawn(this, 0);
+	if (player == nullptr)
+		return;
+
+	if (GetMesh() != nullptr)
+	{
+		const FRotator enemyToPlayerRot{ FVector{ (player->GetActorLocation() + player->GetVelocity() * 0.2) - GetMesh()->GetSocketLocation(TEXT("Gun")) }.Rotation() };
+		SpawnBullet(enemyToPlayerRot, GetMesh()->GetSocketLocation(TEXT("Gun")), 30.f, this);
+	}
+	else
+	{
+		const FRotator enemyToPlayerRot{ FVector{ (player->GetActorLocation() + player->GetVelocity() * 0.2) - GetActorLocation() }.Rotation() };
+		SpawnBullet(enemyToPlayerRot, GetActorLocation(), 30.f, this);
+	}
 }
 

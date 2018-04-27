@@ -33,6 +33,16 @@ AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectIn
     SetGenericTeamId(FGenericTeamId(1));
 }
 
+AIState AEnemyAI::GetState() const
+{
+	UBehaviorTreeComponent *behaviorTreeComp = Cast<UBehaviorTreeComponent>(BrainComponent);
+	if (behaviorTreeComp && behaviorTreeComp->GetBlackboardComponent())
+	{
+		return static_cast<AIState>(behaviorTreeComp->GetBlackboardComponent()->GetValueAsEnum(TEXT("State")));
+	}
+	return AIState::NoState;
+}
+
 void AEnemyAI::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) {
 	Super::OnMoveCompleted(RequestID, Result);
 
