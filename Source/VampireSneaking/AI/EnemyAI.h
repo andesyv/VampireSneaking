@@ -86,14 +86,17 @@ protected:
 	UAISenseConfig *SightConfig;
 	float DefaultVisionRange{};
 
-	// Timerhandle for the searching.
-	FTimerHandle SearchingTimerHandle;
+	// Timerhandle for setting the last seen position some time after the player was seen.
+	FTimerHandle DelayedLastSeenPosition;
 
 	// Timerhandle for trueVision range.
 	FTimerHandle VisionRangeTimerHandle;
 
 	// Targeted actor
 	TArray<AActor*> TargetedActors{};
+
+	UFUNCTION()
+	void SetLastSeenPosition(AActor* Actor);
 
 	// For setting the AI to the Idle state
 	UFUNCTION()
