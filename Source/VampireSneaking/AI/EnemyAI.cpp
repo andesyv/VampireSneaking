@@ -167,6 +167,25 @@ bool AEnemyAI::ToggleVisionRange() const
 	return false;
 }
 
+void AEnemyAI::SetLastSeenPosition(AActor* Actor)
+{
+	if (GetWorld() && DelayedLastSeenPosition.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DelayedLastSeenPosition);
+	}
+
+	if (Actor == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("SetLastSeenPosition received nullptr!"));
+		return;
+	}
+
+	if (!Blackboard->SetValue<UBlackboardKeyType_Vector>(TEXT("LastSeenPosition"), Actor->GetActorLocation()))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
+	}
+}
+
 void AEnemyAI::SetAIIdleState() const
 {
 	if (Blackboard) {
@@ -292,6 +311,15 @@ void AEnemyAI::UpdateState(const TArray<AActor*>& UpdatedActors)
 									UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard LastSeenPosition."));
 								}
 
+								// Set a timer to the delayed last seen position.
+								FTimerDelegate TimerDelegate;
+								TimerDelegate.BindUFunction(this, FName("SetLastSeenPosition"), item);
+
+								if (GetWorld())
+								{
+									GetWorld()->GetTimerManager().SetTimer(DelayedLastSeenPosition, TimerDelegate, 0.5f, false);
+								}
+
 								AddRemoveTargetingEnemy(AddRemoveMode::Add, item);
 							}
 							else
@@ -398,10 +426,6 @@ void AEnemyAI::CheckIfOutsideVisionRange()
 }
 
 bool AEnemyAI::ToggleSucking() {
-	if (GetWorld() && SearchingTimerHandle.IsValid()) {
-		GetWorld()->GetTimerManager().ClearTimer(SearchingTimerHandle);
-	}
-
 	if (Blackboard) {
 		if (static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) != AIState::Combat) {
 			bool StateIsFrozen{ lastState != AIState::Frozen && static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) == AIState::Frozen };
