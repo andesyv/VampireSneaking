@@ -86,6 +86,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SuckSpeed = 15.f;
 
+	/** Keep momentum when switching modes?
+	 * (This allows for the infamous dash-exploit)
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = ( DisplayName = "Keep momentum when switching modes?"))
+	bool KeepMomentum = false;
+
 	// Damage type
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
 	TSubclassOf<UDamageType> DamageType;

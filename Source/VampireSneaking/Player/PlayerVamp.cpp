@@ -14,6 +14,7 @@
 #include "TimerManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -69,6 +70,10 @@ bool APlayerVamp::ToggleBloodSucking() const
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	// Toggling ability.
 	if (GetController()) {
 		ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(GetController());
@@ -100,6 +105,10 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 
 void APlayerVamp::AttackCheck()
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	if (CHEAT_NoCooldown || TimeBeforeNextAttack <= 0.f)
 	{
 		Attack();
@@ -174,6 +183,10 @@ FVector APlayerVamp::BallisticTrajectory(const FVector &EndPoint)
 
 void APlayerVamp::BloodAttack()
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	if (controller && controller->HealthComponent)
 	{
 		if (controller->HealthComponent->GetBlood() - BloodProjectileActivationCost > 0.f)
@@ -258,6 +271,10 @@ void APlayerVamp::BatModeFinish()
 	if (GetCharacterMovement())
 	{
 		GetCharacterMovement()->MovementMode = BatMode ? EMovementMode::MOVE_Flying : EMovementMode::MOVE_Walking;
+		if (!KeepMomentum)
+		{
+			GetCharacterMovement()->Velocity = FVector::ZeroVector;
+		}
 	}
 
 	if (BatMode)
@@ -288,6 +305,10 @@ void APlayerVamp::BatModeFinish()
 
 void APlayerVamp::Dash()
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	if (!CHEAT_NoCooldown && TimeBeforeNextDash > 0.f)
 	{
 		return;
