@@ -25,27 +25,27 @@ void AVampireSneakingGameModeBase::StartPlay()
 	Super::StartPlay();
 }
 
-APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
-	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
-
-	// Check if the Controllable Pawns already got stuff in it. (Hopefully doesn't. :s)
-	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(NewPlayer);
-	if (playerController && playerController->ControllablePawns.Num() < 1) {
-
-		// Add player-pawn.
-		playerController->ControllablePawns.Add(returnValue);
-		
-		// Add bat-pawn.
-		APawn *bat = SpawnBatPawn(BatFormClass, FVector{ 0.f, 0.f, -1000.f }, FRotator::ZeroRotator);
-		if (bat) {
-			playerController->ControllablePawns.Add(bat);
-		}
-
-		// Make stats
-	}
-
-	return returnValue;
-}
+//APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
+//	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
+//
+//	// Check if the Controllable Pawns already got stuff in it. (Hopefully doesn't. :s)
+//	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(NewPlayer);
+//	if (playerController && playerController->ControllablePawns.Num() < 1) {
+//
+//		// Add player-pawn.
+//		playerController->ControllablePawns.Add(returnValue);
+//		
+//		// Add bat-pawn.
+//		APawn *bat = SpawnBatPawn(BatFormClass, FVector{ 0.f, 0.f, -1000.f }, FRotator::ZeroRotator);
+//		if (bat) {
+//			playerController->ControllablePawns.Add(bat);
+//		}
+//
+//		// Make stats
+//	}
+//
+//	return returnValue;
+//}
 
 void AVampireSneakingGameModeBase::RestartLevel()
 {
