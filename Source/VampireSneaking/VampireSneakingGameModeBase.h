@@ -27,9 +27,10 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// Utility functions
 
-	static float GetAngleBetween(FVector pos1, FVector pos2);
+	static float GetAngleBetween(const FVector& pos1, const FVector& pos2);
 
-
+	// Toggles the vision ranges of all enemies between full and half length.
+	bool ToggleVisionRanges() const;
 
 public:
 	/** Transitions to calls BeginPlay on actors. */
@@ -42,7 +43,7 @@ public:
 	* @param	StartSpot - Actor at which to spawn pawn
 	* @return	a pawn of the default pawn class
 	*/
-	APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
+	// APawn* SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) override;
 
 	// Restart the level!
 	UFUNCTION(BlueprintCallable)

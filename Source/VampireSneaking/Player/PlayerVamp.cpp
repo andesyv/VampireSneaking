@@ -11,12 +11,20 @@
 #include "Math/Vector.h"
 #include "Engine/World.h"
 #include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 
 // Sets default values
 APlayerVamp::APlayerVamp(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	ParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Particle System"));
+	ParticleSystem->SetupAttachment(GetCapsuleComponent());
+	ParticleSystem->SetAutoActivate(false);
 }
 
 // Called every frame
@@ -25,6 +33,16 @@ void APlayerVamp::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	SuckBlood(SuckSpeed, DeltaTime);
+
+
+	if (TimeBeforeNextBatToggle > 0.f)
+	{
+		TimeBeforeNextBatToggle -= DeltaTime; 
+	}
+	else if (TimeBeforeNextBatToggle < 0.f)
+	{
+		TimeBeforeNextBatToggle = 0.f;
+	}
 }
 
 // Called to bind functionality to input
@@ -35,6 +53,8 @@ void APlayerVamp::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerVamp::AttackCheck);
 	PlayerInputComponent->BindAction("BloodAttack", IE_Pressed, this, &APlayerVamp::BloodAttack);
 	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &APlayerVamp::Dash);
+
+	PlayerInputComponent->BindAction("BatTransform", EInputEvent::IE_Pressed, this, &APlayerVamp::BatModeToggle);
 }
 
 bool APlayerVamp::ToggleBloodSucking() const
@@ -50,6 +70,10 @@ bool APlayerVamp::ToggleBloodSucking() const
 
 void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	// Toggling ability.
 	if (GetController()) {
 		ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(GetController());
@@ -81,6 +105,10 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 
 void APlayerVamp::AttackCheck()
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	if (CHEAT_NoCooldown || TimeBeforeNextAttack <= 0.f)
 	{
 		Attack();
@@ -155,6 +183,10 @@ FVector APlayerVamp::BallisticTrajectory(const FVector &EndPoint)
 
 void APlayerVamp::BloodAttack()
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	if (controller && controller->HealthComponent)
 	{
 		if (controller->HealthComponent->GetBlood() - BloodProjectileActivationCost > 0.f)
@@ -195,8 +227,88 @@ void APlayerVamp::BloodAttack()
 	}
 }
 
+void APlayerVamp::BatModeToggle()
+{
+	// Toggles the batmode Ability.
+	if (TimeBeforeNextBatToggle > 0.f)
+	{
+		return;
+	}
+
+	if (GetWorld())
+	{
+		if (TogglingModes || (BatModeTimerHandle.IsValid() && GetWorld()->GetTimerManager().IsTimerActive(BatModeTimerHandle)))
+		{
+			// This function should'nt play while it's still being played.
+			return;
+		}
+		GetWorld()->GetTimerManager().SetTimer(BatModeTimerHandle, this, &APlayerVamp::BatModeFinish, BatModeCooldown);
+	}
+	else
+	{
+		return;
+	}
+
+	BatMode = !BatMode;
+	TogglingModes = true;
+	TimeBeforeNextBatToggle = BatModeCooldown;
+	if (BatModeParticle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, BatModeParticle, GetActorLocation(), FRotator::ZeroRotator, FVector{2.f, 2.f, 2.f});
+	}
+
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MovementMode = EMovementMode::MOVE_None;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Bat mode was toggled!"));
+}
+
+void APlayerVamp::BatModeFinish()
+{
+	TogglingModes = false;
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MovementMode = BatMode ? EMovementMode::MOVE_Flying : EMovementMode::MOVE_Walking;
+		if (!KeepMomentum)
+		{
+			GetCharacterMovement()->Velocity = FVector::ZeroVector;
+		}
+	}
+
+	if (BatMode)
+	{
+		ParticleSystem->Activate(true);
+	}
+	else
+	{
+		ParticleSystem->Deactivate();
+	}
+	GetMesh()->ToggleVisibility(false);
+	
+	if (GetWorld() && GetWorld()->GetAuthGameMode())
+	{
+		AVampireSneakingGameModeBase *gamemode = Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode());
+		if (gamemode)
+		{
+			// Toggle vision range of enemies.
+			if (!gamemode->ToggleVisionRanges())
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Could'nt switch between enemy vision ranges!"));
+			}
+		}
+	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("Bat mode was finished toggled."));
+}
+
 void APlayerVamp::Dash()
 {
+	if (TogglingModes || BatMode)
+	{
+		return;
+	}
 	if (!CHEAT_NoCooldown && TimeBeforeNextDash > 0.f)
 	{
 		return;

@@ -25,27 +25,27 @@ void AVampireSneakingGameModeBase::StartPlay()
 	Super::StartPlay();
 }
 
-APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
-	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
-
-	// Check if the Controllable Pawns already got stuff in it. (Hopefully doesn't. :s)
-	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(NewPlayer);
-	if (playerController && playerController->ControllablePawns.Num() < 1) {
-
-		// Add player-pawn.
-		playerController->ControllablePawns.Add(returnValue);
-		
-		// Add bat-pawn.
-		APawn *bat = SpawnBatPawn(BatFormClass, FVector{ 0.f, 0.f, -1000.f }, FRotator::ZeroRotator);
-		if (bat) {
-			playerController->ControllablePawns.Add(bat);
-		}
-
-		// Make stats
-	}
-
-	return returnValue;
-}
+//APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
+//	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
+//
+//	// Check if the Controllable Pawns already got stuff in it. (Hopefully doesn't. :s)
+//	ACustomPlayerController *playerController = Cast<ACustomPlayerController>(NewPlayer);
+//	if (playerController && playerController->ControllablePawns.Num() < 1) {
+//
+//		// Add player-pawn.
+//		playerController->ControllablePawns.Add(returnValue);
+//		
+//		// Add bat-pawn.
+//		APawn *bat = SpawnBatPawn(BatFormClass, FVector{ 0.f, 0.f, -1000.f }, FRotator::ZeroRotator);
+//		if (bat) {
+//			playerController->ControllablePawns.Add(bat);
+//		}
+//
+//		// Make stats
+//	}
+//
+//	return returnValue;
+//}
 
 void AVampireSneakingGameModeBase::RestartLevel()
 {
@@ -180,7 +180,30 @@ void AVampireSneakingGameModeBase::RemoveFromEnemyList(AActor * DestroyedEnemy)
 	}
 }
 
-float AVampireSneakingGameModeBase::GetAngleBetween(FVector pos1, FVector pos2)
+float AVampireSneakingGameModeBase::GetAngleBetween(const FVector& pos1, const FVector& pos2)
 {
 	return FMath::RadiansToDegrees(FMath::Acos(FVector::DotProduct(pos1, pos2) / (pos1.Size() * pos2.Size())));
+}
+
+bool AVampireSneakingGameModeBase::ToggleVisionRanges() const
+{
+	const TArray<AEnemy*> enemies{ EnemyList };
+	for (auto item : enemies)
+	{
+		if (item->GetController())
+		{
+			AEnemyAI *enemyAI = Cast<AEnemyAI>(item->GetController());
+			if (enemyAI)
+			{
+				if (enemyAI->ToggleVisionRange())
+				{
+					// Continue to skip the return in the loop.
+					continue;
+				}
+			}
+		}
+		return false;
+	}
+	// This is clearly the best outcome.
+	return true;
 }
