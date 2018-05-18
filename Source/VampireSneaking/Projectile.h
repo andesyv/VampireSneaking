@@ -36,8 +36,6 @@ protected:
 	USphereComponent *CollisionComponent;
 
 public:	
-	// Called every frame
-	void Tick(float DeltaTime) override;
 
 	APawn * Instigator{ nullptr };
 

@@ -85,16 +85,18 @@ protected:
 	 */
 	UAISenseConfig *SightConfig;
 	float DefaultVisionRange{};
-	// float LoseRange{};
 
-	// Timerhandle for the searching.
-	FTimerHandle SearchingTimerHandle;
+	// Timerhandle for setting the last seen position some time after the player was seen.
+	FTimerHandle DelayedLastSeenPosition;
 
 	// Timerhandle for trueVision range.
 	FTimerHandle VisionRangeTimerHandle;
 
 	// Targeted actor
 	TArray<AActor*> TargetedActors{};
+
+	UFUNCTION()
+	void SetLastSeenPosition(AActor* Actor);
 
 	// For setting the AI to the Idle state
 	UFUNCTION()
@@ -144,6 +146,10 @@ public:
 	UHealthComponent *HealthComponent = nullptr;
 
 	AEnemyAI(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	// Returns the current state of the behaviorTree.
+	UFUNCTION(BlueprintCallable)
+	AIState GetState() const;
 
 	/** Called on completing current movement request */
 	void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;

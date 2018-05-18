@@ -15,7 +15,7 @@
 AProjectile::AProjectile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
 	RootComponent = CollisionComponent;
@@ -30,30 +30,6 @@ void AProjectile::BeginPlay()
 
 	MovementComponent->UpdatedComponent = CollisionComponent;
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
-
-
-	//TArray<UStaticMeshComponent*> meshArray;
-	//// UPrimitiveComponent* component = FindComponentByClass<UStaticMeshComponent>();
-	//GetComponents<UStaticMeshComponent>(meshArray);
-	//for (auto item : meshArray)
-	//{
-	//	if (item)
-	//	{
-	//		item->AddImpulse(GetActorForwardVector() * 100000.f);
-	//		item->SetPhysicsAngularVelocityInDegrees(FVector{
-	//			FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f), FMath::RandRange(0.1f, 1.f) * 1000.f
-	//		});
-	//		item->OnComponentHit.AddDynamic(this, &AProjectile::BloodHit);
-	//	}
-	//}
-}
-
-// Called every frame
-void AProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	// UE_LOG(LogTemp, Warning, TEXT("Velocity is: %s"), *CollisionComponent->GetPhysicsLinearVelocity().ToString());
 }
 
 void AProjectile::BloodHit_Implementation(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
