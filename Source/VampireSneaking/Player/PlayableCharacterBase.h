@@ -14,6 +14,7 @@ class UMeshComponent;
 
 /**
 * Character base for all characters that the player should be able to control.
+* (Pretty useless after I changed it to only be 1 character that the player should be able to control..)
 */
 UCLASS(Abstract, meta = (DisplayName="Playable Character Base"))
 class VAMPIRESNEAKING_API APlayableCharacterBase : public ACharacter, public IGenericTeamAgentInterface

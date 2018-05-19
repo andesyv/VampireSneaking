@@ -111,11 +111,7 @@ void ACustomPlayerController::ChangePawn(const int index)
 	// Hinder enemies targeting the player to reset their attack time.
 	CancelEnemyCooldownReset();
 
-	// Toggle vision range of enemies.
-	if (!ToggleVisionRanges())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Could'nt switch between enemy vision ranges!"));
-	}
+	
 }
 
 void ACustomPlayerController::CancelEnemyCooldownReset()
@@ -142,37 +138,6 @@ void ACustomPlayerController::CancelEnemyCooldownReset()
 	}
 }
 
-bool ACustomPlayerController::ToggleVisionRanges() const
-{
-	if (GetWorld() && GetWorld()->GetAuthGameMode())
-	{
-		AVampireSneakingGameModeBase *gamemode = Cast<AVampireSneakingGameModeBase>(GetWorld()->GetAuthGameMode());
-		if (gamemode)
-		{
-			const TArray<AEnemy*> enemies{ gamemode->GetEnemyList() };
-			for (auto item : enemies)
-			{
-				if (item->GetController())
-				{
-					AEnemyAI *enemyAI = Cast<AEnemyAI>(item->GetController());
-					if (enemyAI)
-					{
-						if (enemyAI->ToggleVisionRange())
-						{
-							// Continue to skip the return in the loop.
-							continue;
-						}
-					}
-				}
-				return false;
-			}
-			// This is clearly the best outcome.
-			return true;
-		}
-	}
-	return false;
-}
-
 APawn* ACustomPlayerController::MoveController_Implementation(int index)
 {
 	APawn *currentlyPossessed = GetPawn();
@@ -197,8 +162,8 @@ void ACustomPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction("BatTransform", EInputEvent::IE_Pressed, this, &ACustomPlayerController::ChangePawn);
-	InputComponent->BindAction("BatTransform", EInputEvent::IE_Released, this, &ACustomPlayerController::ChangePawn);
+	// InputComponent->BindAction("BatTransform", EInputEvent::IE_Pressed, this, &ACustomPlayerController::ChangePawn);
+	// InputComponent->BindAction("BatTransform", EInputEvent::IE_Released, this, &ACustomPlayerController::ChangePawn);
 
 	InputComponent->BindAction("Bite", IE_Pressed, this, &ACustomPlayerController::ToggleSuckBlood);
 	InputComponent->BindAction("Bite", IE_Released, this, &ACustomPlayerController::ToggleSuckBlood);
