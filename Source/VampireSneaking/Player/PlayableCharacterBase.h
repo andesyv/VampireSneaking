@@ -66,7 +66,15 @@ public:
 	// Called to bind functionality to input
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Returns a vector pointing from the player to the mouse position.
+	UFUNCTION(BlueprintCallable)
+	FVector GetMouseVector() const;
+
 	// Helper function to get the forward vector of the mesh, relative to the mesh's rotation.
 	UFUNCTION(BlueprintCallable)
 	FVector GetMeshForwardVector() const;
+
+	// Returns the new head rotation
+	UFUNCTION(BlueprintCallable)
+	FRotator GetHeadRot();
 };

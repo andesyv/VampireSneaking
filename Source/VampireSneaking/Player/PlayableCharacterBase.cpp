@@ -3,6 +3,8 @@
 #include "Player/PlayableCharacterBase.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Player/CustomPlayerController.h"
+#include "GameFramework/PawnMovementComponent.h"
+#include "VampireSneakingGameModeBase.h"
 
 // Sets default values
 APlayableCharacterBase::APlayableCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -31,8 +33,12 @@ void APlayableCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!SuckingBlood && controller && meshComponent) {
-		Rotate();
+	if (!SuckingBlood && controller && meshComponent && GetMovementComponent()) {
+		// Rotate();
+		if (GetMovementComponent()->Velocity.Size() > 0.1f)
+		{
+			meshComponent->SetRelativeRotation(GetMovementComponent()->Velocity.Rotation());
+		}
 	}
 	
 	if (TimeBeforeNextAttack < 0.f)
@@ -69,7 +75,17 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 FVector APlayableCharacterBase::GetMeshForwardVector() const
 {
-	return FVector{(meshComponent->GetForwardVector().Rotation() - meshStartRotation).Vector()};
+	if (meshComponent)
+	{
+		return FVector{ (meshComponent->GetForwardVector().Rotation() - meshStartRotation).Vector() };
+	}
+	return GetActorForwardVector();
+}
+
+FRotator APlayableCharacterBase::GetHeadRot()
+{
+	FRotator newRotation{-GetMeshForwardVector().Rotation().Pitch, FMath::Clamp(GetMouseVector().Rotation().Yaw - GetMeshForwardVector().Rotation().Yaw, -179.9f, 180.f), 0.f};
+	return newRotation;
 }
 
 void APlayableCharacterBase::MoveX(float amount)
@@ -90,13 +106,22 @@ void APlayableCharacterBase::MoveY(float amount)
 	AddMovementInput(GetActorForwardVector(), amount);
 }
 
-void APlayableCharacterBase::Rotate()
+FVector APlayableCharacterBase::GetMouseVector() const
 {
 	FHitResult hitResult{};
-	if (controller->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult) && meshComponent) {
+	if (controller && controller->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult)) {
 		FVector direction{ hitResult.ImpactPoint - GetActorLocation() };
-		direction.Z = 0;
-		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation });
+		// direction.Z = 0;
+		return direction;
+	}
+	return FVector::ZeroVector;
+}
+
+void APlayableCharacterBase::Rotate()
+{
+	if (meshComponent)
+	{
+		meshComponent->SetWorldRotation(FRotator{ GetMouseVector().Rotation() + meshStartRotation });
 	}
 }
 
