@@ -10,6 +10,9 @@
 #include "AI/BTShootAtPlayer.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "VampireSneakingGameModeBase.h"
+#include "Player/CustomPlayerController.h"
+#include "HealthComponent.h"
 
 
 // Sets default values
@@ -97,12 +100,39 @@ void AEnemy::ShootAtPlayer()
 	if (GetMesh() != nullptr)
 	{
 		const FRotator enemyToPlayerRot{ FVector{ (player->GetActorLocation() + player->GetVelocity() * 0.2) - GetMesh()->GetSocketLocation(TEXT("Gun")) }.Rotation() };
-		SpawnBullet(enemyToPlayerRot, GetMesh()->GetSocketLocation(TEXT("Gun")), 30.f, this);
+		SpawnBullet(enemyToPlayerRot, GetMesh()->GetSocketLocation(TEXT("Gun")), AttackDamage, this);
 	}
 	else
 	{
 		const FRotator enemyToPlayerRot{ FVector{ (player->GetActorLocation() + player->GetVelocity() * 0.2) - GetActorLocation() }.Rotation() };
-		SpawnBullet(enemyToPlayerRot, GetActorLocation(), 30.f, this);
+		SpawnBullet(enemyToPlayerRot, GetActorLocation(), AttackDamage, this);
 	}
+}
+
+void AEnemy::MeleeAttack(float Damage, float AttackRange, float AttackAngle)
+{
+	// Check if enemies are inside players attack area
+	if (GetWorld() && UGameplayStatics::GetPlayerPawn(this, 0))
+	{
+		/// (Exactly the same checks as in "AIVisionCheck.h". Go see there for explanation.
+		FVector enemyToPlayer{UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation() - GetActorLocation()};
+		if (enemyToPlayer.Size() < AttackRange
+			&& AVampireSneakingGameModeBase::GetAngleBetween(enemyToPlayer, GetActorForwardVector()) < AttackAngle
+			// && !(GetWorld()->LineTraceSingleByChannel(hitResult, GetActorLocation(), item->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams))
+			&& UGameplayStatics::GetPlayerPawn(this, 0)->GetController()
+		) {
+			ACustomPlayerController* playerCon = Cast<ACustomPlayerController>(
+				UGameplayStatics::GetPlayerPawn(this, 0)->GetController());
+			if (playerCon && playerCon->HealthComponent)
+			{
+				playerCon->HealthComponent->TakeDamage(Damage);
+			}
+		}
+	}
+}
+
+void AEnemy::AttackPlayer()
+{
+	MeleeAttack(AttackDamage);
 }
 
