@@ -37,13 +37,13 @@ void ANextLevel::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 		{
 			UWorld* TheWorld = GetWorld();
 			FString CurrentLevel = TheWorld->GetMapName();
-			if (CurrentLevel == "UEDPIE_0_AlfaMap") {
+			if (CurrentLevel == "AlfaMap") {
 				UGameplayStatics::OpenLevel(GetWorld(), "BetaMap");
-				UE_LOG(LogTemp, Warning, TEXT("Loading %s"), *CurrentLevel);
+				//UE_LOG(LogTemp, Warning, TEXT("Loading %s"), *CurrentLevel);
 			}
 			else {
 				UGameplayStatics::OpenLevel(GetWorld(), "AlfaMap");
-				UE_LOG(LogTemp, Warning, TEXT("Loading %s"), *CurrentLevel);
+				//UE_LOG(LogTemp, Warning, TEXT("Loading %s"), *CurrentLevel);
 			}
 		}
 		/*auto *gamemode = GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>();
