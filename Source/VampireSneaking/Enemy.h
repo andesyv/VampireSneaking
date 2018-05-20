@@ -20,10 +20,13 @@ public:
 	// Sets default values for this pawn's properties
 	AEnemy();
 
-public:	
 	// Health and blood component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UHealthComponent *HealthComponent = nullptr;
+
+	// Damage the enemy deals
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackDamage = 30.f;
 
 	/** Spawns a bullet.
 	 * To be used with shooting animation.
@@ -38,6 +41,16 @@ public:
 	// Blueprint helper function that shoots at the player.
 	UFUNCTION(BlueprintCallable)
 	void ShootAtPlayer();
+
+	/** Melee attack for enemy
+	 * To be used on melee enemies.
+	 */
+	UFUNCTION(BlueprintCallable)
+	void MeleeAttack(float Damage = 30.f, float AttackRange = 10.f, float AttackAngle = 30.f);
+
+	// Blueprint helper function that does a melee attack towards the player.
+	UFUNCTION(BlueprintCallable)
+	void AttackPlayer();
 
 	// Projectile class
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -57,19 +70,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
 	class UBehaviorTree *BehaviorTree;
 
-	// The angle from the center that the AI will be able to see, in degrees. Total angle that the AI can see is this * 2.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
-	float VisionAngle = 10.f;
-
-	// The length the AI will be able to see.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
-	float VisionRadius = 100.f;
-
 	// Patrol points
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Logic")
 	TArray<ATargetPoint*> PatrolPoints;
 
-	// Explosion damage referance
+	// Explosion damage reference
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class UDamageType_Explosion> ExplosionDamage;
 
