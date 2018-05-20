@@ -242,12 +242,11 @@ void ACustomPlayerController::SetInvisWalls()
 }
 
 void ACustomPlayerController::Death_Implementation() {
-	// Destory all pawns.
-	UnPossess();
-	for (auto pawn : ControllablePawns) {
+	APawn *pawn = GetPawn();
+	if (pawn)
+	{
 		pawn->Destroy();
 	}
-	ControllablePawns.Empty();
 
 	// Call death event.
 	if (GetWorld() && GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()) {
