@@ -6,6 +6,7 @@
 #include "Player/PlayerVamp.h"
 #include "Player/CustomPlayerController.h"
 #include "HealthComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -27,6 +28,11 @@ void AEnemyBullet::BeginPlay()
 
 	MovementComponent->UpdatedComponent = CollisionComponent;
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnemyBullet::OnOverlap);
+
+	if (MuzzleFlare != nullptr)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFlare, GetActorLocation(), GetActorRotation(), FVector{0.2f, 0.2f, 0.2f});
+	}
 }
 
 void AEnemyBullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)

@@ -317,7 +317,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*>& UpdatedActors)
 
 								if (GetWorld())
 								{
-									GetWorld()->GetTimerManager().SetTimer(DelayedLastSeenPosition, TimerDelegate, 0.5f, false);
+									GetWorld()->GetTimerManager().SetTimer(DelayedLastSeenPosition, TimerDelegate, DelayedLastPositionTime, false);
 								}
 
 								AddRemoveTargetingEnemy(AddRemoveMode::Add, item);

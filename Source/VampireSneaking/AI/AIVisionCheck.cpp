@@ -68,30 +68,31 @@ AIState UDEPRECATED_AIVisionCheck::GetState(UBehaviorTreeComponent & OwnerComp, 
 	static float timer{ 0.f };
 
 	// Do the checks.
-	if (FMath::Abs(AVampireSneakingGameModeBase::GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
-		&& enemyToPlayer.Size() < enemy->VisionRadius	// Is player inside vision radius?
-		&& !(GetWorld()->LineTraceSingleByChannel(traceResult, enemy->GetActorLocation(), playerController->GetPawn()->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams)))	// Is there anything blocking the line of sight?
-	{
-		// The enemy can see the player.
+	//if (FMath::Abs(AVampireSneakingGameModeBase::GetAngleBetween(enemyToPlayer, enemy->GetActorForwardVector())) < enemy->VisionAngle	// Is player inside vision angle?
+	//	&& enemyToPlayer.Size() < enemy->VisionRadius	// Is player inside vision radius?
+	//	&& !(GetWorld()->LineTraceSingleByChannel(traceResult, enemy->GetActorLocation(), playerController->GetPawn()->GetActorLocation(), ECollisionChannel::ECC_GameTraceChannel3, collisionQueryParams)))	// Is there anything blocking the line of sight?
+	//{
+	//	// The enemy can see the player.
 
-		return AIState::Combat;
-	}
-	else if (enemy->beingSucked)
-	{
-		return AIState::Frozen;
-	}
-	else if (lastState == AIState::Combat)
-	{
-		timer = 0.f;
-		return AIState::Searching;
-	}
-	else if (lastState == AIState::Searching && timer < SearchTime)
-	{
-		timer += DeltaSeconds;
-		return AIState::Searching;
-	}
-	else
-	{
-		return AIState::Idle;
-	}
+	//	return AIState::Combat;
+	//}
+	//else if (enemy->beingSucked)
+	//{
+	//	return AIState::Frozen;
+	//}
+	//else if (lastState == AIState::Combat)
+	//{
+	//	timer = 0.f;
+	//	return AIState::Searching;
+	//}
+	//else if (lastState == AIState::Searching && timer < SearchTime)
+	//{
+	//	timer += DeltaSeconds;
+	//	return AIState::Searching;
+	//}
+	//else
+	//{
+	//	return AIState::Idle;
+	//}
+	return AIState::NoState;
 }

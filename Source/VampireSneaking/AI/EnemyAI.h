@@ -162,11 +162,11 @@ public:
 	// Toggles the vision range of the enemy between half and full.
 	bool ToggleVisionRange() const;
 
-	// How long the AI will search for before going back into patrol-mode
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float SearchTime = 3.f;
+	// Time the enemy should know the players position after the player has gone out of vision.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DelayedLastPositionTime = 0.5f;
 
 	// Info for the next hit taken in behaviorTree.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	FExplosionDamageInfo DamageInfo = FExplosionDamageInfo{};
 };

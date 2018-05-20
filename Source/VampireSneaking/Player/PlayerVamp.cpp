@@ -261,8 +261,6 @@ void APlayerVamp::BatModeToggle()
 	{
 		GetCharacterMovement()->MovementMode = EMovementMode::MOVE_None;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Bat mode was toggled!"));
 }
 
 void APlayerVamp::BatModeFinish()
@@ -299,8 +297,6 @@ void APlayerVamp::BatModeFinish()
 			}
 		}
 	}
-	
-	UE_LOG(LogTemp, Warning, TEXT("Bat mode was finished toggled."));
 }
 
 void APlayerVamp::Dash()
