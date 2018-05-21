@@ -403,7 +403,7 @@ void AEnemyAI::StimulusExpired(FAIStimulus & stimulus)
 
 float AEnemyAI::GetLengthBetween(AActor * first, AActor * second)
 {
-	if (first != nullptr && second != nullptr)
+	if (first != nullptr && second != nullptr && !first->IsActorBeingDestroyed() && !second->IsActorBeingDestroyed())
 	{
 		FVector betweenVector{ first->GetActorLocation() - second->GetActorLocation() };
 		return betweenVector.Size();
