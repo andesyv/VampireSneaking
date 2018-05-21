@@ -12,7 +12,7 @@ UHealthComponent::UHealthComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 
-	Reset();
+	// Reset();
 }
 
 // Called when the game starts
