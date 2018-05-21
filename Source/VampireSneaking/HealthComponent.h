@@ -31,7 +31,7 @@ protected:
 
 	// The amount of blood to start with.
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
-		float StartingBlood = 100.f;
+		float StartingBlood = 80.f;
 
 	// Make the maximum amount of blood be the starting blood?
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
