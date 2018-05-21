@@ -131,7 +131,7 @@ protected:
 	 * Toggles the blackboard state enum between Frozen and Idle.
 	 * Returns true if state was changed to Frozen.
 	 */
-	bool ToggleSucking();
+	bool ToggleSucking() const;
 
 	// The state before ToggleSucking. Used in ToggleSucking.
 	AIState lastState;
