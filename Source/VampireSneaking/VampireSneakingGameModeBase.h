@@ -65,6 +65,8 @@ protected:
 	// For spawning the bat.
 	APawn* SpawnBatPawn(UClass *spawnClass, const FVector &Position, const FRotator &Rotation);
 
+	void ResetEnemies();
+
 	// Resets the enemy blackboard and behaviorTree.
 	void ResetEnemyAI(AEnemy* TargetEnemy = nullptr);
 	void ResetEnemyAI_Internal(AEnemy* enemy) const;

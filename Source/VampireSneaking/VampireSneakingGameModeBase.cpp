@@ -87,6 +87,25 @@ APawn * AVampireSneakingGameModeBase::SpawnBatPawn(UClass *spawnClass, const FVe
 	return returnPawn;
 }
 
+void AVampireSneakingGameModeBase::ResetEnemies()
+{
+	for (auto &enemy : GetEnemyList())
+	{
+		if (enemy->GetController())
+		{
+			AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy->GetController());
+			if (enemyAI)
+			{
+				enemyAI->TargetedActors.Empty();
+				enemyAI->ClearTimer(enemyAI->DelayedLastSeenPosition);
+				enemyAI->ClearTimer(enemyAI->VisionRangeTimerHandle);
+			}
+		}
+
+		ResetEnemyAI(enemy);
+	}
+}
+
 void AVampireSneakingGameModeBase::ResetEnemyAI(AEnemy* TargetEnemy)
 {
 	if (TargetEnemy)

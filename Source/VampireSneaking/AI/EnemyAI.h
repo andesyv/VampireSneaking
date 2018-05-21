@@ -67,6 +67,7 @@ class VAMPIRESNEAKING_API AEnemyAI : public AAIController
 	GENERATED_BODY()
 
 	friend class APlayerVamp;
+	friend class AVampireSneakingGameModeBase;
 
 protected:
 	// Start of the game.
@@ -157,7 +158,7 @@ public:
 	// Delegate for move completion.
 	FTaskNodeExecutionDelegate OnMoveCompletedDelegate{};
 
-	UCustomAIPerceptionComponent* const GetPerceptionComp() const;
+	UCustomAIPerceptionComponent* GetPerceptionComp() const;
 
 	// Toggles the vision range of the enemy between half and full.
 	bool ToggleVisionRange() const;
