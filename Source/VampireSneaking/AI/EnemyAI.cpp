@@ -415,7 +415,7 @@ void AEnemyAI::CheckIfOutsideVisionRange()
 {
 	for (auto item : TargetedActors)
 	{
-		if (GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
+		if (GetPawn() && GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 		{
 			// UE_LOG(LogTemp, Warning, TEXT("Player is outside vision range and also lost!"));
 			const TArray<AActor*> ArrayCopy{ TargetedActors };
@@ -425,10 +425,11 @@ void AEnemyAI::CheckIfOutsideVisionRange()
 	}
 }
 
-bool AEnemyAI::ToggleSucking() {
+bool AEnemyAI::ToggleSucking() const
+{
 	if (Blackboard) {
 		if (static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) != AIState::Combat) {
-			bool StateIsFrozen{ lastState != AIState::Frozen && static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) == AIState::Frozen };
+			const bool StateIsFrozen{ lastState != AIState::Frozen && static_cast<AIState>(Blackboard->GetValue<UBlackboardKeyType_Enum>(TEXT("State"))) == AIState::Frozen };
 			if (!Blackboard->SetValue<UBlackboardKeyType_Enum>(TEXT("State"), static_cast<int>(StateIsFrozen ? AIState::Idle : AIState::Frozen))) {
 				UE_LOG(LogTemp, Warning, TEXT("Failed to set blackboard state enum."));
 				return false;
