@@ -35,27 +35,8 @@ void ANextLevel::OnHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherAc
 		auto *playerController = Cast<ACustomPlayerController>(Cast<APawn>(OtherActor)->GetController());
 		if (playerController)
 		{
-			UWorld* TheWorld = GetWorld();
-			FString CurrentLevel = TheWorld->GetMapName();
-			if (CurrentLevel == "AlfaMap") {
-				UGameplayStatics::OpenLevel(GetWorld(), "BetaMap");
-				//UE_LOG(LogTemp, Warning, TEXT("Loading %s"), *CurrentLevel);
-			}
-			else {
-				UGameplayStatics::OpenLevel(GetWorld(), "AlfaMap");
-				//UE_LOG(LogTemp, Warning, TEXT("Loading %s"), *CurrentLevel);
-			}
+			UGameplayStatics::OpenLevel(GetWorld(), "BetaMap");
 		}
-		/*auto *gamemode = GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>();
-		if (gamemode && playerController)
-		{
-		auto *playerStart = gamemode->FindPlayerStart(playerController);
-		if (playerStart)
-		{
-		playerStart->SetActorLocation(FVector{ playerStart->GetActorLocation().Z, GetActorLocation().Y, GetActorLocation().Z });
-		Destroy();
-		}
-		}*/
 	}
 
 }
