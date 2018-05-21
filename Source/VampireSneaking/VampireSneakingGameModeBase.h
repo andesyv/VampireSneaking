@@ -37,6 +37,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Game)
 	void StartPlay() override;
 
+	/** Tries to spawn the player's pawn, at the location returned by FindPlayerStart */
+	UFUNCTION(BlueprintCallable, Category = Game)
+	void RestartPlayer(AController* NewPlayer) override;
+
 	/**
 	* Called during RestartPlayer to actually spawn the player's pawn, when using a start spot
 	* @param	NewPlayer - Controller for whom this pawn is spawned

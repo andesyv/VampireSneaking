@@ -25,6 +25,17 @@ void AVampireSneakingGameModeBase::StartPlay()
 	Super::StartPlay();
 }
 
+void AVampireSneakingGameModeBase::RestartPlayer(AController * NewPlayer)
+{
+	Super::RestartPlayer(NewPlayer);
+
+	ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(NewPlayer);
+	if (playerCon != nullptr && playerCon->HealthComponent)
+	{
+		playerCon->HealthComponent->Reset();
+	}
+}
+
 //APawn* AVampireSneakingGameModeBase::SpawnDefaultPawnFor_Implementation(AController* NewPlayer, AActor* StartSpot) {
 //	APawn *returnValue = Super::SpawnDefaultPawnFor_Implementation(NewPlayer, StartSpot);
 //
@@ -128,12 +139,13 @@ void AVampireSneakingGameModeBase::LocalRestartPlayer(APlayerController* Control
 	if (Controller)
 	{
 		auto *CustomController = Cast<ACustomPlayerController>(Controller);
-		if (CustomController && CustomController->LastCheckpoint != nullptr)
+		if (CustomController && CustomController->LastCheckpoint != nullptr && CustomController->HealthComponent)
 		{
 			FTransform spawnTransform{ CustomController->LastCheckpoint->GetActorTransform() };
 			// Just to make sure the player isn't super big all of a sudden.
 			spawnTransform.SetScale3D(FVector{ 1.f, 1.f, 1.f });
 			RestartPlayerAtTransform(Controller, spawnTransform);
+			CustomController->HealthComponent->Reset();
 			return;
 		}
 	}
@@ -155,12 +167,6 @@ void AVampireSneakingGameModeBase::PlayerDeath(APlayerController* PlayerCon)
 	}
 
 	ResetEnemyAI();
-
-	auto *customController = Cast<ACustomPlayerController>(PlayerCon);
-	if (customController && customController->HealthComponent)
-	{
-		customController->HealthComponent->Reset();
-	}
 	
 	FTimerDelegate RespawnTimerDelegate;
 	RespawnTimerDelegate.BindUFunction(this, FName{ "LocalRestartPlayer" }, PlayerCon);
