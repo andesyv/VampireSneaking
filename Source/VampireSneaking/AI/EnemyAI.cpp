@@ -127,7 +127,7 @@ void AEnemyAI::BeginPlay() {
 	}
 }
 
-UCustomAIPerceptionComponent* const AEnemyAI::GetPerceptionComp() const
+UCustomAIPerceptionComponent* AEnemyAI::GetPerceptionComp() const
 {
 	if (AIPerceptionComp)
 	{
@@ -415,6 +415,10 @@ void AEnemyAI::CheckIfOutsideVisionRange()
 {
 	for (auto item : TargetedActors)
 	{
+		if (item->IsActorBeingDestroyed())
+		{
+			continue;
+		}
 		if (GetPawn() && GetLengthBetween(item, GetPawn()) > TrueVisionRadius)
 		{
 			// UE_LOG(LogTemp, Warning, TEXT("Player is outside vision range and also lost!"));
