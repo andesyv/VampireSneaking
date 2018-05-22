@@ -143,4 +143,6 @@ public:
 	// Montage used when attacking.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	UAnimMontage *AttackMontage = nullptr;
+
+	bool IsEnemyDrainable(AEnemy *enemy) const;
 };
