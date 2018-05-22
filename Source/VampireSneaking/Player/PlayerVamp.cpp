@@ -78,7 +78,7 @@ void APlayerVamp::SuckBlood(float amount, float DeltaTime)
 	if (GetController()) {
 		ACustomPlayerController *playerCon = Cast<ACustomPlayerController>(GetController());
 		if (playerCon) {
-			if (playerCon->GetBloodSuckButton() && EnemyInFront()) {
+			if (playerCon->GetBloodSuckButton() && EnemyInFront() && IsEnemyDrainable(suckedEnemy)) {
 				SuckingBlood = !SuckingBlood ? ToggleBloodSucking() : SuckingBlood;
 			} else {
 				SuckingBlood = SuckingBlood ? ToggleBloodSucking() : SuckingBlood;
@@ -153,7 +153,7 @@ void APlayerVamp::Attack_Implementation()
 bool APlayerVamp::EnemyInFront()
 {
 	const FName TraceTag("SuckTrace");
-	GetWorld()->DebugDrawTraceTag = TraceTag;
+	// GetWorld()->DebugDrawTraceTag = TraceTag;
 	const FCollisionQueryParams collisionQueryParams{ TraceTag, false , this };
 
 	FHitResult hitResult{};
@@ -320,4 +320,17 @@ void APlayerVamp::Dash()
 
 	// Set cooldown.
 	TimeBeforeNextDash = DashCooldown;
+}
+
+bool APlayerVamp::IsEnemyDrainable(AEnemy * enemy) const
+{
+	if (enemy && enemy->GetController())
+	{
+		AEnemyAI *enemyAI = Cast<AEnemyAI>(enemy->GetController());
+		if (enemyAI && enemyAI->HealthComponent)
+		{
+			return enemyAI->HealthComponent->CanBeDrained();
+		}
+	}
+	return false;
 }

@@ -26,7 +26,7 @@ protected:
 		float Blood = 100.f;
 
 	// Maximum amount of blood. (Will later be updated to have an indefinite amount of blood)
-	UPROPERTY(BlueprintGetter = GetMaxBlood, Category = "Blood")
+	UPROPERTY(EditDefaultsOnly, BlueprintGetter = GetMaxBlood, Category = "Blood")
 		float MaxBlood = 100.f;
 
 	// The amount of blood to start with.
@@ -36,6 +36,10 @@ protected:
 	// Make the maximum amount of blood be the starting blood?
 	UPROPERTY(EditDefaultsOnly, Category = "Blood")
 		bool MaxBloodIsStartingBlood = false;
+
+	// Can the player/enemy be drained of blood?
+	UPROPERTY(EditAnywhere, BlueprintGetter = CanBeDrained, Category = "Blood", meta = (DisplayName = "Can be drained"))
+		bool Suckable = true;
 
 	// If the player/enemy is out of blood.
 	UPROPERTY(BlueprintGetter = IsOutOfBlood, Category = "Blood")
@@ -54,27 +58,31 @@ protected:
 public:
 	// Getter for Blood
 	UFUNCTION(BlueprintGetter, Category = "Blood")
-		const float GetBlood() const;
+		float GetBlood() const;
 
 	// Getter for MaxBlood
 	UFUNCTION(BlueprintGetter, Category = "Blood")
-		const float GetMaxBlood() const;
+		float GetMaxBlood() const;
 
 	// Get percentage amount of blood.
 	UFUNCTION(BlueprintCallable, Category = "Blood")
-		const float GetPercentageBlood() const;
+		float GetPercentageBlood() const;
 
 	// Adds blood to the current amount of blood.
 	UFUNCTION(BlueprintCallable, Category = "Blood")
-		const float AddBlood(float amount);
+		float AddBlood(float amount);
 
 	// Returns true if the player/enemy is out of blood.
 	UFUNCTION(BlueprintGetter, Category = "Blood")
-		const bool IsOutOfBlood() const;
+		bool IsOutOfBlood() const;
+
+	// Returns true if the enemy/player can be drained of blood
+	UFUNCTION(BlueprintGetter, Category = "Blood")
+	bool CanBeDrained() const;
 	
 	// Take damage.
 	UFUNCTION(BlueprintCallable, Category = "Blood")
-		const float TakeDamage(float amount);
+		float TakeDamage(float amount);
 
 	// Delegate called on death.
 	UPROPERTY(BlueprintAssignable, Category = "Blood")
