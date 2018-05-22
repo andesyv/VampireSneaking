@@ -67,9 +67,38 @@ void APlayableCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	}
 }
 
+FVector APlayableCharacterBase::GetMouseVector() const
+{
+	FHitResult hitResult{};
+	if (controller && controller->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult)) {
+		FVector direction{ hitResult.ImpactPoint - GetActorLocation() };
+		direction.Z = 0;
+		return direction;
+	}
+	return FVector::ZeroVector;
+}
+
+FRotator APlayableCharacterBase::RotateAToB(FVector a, FVector b) const
+{
+	a = a.GetSafeNormal();
+	b = b.GetSafeNormal();
+	const FVector v{ FVector::CrossProduct(a, b) };
+	const float sinV{ FMath::Abs(v.Size()) };
+	const float cosV{ FVector::DotProduct(a, b) };
+	const FMatrix Vx{ FVector{0, -v.Z, v.Y}, FVector{v.Z, 0, -v.X}, FVector{-v.Y, v.X, 0}, FVector::ZeroVector};
+
+	const FMatrix rotationMatrix{ FMatrix::Identity + Vx + Vx * Vx * (1.f / (1.f + cosV)) };
+
+	return rotationMatrix.Rotator();
+}
+
 FVector APlayableCharacterBase::GetMeshForwardVector() const
 {
-	return FVector{(meshComponent->GetForwardVector().Rotation() - meshStartRotation).Vector()};
+	if (meshComponent != nullptr)
+	{
+		return FVector{ (meshComponent->GetForwardVector().Rotation() - meshStartRotation).Vector() };
+	}
+	return FVector::ZeroVector;
 }
 
 void APlayableCharacterBase::MoveX(float amount)
@@ -92,11 +121,9 @@ void APlayableCharacterBase::MoveY(float amount)
 
 void APlayableCharacterBase::Rotate()
 {
-	FHitResult hitResult{};
-	if (controller->GetHitResultUnderCursor(ECollisionChannel::ECC_GameTraceChannel2, false, hitResult) && meshComponent) {
-		FVector direction{ hitResult.ImpactPoint - GetActorLocation() };
-		direction.Z = 0;
-		meshComponent->SetWorldRotation(FRotator{ direction.Rotation() + meshStartRotation });
+	if (meshComponent != nullptr)
+	{
+		meshComponent->SetWorldRotation(FRotator{ GetMouseVector().Rotation() + meshStartRotation });
 	}
 }
 

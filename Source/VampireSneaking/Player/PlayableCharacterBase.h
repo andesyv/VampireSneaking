@@ -69,4 +69,12 @@ public:
 	// Helper function to get the forward vector of the mesh, relative to the mesh's rotation.
 	UFUNCTION(BlueprintCallable)
 	FVector GetMeshForwardVector() const;
+
+	// Helper function to get the vector from the player to the mouse. z is neutralized.
+	UFUNCTION(BlueprintCallable)
+	FVector GetMouseVector() const;
+
+	// Returns the rotation matrix to rotate vector a to b
+	UFUNCTION(BlueprintCallable)
+	FRotator RotateAToB(FVector a, FVector b) const;
 };
