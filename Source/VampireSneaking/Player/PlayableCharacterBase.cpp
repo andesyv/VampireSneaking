@@ -92,6 +92,11 @@ FRotator APlayableCharacterBase::RotateAToB(FVector a, FVector b) const
 	return rotationMatrix.Rotator();
 }
 
+bool APlayableCharacterBase::IsSuckingBlood() const
+{
+	return SuckingBlood;
+}
+
 FVector APlayableCharacterBase::GetMeshForwardVector() const
 {
 	if (meshComponent != nullptr)

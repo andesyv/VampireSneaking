@@ -11,7 +11,6 @@
 class ACustomPlayerController;
 class UMeshComponent;
 
-
 /**
 * Character base for all characters that the player should be able to control.
 * (Pretty useless after I changed it to only be 1 character that the player should be able to control..)
@@ -77,4 +76,8 @@ public:
 	// Returns the rotation matrix to rotate vector a to b
 	UFUNCTION(BlueprintCallable)
 	FRotator RotateAToB(FVector a, FVector b) const;
+
+	// Returns true if the player is sucking blood
+	UFUNCTION(BlueprintCallable)
+	bool IsSuckingBlood() const;
 };
