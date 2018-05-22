@@ -10,6 +10,7 @@
 // Forward declarations
 class AEnemy;
 class UParticleSystemComponent;
+class UAnimMontage;
 
 UCLASS(Blueprintable, meta = (DisplayName = "Player Vampire"))
 class VAMPIRESNEAKING_API APlayerVamp : public APlayableCharacterBase
@@ -137,6 +138,9 @@ public:
 	bool CHEAT_NoCooldown = false;
 
 	UFUNCTION()
-		void Dash(); 
-	
+	void Dash(); 
+
+	// Montage used when attacking.
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UAnimMontage *AttackMontage = nullptr;
 };

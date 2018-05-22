@@ -117,8 +117,13 @@ void APlayerVamp::AttackCheck()
 
 void APlayerVamp::Attack_Implementation()
 {
+	// Play animation
+	if (AttackMontage != nullptr)
+	{
+		PlayAnimMontage(AttackMontage);
+	}
+
 	FHitResult hitResult{}; // TODO: Understand how this can show force in the ApplyPointDamage function.
-	
 
 	// Check if enemies are inside players attack area
 	if (UGameplayStatics::GetGameMode(GetWorld())) {
