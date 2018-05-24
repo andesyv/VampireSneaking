@@ -15,10 +15,20 @@ UCLASS()
 class VAMPIRESNEAKING_API AEnemy : public ACharacter
 {
 	GENERATED_BODY()
+	friend class AEnemyAI;
+
+protected:
+	// To know if the enemy is dead or not.
+	UPROPERTY(BlueprintGetter = IsDead)
+	bool dead = false;
 
 public:
 	// Sets default values for this pawn's properties
 	AEnemy();
+
+	// Is the enemy dead?
+	UFUNCTION(BlueprintCallable, BlueprintGetter)
+	bool IsDead() const;
 
 	// Health and blood component
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)

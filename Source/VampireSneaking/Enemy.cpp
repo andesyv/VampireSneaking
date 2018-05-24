@@ -136,3 +136,8 @@ void AEnemy::AttackPlayer()
 	MeleeAttack(AttackDamage);
 }
 
+bool AEnemy::IsDead() const
+{
+	return dead;
+}
+

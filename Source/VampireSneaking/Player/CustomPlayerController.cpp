@@ -245,13 +245,25 @@ void ACustomPlayerController::Death_Implementation() {
 	APawn *pawn = GetPawn();
 	if (pawn)
 	{
-		pawn->Destroy();
-	}
+		APlayableCharacterBase *player = Cast<APlayableCharacterBase>(pawn);
+		if (player)
+		{
+			player->dead = true;
+		}
 
-	// Call death event.
-	if (GetWorld() && GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()) {
-		GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>()->PlayerDeath(this);
+		// Call death event.
+		if (GetWorld()) {
+			AVampireSneakingGameModeBase *gamemode = GetWorld()->GetAuthGameMode<AVampireSneakingGameModeBase>();
+			if (gamemode)
+			{
+				gamemode->PlayerDeath(this);
+				gamemode->pawnToBeDestroyed = pawn;
+			}
+		}
 	}
+	UnPossess();
+
+	
 
 	// Destroy yoself!
 	// Destroy();

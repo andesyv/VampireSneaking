@@ -93,4 +93,6 @@ protected:
 	// Function to remove enemies from list.
 	UFUNCTION()
 	void RemoveFromEnemyList(AActor *DestroyedEnemy);
+
+	APawn *pawnToBeDestroyed{ nullptr };
 };

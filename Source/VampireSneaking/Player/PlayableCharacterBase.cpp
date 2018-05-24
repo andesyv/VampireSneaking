@@ -31,7 +31,7 @@ void APlayableCharacterBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!SuckingBlood && controller && meshComponent) {
+	if (!SuckingBlood && controller && !dead) {
 		Rotate();
 	}
 	
@@ -97,6 +97,11 @@ bool APlayableCharacterBase::IsSuckingBlood() const
 	return SuckingBlood;
 }
 
+bool APlayableCharacterBase::IsPlayerDead() const
+{
+	return dead;
+}
+
 FVector APlayableCharacterBase::GetMeshForwardVector() const
 {
 	if (meshComponent != nullptr)
@@ -108,7 +113,7 @@ FVector APlayableCharacterBase::GetMeshForwardVector() const
 
 void APlayableCharacterBase::MoveX(float amount)
 {
-	if (SuckingBlood)
+	if (SuckingBlood || dead)
 	{
 		return;
 	}
@@ -117,7 +122,7 @@ void APlayableCharacterBase::MoveX(float amount)
 
 void APlayableCharacterBase::MoveY(float amount)
 {
-	if (SuckingBlood)
+	if (SuckingBlood || dead)
 	{
 		return;
 	}

@@ -58,6 +58,10 @@ protected:
 	// Currently sucking blood?
 	bool SuckingBlood{ false };
 
+	// Is the player dead?
+	UPROPERTY(BlueprintGetter = IsPlayerDead)
+	bool dead = false;
+
 public:
 	// Called every frame
 	void Tick(float DeltaTime) override;
@@ -80,4 +84,8 @@ public:
 	// Returns true if the player is sucking blood
 	UFUNCTION(BlueprintCallable)
 	bool IsSuckingBlood() const;
+
+	// Returns true if the player is dead
+	UFUNCTION(BlueprintCallable, BlueprintGetter)
+	bool IsPlayerDead() const;
 };

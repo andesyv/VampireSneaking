@@ -5,7 +5,6 @@
 #include "EngineUtils.h"
 #include "Player/CustomPlayerController.h"
 #include "Enemy.h"
-#include "Player/BatMode.h"
 #include "TimerManager.h"
 #include "AI/EnemyAI.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -155,6 +154,12 @@ void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
 
 void AVampireSneakingGameModeBase::LocalRestartPlayer(APlayerController* Controller)
 {
+	if (pawnToBeDestroyed != nullptr)
+	{
+		pawnToBeDestroyed->Destroy();
+		pawnToBeDestroyed = nullptr;
+	}
+
 	if (Controller)
 	{
 		auto *CustomController = Cast<ACustomPlayerController>(Controller);

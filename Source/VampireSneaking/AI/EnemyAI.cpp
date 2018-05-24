@@ -14,6 +14,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Perception/AISense_Hearing.h"
 #include "Perception/AISense.h"
+#include "Components/CapsuleComponent.h"
 
 AEnemyAI::AEnemyAI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -448,15 +449,24 @@ bool AEnemyAI::ToggleSucking() const
 }
 
 void AEnemyAI::Death_Implementation() {
-	APawn *enemy = GetPawn();
-	if (enemy) {
+	if (GetPawn()) {
+		// enemy->Destroy();
+		AEnemy *enemy = Cast<AEnemy>(GetPawn());
+		if (enemy)
+		{
+			enemy->dead = true;
+			if (enemy->GetCapsuleComponent())
+			{
+				enemy->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			}
+		}
+
 		UnPossess();
-		enemy->Destroy();
 	}
-	Destroy();
 
 	if (GetWorld())
 	{
 		AddRemoveTargetingEnemy(AddRemoveMode::Remove, UGameplayStatics::GetPlayerPawn(GetWorld(), 0));
 	}
+	Destroy();
 }
