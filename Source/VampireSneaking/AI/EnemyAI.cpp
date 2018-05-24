@@ -241,7 +241,7 @@ void AEnemyAI::UpdateState(const TArray<AActor*>& UpdatedActors)
 {
 	for (auto item : UpdatedActors)
 	{
-		if (!item->IsA(APlayableCharacterBase::StaticClass()))
+		if (!item->IsA(APlayableCharacterBase::StaticClass()) || item->IsActorBeingDestroyed())
 		{
 			continue;
 		}
