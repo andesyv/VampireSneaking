@@ -22,6 +22,7 @@ class VAMPIRESNEAKING_API AVampireSneakingGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 
 	friend class ACustomPlayerController;
+	friend class UCustomGameInstance;
 	
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -53,6 +54,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RestartLevel();
 
+	// Plays the next level.
+	UFUNCTION(BlueprintCallable)
+	int NextLevel();
+
 	// Get a list of enemies in the scene
 	UFUNCTION(BlueprintCallable)
 	TArray<AEnemy*>& GetEnemyList();
@@ -62,6 +67,9 @@ public:
 	TSubclassOf<ABatMode> BatFormClass;
 
 protected:
+	// The game instance. Should not be altered in runtime.
+	UCustomGameInstance * GameInstance;
+
 	// For spawning the bat.
 	APawn* SpawnBatPawn(UClass *spawnClass, const FVector &Position, const FRotator &Rotation);
 

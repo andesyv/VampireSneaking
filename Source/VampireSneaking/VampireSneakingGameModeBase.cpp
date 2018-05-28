@@ -9,6 +9,7 @@
 #include "AI/EnemyAI.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "HealthComponent.h"
+#include "CustomGameInstance.h"
 
 void AVampireSneakingGameModeBase::StartPlay()
 {
@@ -60,6 +61,15 @@ void AVampireSneakingGameModeBase::RestartPlayer(AController * NewPlayer)
 void AVampireSneakingGameModeBase::RestartLevel()
 {
 	UGameplayStatics::OpenLevel(GetWorld(), FName{ *GetWorld()->GetMapName() }, true);
+}
+
+int AVampireSneakingGameModeBase::NextLevel()
+{
+	if (GameInstance != nullptr)
+	{
+		return GameInstance->NextLevel();
+	}
+	return -1;
 }
 
 TArray<AEnemy*>& AVampireSneakingGameModeBase::GetEnemyList()
@@ -154,6 +164,11 @@ void AVampireSneakingGameModeBase::ResetEnemyAI_Internal(AEnemy* enemy) const
 
 void AVampireSneakingGameModeBase::LocalRestartPlayer(APlayerController* Controller)
 {
+	if (GetWorld() && GetWorld()->GetMapName() == FString{"TransitionMap"})
+	{
+		return;
+	}
+
 	if (pawnToBeDestroyed != nullptr)
 	{
 		pawnToBeDestroyed->Destroy();
