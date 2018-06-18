@@ -38,6 +38,10 @@ protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
 
+	// Quits the game.
+	UFUNCTION(BlueprintCallable)
+	void QuitGame();
+
 	// Shall only be changed in the ChangePawn function.
 	uint32 CurrentIndex{0};
 

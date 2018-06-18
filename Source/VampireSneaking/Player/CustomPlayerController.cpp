@@ -51,6 +51,11 @@ void ACustomPlayerController::BeginPlay()
 	}
 }
 
+void ACustomPlayerController::QuitGame()
+{
+	FGenericPlatformMisc::RequestExit(false);
+}
+
 void ACustomPlayerController::ChangePawn()
 {
 	ChangePawn(-1);
@@ -167,6 +172,7 @@ void ACustomPlayerController::SetupInputComponent()
 
 	InputComponent->BindAction("Bite", IE_Pressed, this, &ACustomPlayerController::ToggleSuckBlood);
 	InputComponent->BindAction("Bite", IE_Released, this, &ACustomPlayerController::ToggleSuckBlood);
+	InputComponent->BindAction("Quit", IE_Pressed, this, &ACustomPlayerController::QuitGame);
 }
 
 const APawn * ACustomPlayerController::GetControllablePawn(int index) const
